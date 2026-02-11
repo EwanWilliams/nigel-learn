@@ -15,4 +15,5 @@ closes #
 - [ ] I have reported changes/additions that need to be made to the documentation
 - [ ] I have assigned relevant team members to review this PR
 - [ ] I have selected the appropriate label for this PR
+- [ ] I have selected the appropriate milestone for this PR
 - [ ] This PR and branch is linked to the correct project issue
