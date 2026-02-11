@@ -2,6 +2,12 @@
 
 <!-- Please summarise the changes you have made, features you have implemented and briefly how you have achieved this. -->
 
+## Link Issue
+
+<!-- use the "closes #[issue number]" syntax below to link the issue this PR closes -->
+
+closes #
+
 ## Checklist
 
 - [ ] I have performed a self review of my code
