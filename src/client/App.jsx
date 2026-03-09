@@ -130,7 +130,7 @@ function HomeScreen({ accounts, query, setQuery, onSelect }) {
 
 function MailScreen({ mailItems, onSelect }) {
   return (
-    <div className="phoneContent">
+    <div className="mailPanelBody">
       <div className="sectionHeader">
         <h3>Inbox</h3>
         <span className="mutedSmall">{mailItems.length} messages</span>
@@ -193,8 +193,8 @@ function DetailScreen({ account, onBack }) {
 
 function MailDetailScreen({ mail, onBack }) {
   return (
-    <div className="detail">
-      <button className="backBtn" onClick={onBack} aria-label="Back">
+    <div className="mailPanelBody">
+      <button className="backBtn" onClick={onBack} aria-label="Back to inbox">
         ← Back
       </button>
 
@@ -231,6 +231,7 @@ export default function App() {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedMail, setSelectedMail] = useState(null);
   const [query, setQuery] = useState("");
+  const [mailOpen, setMailOpen] = useState(false);
 
   const accounts = useMemo(
     () => [
@@ -321,72 +322,102 @@ export default function App() {
 
   const openMail = (mail) => {
     setSelectedMail(mail);
-    setScreen("mailDetail");
   };
 
   const goHome = () => {
     setSelectedAccount(null);
-    setSelectedMail(null);
     setScreen("home");
   };
 
-  const goMail = () => {
-    setSelectedAccount(null);
+  const toggleMailPanel = () => {
+    setMailOpen((prev) => {
+      const next = !prev;
+      if (!next) {
+        setSelectedMail(null);
+      }
+      return next;
+    });
+  };
+
+  const closeMailPanel = () => {
+    setMailOpen(false);
     setSelectedMail(null);
-    setScreen("mail");
   };
 
   return (
     <div className="app-container">
-      <div className="phone">
-        <div className="screen">
-          <div className="topbar">
-            <div className="topbar-title">
-              <h2>Student Bank</h2>
-              <span className="topbar-sub">Prototype</span>
+      <div className={`simulatorLayout ${mailOpen ? "mailVisible" : ""}`}>
+        <div className="phone">
+          <div className="screen">
+            <div className="topbar">
+              <div className="topbar-title">
+                <h2>Student Bank</h2>
+                <span className="topbar-sub">Prototype</span>
+              </div>
+
+              <div className="topbar-actions">
+                <button
+                  className={`iconBtn ${mailOpen ? "activeIconBtn" : ""}`}
+                  aria-label="Inbox"
+                  title="Inbox"
+                  onClick={toggleMailPanel}
+                >
+                  ✉️
+                </button>
+                <button
+                  className="iconBtn"
+                  aria-label="Home"
+                  title="Home"
+                  onClick={goHome}
+                >
+                  ⌂
+                </button>
+              </div>
             </div>
 
-            <div className="topbar-actions">
-              <button
-                className="iconBtn"
-                aria-label="Mail"
-                title="Mail"
-                onClick={goMail}
-              >
-                ✉️
-              </button>
-              <button
-                className="iconBtn"
-                aria-label="Home"
-                title="Home"
-                onClick={goHome}
-              >
-                ⌂
-              </button>
-            </div>
+            {screen === "home" && (
+              <HomeScreen
+                accounts={accounts}
+                query={query}
+                setQuery={setQuery}
+                onSelect={openDetail}
+              />
+            )}
+
+            {screen === "detail" && selectedAccount && (
+              <DetailScreen account={selectedAccount} onBack={goHome} />
+            )}
           </div>
-
-          {screen === "home" && (
-            <HomeScreen
-              accounts={accounts}
-              query={query}
-              setQuery={setQuery}
-              onSelect={openDetail}
-            />
-          )}
-
-          {screen === "mail" && (
-            <MailScreen mailItems={mailItems} onSelect={openMail} />
-          )}
-
-          {screen === "detail" && selectedAccount && (
-            <DetailScreen account={selectedAccount} onBack={goHome} />
-          )}
-
-          {screen === "mailDetail" && selectedMail && (
-            <MailDetailScreen mail={selectedMail} onBack={goMail} />
-          )}
         </div>
+
+        {mailOpen && (
+          <aside className="mailPanel">
+            <div className="mailPanelHeader">
+              <div>
+                <div className="mailPanelTitle">Inbox</div>
+                <div className="mailPanelSub">Budget alerts and messages</div>
+              </div>
+
+              <button
+                className="iconBtn"
+                aria-label="Close inbox"
+                title="Close inbox"
+                onClick={closeMailPanel}
+              >
+                ✕
+              </button>
+            </div>
+
+            {selectedMail ? (
+              <MailDetailScreen
+                mail={selectedMail}
+                onBack={() => setSelectedMail(null)}
+              />
+            ) : (
+              <MailScreen mailItems={mailItems} onSelect={openMail} />
+            )}
+          </aside>
+        )}
       </div>
     </div>
   );
