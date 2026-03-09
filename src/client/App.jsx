@@ -24,6 +24,9 @@ function AccountRow({ account, onSelect }) {
       onClick={() => onSelect(account)}
       role="button"
       tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onSelect(account);
+      }}
     >
       <div className="accountLeft">
         <div className="accountIcon">{account.icon}</div>
@@ -49,6 +52,36 @@ function AccountRow({ account, onSelect }) {
           <span className="tag">{account.type}</span>
           <span className="chev">›</span>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function MailRow({ mail, onSelect }) {
+  return (
+    <div
+      className={`mailCard ${mail.read ? "" : "mailUnread"}`}
+      onClick={() => onSelect(mail)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onSelect(mail);
+      }}
+    >
+      <div className="mailTop">
+        <div className="mailSender">
+          <span className="mailDot" />
+          Nigel Learn
+        </div>
+        <div className="mailDate">{mail.date}</div>
+      </div>
+
+      <div className="mailSubject">{mail.subject}</div>
+      <div className="mailPreview">{mail.preview}</div>
+
+      <div className="mailMetaRow">
+        <span className="tag">Expense</span>
+        <span className="tag mailAmount">{formatGBP(mail.amount)}</span>
       </div>
     </div>
   );
@@ -82,6 +115,30 @@ function HomeScreen({ accounts, query, setQuery, onSelect }) {
       <div className="account-list">
         {filtered.map((account) => (
           <AccountRow key={account.id} account={account} onSelect={onSelect} />
+        ))}
+      </div>
+
+      <div className="noteCard">
+        <div className="noteTitle">Next step</div>
+        <div className="noteText">
+          Later, Current Account can contain pots like Rent, Travel, Food and Fun.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MailScreen({ mailItems, onSelect }) {
+  return (
+    <div className="phoneContent">
+      <div className="sectionHeader">
+        <h3>Inbox</h3>
+        <span className="mutedSmall">{mailItems.length} messages</span>
+      </div>
+
+      <div className="mailList">
+        {mailItems.map((mail) => (
+          <MailRow key={mail.id} mail={mail} onSelect={onSelect} />
         ))}
       </div>
     </div>
@@ -134,9 +191,45 @@ function DetailScreen({ account, onBack }) {
   );
 }
 
+function MailDetailScreen({ mail, onBack }) {
+  return (
+    <div className="detail">
+      <button className="backBtn" onClick={onBack} aria-label="Back">
+        ← Back
+      </button>
+
+      <div className="detailCard">
+        <div className="mailDetailHeader">
+          <div className="mailDetailSender">Nigel Learn</div>
+          <div className="mailDetailDate">{mail.date}</div>
+        </div>
+
+        <div className="mailDetailSubject">{mail.subject}</div>
+
+        <div className="detailTags">
+          <span className="tag">Unexpected cost</span>
+          <span className="tag mailAmount">{formatGBP(mail.amount)}</span>
+        </div>
+
+        <div className="mailDetailBody">{mail.message}</div>
+
+        <div className="detailActions">
+          <button className="btn primary" disabled>
+            Adjust budget
+          </button>
+          <button className="btn" disabled>
+            Mark as handled
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [screen, setScreen] = useState("home");
-  const [selected, setSelected] = useState(null);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [selectedMail, setSelectedMail] = useState(null);
   const [query, setQuery] = useState("");
 
   const accounts = useMemo(
@@ -185,14 +278,62 @@ export default function App() {
     []
   );
 
-  const goHome = () => {
-    setScreen("home");
-    setSelected(null);
-  };
+  const mailItems = useMemo(
+    () => [
+      {
+        id: "mail-1",
+        subject: "Bike repair needed",
+        preview: "Your bike chain snapped and needs repairing this week.",
+        message:
+          "Your bike chain snapped on the way home. The repair shop has quoted £60 and payment is needed this week. You may need to adjust your budget to cover this unexpected travel expense.",
+        amount: 60,
+        date: "Today",
+        read: false,
+      },
+      {
+        id: "mail-2",
+        subject: "Rent contribution increased",
+        preview: "Household bills have gone up this month.",
+        message:
+          "Your household bills have increased this month, so your rent or board contribution needs to increase by £120. Review your budget and decide which areas you may need to reduce.",
+        amount: 120,
+        date: "Yesterday",
+        read: true,
+      },
+      {
+        id: "mail-3",
+        subject: "Phone screen cracked",
+        preview: "A repair is needed to keep using your phone safely.",
+        message:
+          "You dropped your phone and cracked the screen. The repair will cost £90. Think carefully about whether to use savings, reduce fun spending, or cut subscriptions.",
+        amount: 90,
+        date: "Mon",
+        read: true,
+      },
+    ],
+    []
+  );
 
   const openDetail = (account) => {
-    setSelected(account);
+    setSelectedAccount(account);
     setScreen("detail");
+  };
+
+  const openMail = (mail) => {
+    setSelectedMail(mail);
+    setScreen("mailDetail");
+  };
+
+  const goHome = () => {
+    setSelectedAccount(null);
+    setSelectedMail(null);
+    setScreen("home");
+  };
+
+  const goMail = () => {
+    setSelectedAccount(null);
+    setSelectedMail(null);
+    setScreen("mail");
   };
 
   return (
@@ -202,24 +343,48 @@ export default function App() {
           <div className="topbar">
             <div className="topbar-title">
               <h2>Student Bank</h2>
-              <span className="topbar-sub">Prototype (static UI)</span>
+              <span className="topbar-sub">Prototype</span>
             </div>
+
             <div className="topbar-actions">
-              <button className="iconBtn" aria-label="Notifications" title="Notifications">
-                🔔
+              <button
+                className="iconBtn"
+                aria-label="Mail"
+                title="Mail"
+                onClick={goMail}
+              >
+                ✉️
               </button>
-              <button className="iconBtn" aria-label="Settings" title="Settings">
-                ⚙️
+              <button
+                className="iconBtn"
+                aria-label="Home"
+                title="Home"
+                onClick={goHome}
+              >
+                ⌂
               </button>
             </div>
           </div>
 
           {screen === "home" && (
-            <HomeScreen accounts={accounts} query={query} setQuery={setQuery} onSelect={openDetail} />
+            <HomeScreen
+              accounts={accounts}
+              query={query}
+              setQuery={setQuery}
+              onSelect={openDetail}
+            />
           )}
 
-          {screen === "detail" && selected && (
-            <DetailScreen account={selected} onBack={goHome} />
+          {screen === "mail" && (
+            <MailScreen mailItems={mailItems} onSelect={openMail} />
+          )}
+
+          {screen === "detail" && selectedAccount && (
+            <DetailScreen account={selectedAccount} onBack={goHome} />
+          )}
+
+          {screen === "mailDetail" && selectedMail && (
+            <MailDetailScreen mail={selectedMail} onBack={goMail} />
           )}
         </div>
       </div>
