@@ -105,7 +105,7 @@ function MailLetterCard({ mail, open, onToggle }) {
 
           <div className="letterActions">
             <button className="btn primary" disabled>
-              Pay Bill
+              Pay £{mail.amount}
             </button>
           </div>
         </div>
