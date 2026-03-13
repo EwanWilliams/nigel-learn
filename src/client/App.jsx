@@ -4,7 +4,9 @@ import "./app.css";
 function formatGBP(value) {
   const sign = value < 0 ? "-" : "";
   const abs = Math.abs(value);
-  return `${sign}£${abs.toLocaleString("en-GB", { maximumFractionDigits: 0 })}`;
+  return `${sign}£${abs.toLocaleString("en-GB", {
+    maximumFractionDigits: 0,
+  })}`;
 }
 
 function matchesQuery(account, query) {
@@ -57,39 +59,67 @@ function AccountRow({ account, onSelect }) {
   );
 }
 
-function MailRow({ mail, onSelect }) {
+function MailLetterCard({ mail, open, onToggle }) {
   return (
-    <div
-      className={`mailCard ${mail.read ? "" : "mailUnread"}`}
-      onClick={() => onSelect(mail)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onSelect(mail);
-      }}
+    <button
+      type="button"
+      className={`mailPiece ${open ? "mailPieceOpen" : ""}`}
+      onClick={onToggle}
     >
-      <div className="mailTop">
-        <div className="mailSender">
-          <span className="mailDot" />
-          Nigel Learn
+      {!open ? (
+        <div className="envelopeShell">
+          <div className="envelopeFlapTop" />
+
+          <div className="envelopeFront">
+            <div className="envelopeFrontLeft" />
+              <div className="envelopeFrontRight" />
+          </div>
+
+        <div className="envelopeStamp">£</div>
+
+  <div className="envelopeFooter">
+  </div>
+</div>
+      ) : (
+        <div className="letterShell">
+          <div className="letterHeader">
+            <div>
+              <div className="letterOrg">Nigel Learn</div>
+              <div className="letterMeta">Financial Life Admin</div>
+            </div>
+            <div className="letterDate">{mail.date}</div>
+          </div>
+
+          <div className="letterDivider" />
+
+          <div className="letterGreeting">Dear Student,</div>
+
+          <h3 className="letterSubject">{mail.subject}</h3>
+
+          <p className="letterBody">{mail.message}</p>
+
+          <div className="letterCostBox">
+            <span className="letterCostLabel">Amount due</span>
+            <span className="letterCostValue">{formatGBP(mail.amount)}</span>
+          </div>
+
+          <div className="letterActions">
+            <button className="btn primary" disabled>
+              Adjust budget
+            </button>
+            <button className="btn" disabled>
+              Mark handled
+            </button>
+          </div>
         </div>
-        <div className="mailDate">{mail.date}</div>
-      </div>
-
-      <div className="mailSubject">{mail.subject}</div>
-      <div className="mailPreview">{mail.preview}</div>
-
-      <div className="mailMetaRow">
-        <span className="tag">Expense</span>
-        <span className="tag mailAmount">{formatGBP(mail.amount)}</span>
-      </div>
-    </div>
+      )}
+    </button>
   );
 }
 
 function HomeScreen({ accounts, query, setQuery, onSelect }) {
   const filtered = useMemo(
-    () => accounts.filter((a) => matchesQuery(a, query.trim())),
+    () => accounts.filter((account) => matchesQuery(account, query.trim())),
     [accounts, query]
   );
 
@@ -118,29 +148,6 @@ function HomeScreen({ accounts, query, setQuery, onSelect }) {
         ))}
       </div>
 
-      <div className="noteCard">
-        <div className="noteTitle">Next step</div>
-        <div className="noteText">
-          Later, Current Account can contain pots like Rent, Travel, Food and Fun.
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MailScreen({ mailItems, onSelect }) {
-  return (
-    <div className="mailPanelBody">
-      <div className="sectionHeader">
-        <h3>Inbox</h3>
-        <span className="mutedSmall">{mailItems.length} messages</span>
-      </div>
-
-      <div className="mailList">
-        {mailItems.map((mail) => (
-          <MailRow key={mail.id} mail={mail} onSelect={onSelect} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -191,47 +198,35 @@ function DetailScreen({ account, onBack }) {
   );
 }
 
-function MailDetailScreen({ mail, onBack }) {
+function PostPanel({ mailItems, openMailId, onToggle }) {
   return (
-    <div className="mailPanelBody">
-      <button className="backBtn" onClick={onBack} aria-label="Back to inbox">
-        ← Back
-      </button>
-
-      <div className="detailCard">
-        <div className="mailDetailHeader">
-          <div className="mailDetailSender">Nigel Learn</div>
-          <div className="mailDetailDate">{mail.date}</div>
-        </div>
-
-        <div className="mailDetailSubject">{mail.subject}</div>
-
-        <div className="detailTags">
-          <span className="tag">Unexpected cost</span>
-          <span className="tag mailAmount">{formatGBP(mail.amount)}</span>
-        </div>
-
-        <div className="mailDetailBody">{mail.message}</div>
-
-        <div className="detailActions">
-          <button className="btn primary" disabled>
-            Adjust budget
-          </button>
-          <button className="btn" disabled>
-            Mark as handled
-          </button>
+    <aside className="postPanel">
+      <div className="postPanelHeader">
+        <div>
+          <div className="postPanelTitle">Today’s Post</div>
+          <div className="postPanelSub">Letters delivered to your address</div>
         </div>
       </div>
-    </div>
+
+      <div className="mailStack">
+        {mailItems.map((mail) => (
+          <MailLetterCard
+            key={mail.id}
+            mail={mail}
+            open={openMailId === mail.id}
+            onToggle={() => onToggle(mail.id)}
+          />
+        ))}
+      </div>
+    </aside>
   );
 }
 
 export default function App() {
   const [screen, setScreen] = useState("home");
   const [selectedAccount, setSelectedAccount] = useState(null);
-  const [selectedMail, setSelectedMail] = useState(null);
+  const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
-  const [mailOpen, setMailOpen] = useState(false);
 
   const accounts = useMemo(
     () => [
@@ -284,32 +279,26 @@ export default function App() {
       {
         id: "mail-1",
         subject: "Bike repair needed",
-        preview: "Your bike chain snapped and needs repairing this week.",
         message:
           "Your bike chain snapped on the way home. The repair shop has quoted £60 and payment is needed this week. You may need to adjust your budget to cover this unexpected travel expense.",
         amount: 60,
         date: "Today",
-        read: false,
       },
       {
         id: "mail-2",
         subject: "Rent contribution increased",
-        preview: "Household bills have gone up this month.",
         message:
           "Your household bills have increased this month, so your rent or board contribution needs to increase by £120. Review your budget and decide which areas you may need to reduce.",
         amount: 120,
         date: "Yesterday",
-        read: true,
       },
       {
         id: "mail-3",
         subject: "Phone screen cracked",
-        preview: "A repair is needed to keep using your phone safely.",
         message:
           "You dropped your phone and cracked the screen. The repair will cost £90. Think carefully about whether to use savings, reduce fun spending, or cut subscriptions.",
         amount: 90,
         date: "Mon",
-        read: true,
       },
     ],
     []
@@ -320,33 +309,18 @@ export default function App() {
     setScreen("detail");
   };
 
-  const openMail = (mail) => {
-    setSelectedMail(mail);
-  };
-
   const goHome = () => {
     setSelectedAccount(null);
     setScreen("home");
   };
 
-  const toggleMailPanel = () => {
-    setMailOpen((prev) => {
-      const next = !prev;
-      if (!next) {
-        setSelectedMail(null);
-      }
-      return next;
-    });
-  };
-
-  const closeMailPanel = () => {
-    setMailOpen(false);
-    setSelectedMail(null);
+  const toggleMail = (mailId) => {
+    setOpenMailId((current) => (current === mailId ? null : mailId));
   };
 
   return (
     <div className="app-container">
-      <div className={`simulatorLayout ${mailOpen ? "mailVisible" : ""}`}>
+      <div className="simulatorLayout">
         <div className="phone">
           <div className="screen">
             <div className="topbar">
@@ -356,14 +330,6 @@ export default function App() {
               </div>
 
               <div className="topbar-actions">
-                <button
-                  className={`iconBtn ${mailOpen ? "activeIconBtn" : ""}`}
-                  aria-label="Inbox"
-                  title="Inbox"
-                  onClick={toggleMailPanel}
-                >
-                  ✉️
-                </button>
                 <button
                   className="iconBtn"
                   aria-label="Home"
@@ -390,34 +356,11 @@ export default function App() {
           </div>
         </div>
 
-        {mailOpen && (
-          <aside className="mailPanel">
-            <div className="mailPanelHeader">
-              <div>
-                <div className="mailPanelTitle">Inbox</div>
-                <div className="mailPanelSub">Budget alerts and messages</div>
-              </div>
-
-              <button
-                className="iconBtn"
-                aria-label="Close inbox"
-                title="Close inbox"
-                onClick={closeMailPanel}
-              >
-                ✕
-              </button>
-            </div>
-
-            {selectedMail ? (
-              <MailDetailScreen
-                mail={selectedMail}
-                onBack={() => setSelectedMail(null)}
-              />
-            ) : (
-              <MailScreen mailItems={mailItems} onSelect={openMail} />
-            )}
-          </aside>
-        )}
+        <PostPanel
+          mailItems={mailItems}
+          openMailId={openMailId}
+          onToggle={toggleMail}
+        />
       </div>
     </div>
   );

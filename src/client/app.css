@@ -1,85 +1,107 @@
-
 :root {
-  --bg: #0b1220;
-  --surface: rgba(255, 255, 255, 0.06);
-  --surface2: rgba(255, 255, 255, 0.04);
-  --stroke: rgba(255, 255, 255, 0.10);
-  --text: #e9eef9;
-  --muted: rgba(233, 238, 249, 0.68);
+  --bg: #7000E0;
 
-  --blue: rgba(59, 130, 246, 0.30);
-  --green: rgba(34, 197, 94, 0.26);
-  --purple: rgba(168, 85, 247, 0.26);
-  --amber: rgba(245, 158, 11, 0.24);
+  --phoneShell: #303062;
+  --phoneScreen: #f8f9fd;
 
-  --radius: 18px;
-  --radius2: 26px;
+  --stroke: rgba(0,0,0,0.08);
+
+  --textDark: #111827;
+  --textMuted: #6b7280;
+
+  --accent: #7000E0;
+
+  --mailPanelBg: #FF9300;
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-  background:
-    radial-gradient(1000px 600px at 50% -10%, rgba(110,231,255,.14), transparent 60%),
-    radial-gradient(900px 600px at 20% 110%, rgba(124,255,178,.10), transparent 55%),
-    var(--bg);
-  color: var(--text);
-  display: grid;
-  place-items: center;
-  padding: 24px;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background: #7000E0;
+
+  color: white;
+
+  padding: 40px;
+}
+
+button,
+input {
+  font: inherit;
 }
 
 .app-container {
   width: 100%;
-  display: grid;
-  place-items: center;
 }
+
+.simulatorLayout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* PHONE */
 
 .phone {
   width: min(420px, 100%);
   border-radius: 34px;
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 30px 80px rgba(0,0,0,.55);
+  background: var(--phoneShell);
+  border: 1px solid #303062;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
   padding: 14px;
 }
 
-.phone > * {
-  border-radius: var(--radius2);
+.screen {
+  border-radius: 26px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  background: rgba(15, 23, 42, 0.60);
+  background: var(--phoneScreen);
+  border: 1px solid #303062;
+  min-height: 760px;
+  color: var(--textDark);
 }
 
-.topbar, .screen {
-  width: 100%;
-}
+/* TOP BAR */
 
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 14px;
+  padding: 18px;
   border-bottom: 1px solid var(--stroke);
-  background: rgba(15, 23, 42, 0.72);
-  backdrop-filter: blur(10px);
+  background: white;
 }
 
 .topbar-title h2 {
   margin: 0;
-  font-size: 16px;
-  letter-spacing: 0.2px;
-  font-weight: 850;
+  font-size: 18px;
+  font-weight: 900;
+  color: #303062;
 }
 
 .topbar-sub {
   display: block;
   font-size: 12px;
-  color: var(--muted);
-  margin-top: 2px;
+  color: var(--textMuted);
+  margin-top: 4px;
 }
 
 .topbar-actions {
@@ -88,518 +110,369 @@ body {
 }
 
 .iconBtn {
-  width: 34px;
-  height: 34px;
+  width: 46px;
+  height: 46px;
   border-radius: 14px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.04);
-  color: var(--text);
+  background: #f4f4f8;
+  color: var(--textDark);
   cursor: pointer;
 }
-.iconBtn:hover {
-  background: rgba(255,255,255,.06);
-}
 
+/* CONTENT */
 
 .phoneContent {
-  padding: 14px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  color: var(--textDark);
 }
 
 .search {
   width: 100%;
-  padding: 12px 12px;
+  padding: 14px 16px;
   border-radius: 16px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.03);
-  color: var(--text);
-  outline: none;
-  font-weight: 650;
+  background: white;
 }
-.search::placeholder { color: rgba(233,238,249,.45); }
 
 .quickRow {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .chip {
   flex: 1;
-  padding: 10px 12px;
+  padding: 14px 16px;
   border-radius: 16px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.03);
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 700;
+  background: white;
+  font-size: 14px;
 }
 
 .chipWarn {
-  color: rgba(255, 204, 102, 0.95);
-  background: rgba(255, 204, 102, 0.10);
-  border-color: rgba(255, 204, 102, 0.22);
+  background: #f3e8ff;
+  border-color: #e9d5ff;
 }
+
+/* SECTION HEADER */
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-top: 2px;
 }
+
 .sectionHeader h3 {
   margin: 0;
   font-size: 12px;
-  letter-spacing: 0.38px;
-  color: var(--muted);
+  letter-spacing: .08em;
   text-transform: uppercase;
+  color: var(--textMuted);
 }
-.mutedSmall { font-size: 12px; color: var(--muted); }
+
+.mutedSmall {
+  font-size: 12px;
+  color: var(--textMuted);
+}
+
+/* ACCOUNT CARDS */
 
 .account-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
 .accountCard {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px;
-  border-radius: var(--radius);
+  padding: 18px;
+  border-radius: 20px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.03);
+  background: white;
   cursor: pointer;
-  transition: transform 0.08s ease, background 0.08s ease;
+  transition: transform .1s ease, box-shadow .1s ease;
 }
-.accountCard:hover { background: rgba(255,255,255,.05); transform: translateY(-1px); }
-.accountCard:active { transform: translateY(0px) scale(.995); }
+
+.accountCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+}
 
 .accountLeft {
   display: flex;
   gap: 12px;
   align-items: center;
-  min-width: 0;
 }
 
 .accountIcon {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 16px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.05);
-  font-size: 18px;
-  flex: 0 0 auto;
+  background: #f4f4ff;
+  font-size: 22px;
 }
 
-.accountText { min-width: 0; }
 .accountName {
-  font-weight: 900;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.accountDesc {
-  margin-top: 3px;
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 800;
 }
 
-.accountRight {
-  text-align: right;
-  flex: 0 0 auto;
-  margin-left: 12px;
+.accountDesc {
+  font-size: 13px;
+  color: var(--textMuted);
 }
 
 .accountAmount {
-  font-weight: 950;
-  font-size: 14px;
-  letter-spacing: 0.2px;
+  font-weight: 800;
 }
-.accountAmount.neg { color: rgba(255, 204, 102, 0.95); }
 
 .accountMeta {
   display: flex;
   gap: 8px;
+  margin-top: 6px;
   justify-content: flex-end;
-  align-items: center;
-  margin-top: 7px;
 }
 
 .tag {
   font-size: 11px;
-  padding: 4px 9px;
+  padding: 5px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.04);
-  color: var(--muted);
-  font-weight: 800;
+  border: 1px solid #eee;
+  background: #f7f7ff;
 }
 
-.chev { opacity: 0.7; font-size: 18px; }
+/* ACCOUNT COLOUR THEMES */
 
-.mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+.accent-blue {
+  background: #eef4ff;
+  border-left: 6px solid #3b82f6;
 }
 
-.detail { padding: 14px; }
-
-.backBtn {
-  border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.03);
-  color: var(--text);
-  font-weight: 900;
-  border-radius: 14px;
-  padding: 10px 12px;
-  cursor: pointer;
-  margin-bottom: 12px;
+.accent-blue .accountIcon {
+  background: #dbeafe;
 }
 
-.detailCard {
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--stroke);
-  border-radius: 22px;
-  padding: 16px;
+.accent-green {
+  background: #ecfdf5;
+  border-left: 6px solid #22c55e;
 }
 
-.detailTop {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+.accent-green .accountIcon {
+  background: #d1fae5;
 }
 
-.detailIcon {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.05);
-  font-size: 22px;
+.accent-purple {
+  background: #f5edff;
+  border-left: 6px solid #7000E0;
 }
 
-.detailName { font-weight: 950; font-size: 16px; }
-.detailDesc { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-.detailAmount {
-  font-size: 32px;
-  font-weight: 980;
-  margin: 14px 0 10px;
-  letter-spacing: 0.2px;
+.accent-purple .accountIcon {
+  background: #ede9fe;
 }
 
-.detailTags { display: flex; gap: 8px; margin-bottom: 12px; }
-
-.detailActions { display: flex; gap: 10px; }
-
-.btn {
-  flex: 1;
-  padding: 12px;
-  border-radius: 16px;
-  border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.03);
-  color: var(--text);
-  font-weight: 900;
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-.btn.primary {
-  background: rgba(110, 231, 255, 0.12);
-  border-color: rgba(110, 231, 255, 0.22);
+.accent-amber {
+  background: #fffbeb;
+  border-left: 6px solid #f59e0b;
 }
 
-.accent-blue .accountIcon, .accent-blue .detailIcon { background: var(--blue); }
-.accent-green .accountIcon, .accent-green .detailIcon { background: var(--green); }
-.accent-purple .accountIcon, .accent-purple .detailIcon { background: var(--purple); }
-.accent-amber .accountIcon, .accent-amber .detailIcon { background: var(--amber); }
-
-
-.noteCard {
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  padding: 14px;
-}
-.noteTitle { font-weight: 950; }
-.noteText { font-size: 12px; color: var(--muted); margin-top: 6px; }
-
-.mailList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.accent-amber .accountIcon {
+  background: #fef3c7;
 }
 
-.mailCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  padding: 14px;
-  cursor: pointer;
-  transition: transform 0.08s ease, background 0.08s ease;
-}
+/* MAIL PANEL */
 
-.mailCard:hover {
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-1px);
-}
-
-.mailUnread {
-  border-color: rgba(110, 231, 255, 0.28);
-  background: rgba(110, 231, 255, 0.06);
-}
-
-.mailTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.mailSender {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--muted);
-}
-
-.mailDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #6ee7ff;
-}
-
-.mailDate {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.mailSubject {
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.mailPreview {
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.mailMetaRow {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.mailAmount {
-  color: #ffcc66;
-}
-
-.mailDetailHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.mailDetailSender,
-.mailDetailDate {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.mailDetailSubject {
-  font-size: 18px;
-  font-weight: 950;
-  margin-bottom: 12px;
-}
-
-.mailDetailBody {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-  margin-bottom: 16px;
-}
-
-.simulatorLayout {
-  display: flex;
-  gap: 28px;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.simulatorLayout.mailVisible {
-  align-items: flex-start;
-}
-
-.activeIconBtn {
-  background: rgba(110, 231, 255, 0.12);
-  border-color: rgba(110, 231, 255, 0.28);
-}
-
-.mailPanel {
-  width: min(420px, 100%);
+.postPanel {
+  width: min(460px, 100%);
   min-height: 760px;
   border-radius: 34px;
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 30px 80px rgba(0,0,0,.35);
-  padding: 14px;
+  background: var(--mailPanelBg);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+  padding: 18px;
 }
 
-.mailPanelHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding: 2px 2px 0;
-}
-
-.mailPanelTitle {
-  font-size: 16px;
+.postPanelTitle {
+  font-size: 18px;
   font-weight: 900;
-  color: var(--text);
+  color: #303062;
 }
 
-.mailPanelSub {
+.postPanelSub {
+  font-size: 12px;
+  color: #303062;
   margin-top: 4px;
-  font-size: 12px;
-  color: var(--muted);
 }
 
-.mailPanelBody {
+.mailStack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  margin-top: 22px;
 }
 
-.mailList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+/* ENVELOPE */
 
-.mailCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  padding: 14px;
+.mailPiece {
+  position: relative;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: transform 0.08s ease, background 0.08s ease;
 }
 
-.mailCard:hover {
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-1px);
+.envelopeShell {
+  position: relative;
+  height: 190px;
+  background: #f7f7f7;
+  border-radius: 24px;
+  border: 1px solid rgba(180,180,180,.28);
+  box-shadow: 0 12px 28px rgba(0,0,0,.15);
+  overflow: hidden;
 }
 
-.mailUnread {
-  border-color: rgba(110, 231, 255, 0.28);
-  background: rgba(110, 231, 255, 0.06);
+.envelopeFlapTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(180deg,#f1f1f1 0%,#e6e6e6 100%);
+  clip-path: polygon(0 0,100% 0,50% 100%);
+  z-index: 2;
+  transform-origin: top center;
+  transition: transform .35s ease;
 }
 
-.mailTop {
+.mailPieceOpen .envelopeFlapTop {
+  transform: rotateX(180deg);
+}
+
+.envelopeFrontLeft {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 90px;
+  background: white;
+  clip-path: polygon(0 0,100% 100%,0 100%);
+}
+
+.envelopeFrontRight {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  height: 90px;
+  background: #fafafa;
+  clip-path: polygon(100% 0,100% 100%,0 100%);
+}
+
+.envelopeStamp {
+  position: absolute;
+  bottom: 26px;
+  left: 26px;
+  width: 44px;
+  height: 50px;
+  border-radius: 6px;
+  background: #FF9300;
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  z-index: 4;
+}
+
+.envelopeFooter {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 8px;
+  z-index: 4;
 }
 
-.mailSender {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--muted);
-}
-
-.mailDot {
-  width: 8px;
-  height: 8px;
+.paperBadge {
+  font-size: 11px;
+  padding: 5px 8px;
   border-radius: 999px;
-  background: #6ee7ff;
+  border: 1px solid #eee;
+  background: rgba(255,255,255,0.95);
 }
 
-.mailDate {
-  font-size: 12px;
-  color: var(--muted);
+.paperAmount {
+  color: #9c5a14;
 }
 
-.mailSubject {
-  margin-top: 10px;
-  font-size: 14px;
+/* LETTER */
+
+.letterShell {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  box-shadow: 0 16px 40px rgba(0,0,0,.15);
+  padding: 16px;
+  animation: paperPullOut .34s ease;
+}
+
+.letterHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.letterOrg {
   font-weight: 900;
 }
 
-.mailPreview {
-  margin-top: 6px;
+.letterMeta {
   font-size: 12px;
-  color: var(--muted);
-  line-height: 1.5;
+  color: #666;
 }
 
-.mailMetaRow {
+.letterDivider {
+  height: 1px;
+  background: #eee;
+  margin: 14px 0;
+}
+
+.letterSubject {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.letterBody {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 10px;
+}
+
+.letterCostBox {
+  margin-top: 14px;
+  border: 1px dashed #ddd;
+  padding: 10px;
+  border-radius: 12px;
   display: flex;
-  gap: 8px;
+  justify-content: space-between;
+}
+
+.letterActions {
+  display: flex;
+  gap: 10px;
   margin-top: 12px;
 }
 
-.mailAmount {
-  color: #ffcc66;
-}
-
-.mailDetailHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.mailDetailSender,
-.mailDetailDate {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.mailDetailSubject {
-  font-size: 18px;
-  font-weight: 950;
-  margin-bottom: 12px;
-}
-
-.mailDetailBody {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-  margin-bottom: 16px;
-}
-
-@media (max-width: 980px) {
-  .simulatorLayout {
-    flex-direction: column;
-    align-items: center;
+@keyframes paperPullOut {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
   }
 
-  .mailPanel {
-    width: min(420px, 100%);
-    min-height: auto;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
