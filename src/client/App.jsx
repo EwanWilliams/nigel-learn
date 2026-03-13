@@ -105,10 +105,7 @@ function MailLetterCard({ mail, open, onToggle }) {
 
           <div className="letterActions">
             <button className="btn primary" disabled>
-              Adjust budget
-            </button>
-            <button className="btn" disabled>
-              Mark handled
+              Pay Bill
             </button>
           </div>
         </div>
