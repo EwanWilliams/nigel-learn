@@ -72,14 +72,13 @@ function MailLetterCard({ mail, open, onToggle }) {
 
           <div className="envelopeFront">
             <div className="envelopeFrontLeft" />
-              <div className="envelopeFrontRight" />
+            <div className="envelopeFrontRight" />
           </div>
 
-        <div className="envelopeStamp">£</div>
+          <div className="envelopeStamp">£</div>
 
-  <div className="envelopeFooter">
-  </div>
-</div>
+          <div className="envelopeFooter" />
+        </div>
       ) : (
         <div className="letterShell">
           <div className="letterHeader">
@@ -105,7 +104,7 @@ function MailLetterCard({ mail, open, onToggle }) {
 
           <div className="letterActions">
             <button className="btn primary" disabled>
-              Pay £{mail.amount}
+              Pay {formatGBP(mail.amount)}
             </button>
           </div>
         </div>
@@ -114,7 +113,17 @@ function MailLetterCard({ mail, open, onToggle }) {
   );
 }
 
-function HomeScreen({ accounts, query, setQuery, onSelect }) {
+function HomeScreen({
+  accounts,
+  query,
+  setQuery,
+  onSelect,
+  netIncome,
+  totalAllocated,
+  moneyLeft,
+  budgetCategoryConfig,
+  budget,
+}) {
   const filtered = useMemo(
     () => accounts.filter((account) => matchesQuery(account, query.trim())),
     [accounts, query]
@@ -124,7 +133,37 @@ function HomeScreen({ accounts, query, setQuery, onSelect }) {
     <div className="phoneContent">
       <div className="quickRow">
         <div className="chip">Month: March</div>
-        <div className="chip chipWarn">Left to allocate: £220</div>
+        <div className="chip chipWarn">
+          Left to allocate: {formatGBP(moneyLeft)}
+        </div>
+      </div>
+
+      <div className="noteCard">
+        <div className="noteTitle">Monthly budget</div>
+        <div className="noteText">Take-home pay: {formatGBP(netIncome)}</div>
+        <div className="noteText">
+          Total allocated: {formatGBP(totalAllocated)}
+        </div>
+        <div className="noteText">Left to allocate: {formatGBP(moneyLeft)}</div>
+      </div>
+
+      <div className="noteCard">
+        <div className="noteTitle">Budget categories</div>
+        {budgetCategoryConfig.map((category) => (
+          <div
+            key={category.id}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "8px",
+              fontSize: "14px",
+            }}
+          >
+            <span>{category.label}</span>
+            <span>{formatGBP(budget[category.id])}</span>
+          </div>
+        ))}
       </div>
 
       <input
@@ -144,7 +183,6 @@ function HomeScreen({ accounts, query, setQuery, onSelect }) {
           <AccountRow key={account.id} account={account} onSelect={onSelect} />
         ))}
       </div>
-
     </div>
   );
 }
@@ -224,6 +262,35 @@ export default function App() {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
+
+  const netIncome = 1270;
+
+  const [budget] = useState({
+    rent: 350,
+    travel: 120,
+    food: 180,
+    phone: 25,
+    subscriptions: 20,
+    savings: 150,
+    fun: 205,
+  });
+
+  const budgetCategoryConfig = [
+    { id: "rent", label: "Rent / Board" },
+    { id: "travel", label: "Travel" },
+    { id: "food", label: "Food" },
+    { id: "phone", label: "Phone" },
+    { id: "subscriptions", label: "Subscriptions" },
+    { id: "savings", label: "Savings" },
+    { id: "fun", label: "Fun" },
+  ];
+
+  const totalAllocated = Object.values(budget).reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  const moneyLeft = netIncome - totalAllocated;
 
   const accounts = useMemo(
     () => [
@@ -344,6 +411,11 @@ export default function App() {
                 query={query}
                 setQuery={setQuery}
                 onSelect={openDetail}
+                netIncome={netIncome}
+                totalAllocated={totalAllocated}
+                moneyLeft={moneyLeft}
+                budgetCategoryConfig={budgetCategoryConfig}
+                budget={budget}
               />
             )}
 
