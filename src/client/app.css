@@ -528,3 +528,23 @@ input {
   color: #5b21b6;
   font-weight: 600;
 }
+
+.budgetControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.budgetBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--stroke);
+  background: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.budgetBtn:hover {
+  background: #f4f4ff;
+}

@@ -69,14 +69,11 @@ function MailLetterCard({ mail, open, onToggle }) {
       {!open ? (
         <div className="envelopeShell">
           <div className="envelopeFlapTop" />
-
           <div className="envelopeFront">
             <div className="envelopeFrontLeft" />
             <div className="envelopeFrontRight" />
           </div>
-
           <div className="envelopeStamp">£</div>
-
           <div className="envelopeFooter" />
         </div>
       ) : (
@@ -90,11 +87,8 @@ function MailLetterCard({ mail, open, onToggle }) {
           </div>
 
           <div className="letterDivider" />
-
           <div className="letterGreeting">Dear Student,</div>
-
           <h3 className="letterSubject">{mail.subject}</h3>
-
           <p className="letterBody">{mail.message}</p>
 
           <div className="letterCostBox">
@@ -155,6 +149,7 @@ function BudgetScreen({
   moneyLeft,
   budgetCategoryConfig,
   budget,
+  changeBudget
 }) {
   return (
     <div className="phoneContent">
@@ -181,9 +176,26 @@ function BudgetScreen({
         {budgetCategoryConfig.map((category) => (
           <div key={category.id} className="budgetRow">
             <span>{category.label}</span>
-            <span className="budgetAmount">
-              {formatGBP(budget[category.id])}
-            </span>
+
+            <div className="budgetControls">
+              <button
+                className="budgetBtn"
+                onClick={() => changeBudget(category.id, -10)}
+              >
+                −
+              </button>
+
+              <span className="budgetAmount">
+                {formatGBP(budget[category.id])}
+              </span>
+
+              <button
+                className="budgetBtn"
+                onClick={() => changeBudget(category.id, 10)}
+              >
+                +
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -194,7 +206,7 @@ function BudgetScreen({
 function DetailScreen({ account, onBack }) {
   return (
     <div className="detail">
-      <button className="backBtn" onClick={onBack} aria-label="Back">
+      <button className="backBtn" onClick={onBack}>
         ← Back
       </button>
 
@@ -203,35 +215,11 @@ function DetailScreen({ account, onBack }) {
           <div className="detailIcon">{account.icon}</div>
           <div>
             <div className="detailName">{account.name}</div>
-            <div className="detailDesc">
-              {account.type === "Card" && account.last4 ? (
-                <>
-                  {account.desc} • <span className="mono">•••• {account.last4}</span>
-                </>
-              ) : (
-                account.desc
-              )}
-            </div>
+            <div className="detailDesc">{account.desc}</div>
           </div>
         </div>
 
         <div className="detailAmount">{formatGBP(account.amount)}</div>
-
-        <div className="detailTags">
-          <span className="tag">{account.type}</span>
-          <span className="tag">
-            {account.type === "Card" ? "No features yet" : "No transactions yet"}
-          </span>
-        </div>
-
-        <div className="detailActions">
-          <button className="btn primary" disabled>
-            Move money
-          </button>
-          <button className="btn" disabled>
-            View activity
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -270,7 +258,7 @@ export default function App() {
 
   const netIncome = 1270;
 
-  const [budget] = useState({
+  const [budget, setBudget] = useState({
     rent: 350,
     travel: 120,
     food: 180,
@@ -279,6 +267,13 @@ export default function App() {
     savings: 150,
     fun: 205,
   });
+
+  const changeBudget = (category, amount) => {
+    setBudget((prev) => ({
+      ...prev,
+      [category]: Math.max(0, prev[category] + amount),
+    }));
+  };
 
   const budgetCategoryConfig = [
     { id: "rent", label: "Rent / Board" },
@@ -297,81 +292,73 @@ export default function App() {
 
   const moneyLeft = netIncome - totalAllocated;
 
-  const accounts = useMemo(
-    () => [
-      {
-        id: "current",
-        name: "Current Account",
-        desc: "Main spending account",
-        amount: 620,
-        type: "Account",
-        icon: "🏦",
-        last4: null,
-        accent: "blue",
-      },
-      {
-        id: "savings",
-        name: "Savings Account",
-        desc: "Buffer & goals",
-        amount: 150,
-        type: "Account",
-        icon: "💰",
-        last4: null,
-        accent: "green",
-      },
-      {
-        id: "debit",
-        name: "Debit Card",
-        desc: "Linked to Current Account",
-        amount: 0,
-        type: "Card",
-        icon: "💳",
-        last4: "4821",
-        accent: "purple",
-      },
-      {
-        id: "credit",
-        name: "Credit Card",
-        desc: "Borrow now, pay later",
-        amount: -80,
-        type: "Card",
-        icon: "🧾",
-        last4: "1934",
-        accent: "amber",
-      },
-    ],
-    []
-  );
+  const accounts = useMemo(() => [
+    {
+      id: "current",
+      name: "Current Account",
+      desc: "Main spending account",
+      amount: 620,
+      type: "Account",
+      icon: "🏦",
+      accent: "blue",
+    },
+    {
+      id: "savings",
+      name: "Savings Account",
+      desc: "Buffer & goals",
+      amount: 150,
+      type: "Account",
+      icon: "💰",
+      accent: "green",
+    },
+    {
+      id: "debit",
+      name: "Debit Card",
+      desc: "Linked to Current Account",
+      amount: 0,
+      type: "Card",
+      icon: "💳",
+      last4: "4821",
+      accent: "purple",
+    },
+    {
+      id: "credit",
+      name: "Credit Card",
+      desc: "Borrow now, pay later",
+      amount: -80,
+      type: "Card",
+      icon: "🧾",
+      last4: "1934",
+      accent: "amber",
+    },
+  ], []);
 
-  const mailItems = useMemo(
-    () => [
-      {
-        id: "mail-1",
-        subject: "Bike repair needed",
-        message:
-          "Your bike chain snapped on the way home. The repair shop has quoted £60 and payment is needed this week. You may need to adjust your budget to cover this unexpected travel expense.",
-        amount: 60,
-        date: "Today",
-      },
-      {
-        id: "mail-2",
-        subject: "Rent contribution increased",
-        message:
-          "Your household bills have increased this month, so your rent or board contribution needs to increase by £120. Review your budget and decide which areas you may need to reduce.",
-        amount: 120,
-        date: "Yesterday",
-      },
-      {
-        id: "mail-3",
-        subject: "Phone screen cracked",
-        message:
-          "You dropped your phone and cracked the screen. The repair will cost £90. Think carefully about whether to use savings, reduce fun spending, or cut subscriptions.",
-        amount: 90,
-        date: "Mon",
-      },
-    ],
-    []
-  );
+  const mailItems = useMemo(() => [
+    {
+      id: "mail-1",
+      subject: "Bike repair needed",
+      message:
+        "Your bike chain snapped. The repair shop has quoted £60.",
+      amount: 60,
+      date: "Today",
+    },
+    {
+      id: "mail-2",
+      subject: "Rent contribution increased",
+      message:
+        "Your household bills increased so rent rises by £120.",
+      amount: 120,
+      date: "Yesterday",
+    },
+    {
+      id: "mail-3",
+      subject: "Phone screen cracked",
+      message:
+        "Your phone screen repair will cost £90.",
+      amount: 90,
+      date: "Mon",
+    },
+  ], []);
 
   const openDetail = (account) => {
     setSelectedAccount(account);
@@ -397,6 +384,7 @@ export default function App() {
       <div className="simulatorLayout">
         <div className="phone">
           <div className="screen">
+
             <div className="topbar">
               <div className="topbar-title">
                 <h2>Student Bank</h2>
@@ -406,8 +394,6 @@ export default function App() {
               <div className="topbar-actions">
                 <button
                   className="iconBtn"
-                  aria-label="Budget"
-                  title="Budget"
                   onClick={togglePhonePage}
                 >
                   {phonePage === "home" ? "£" : "⌂"}
@@ -415,8 +401,6 @@ export default function App() {
 
                 <button
                   className="iconBtn"
-                  aria-label="Home"
-                  title="Home"
                   onClick={goHome}
                 >
                   ⌂
@@ -441,12 +425,14 @@ export default function App() {
                 moneyLeft={moneyLeft}
                 budgetCategoryConfig={budgetCategoryConfig}
                 budget={budget}
+                changeBudget={changeBudget}
               />
             )}
 
             {screen === "detail" && selectedAccount && (
               <DetailScreen account={selectedAccount} onBack={goHome} />
             )}
+
           </div>
         </div>
 
@@ -455,6 +441,7 @@ export default function App() {
           openMailId={openMailId}
           onToggle={toggleMail}
         />
+
       </div>
     </div>
   );
