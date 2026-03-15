@@ -113,17 +113,7 @@ function MailLetterCard({ mail, open, onToggle }) {
   );
 }
 
-function HomeScreen({
-  accounts,
-  query,
-  setQuery,
-  onSelect,
-  netIncome,
-  totalAllocated,
-  moneyLeft,
-  budgetCategoryConfig,
-  budget,
-}) {
+function HomeScreen({ accounts, query, setQuery, onSelect, moneyLeft }) {
   const filtered = useMemo(
     () => accounts.filter((account) => matchesQuery(account, query.trim())),
     [accounts, query]
@@ -136,34 +126,6 @@ function HomeScreen({
         <div className="chip chipWarn">
           Left to allocate: {formatGBP(moneyLeft)}
         </div>
-      </div>
-
-      <div className="noteCard">
-        <div className="noteTitle">Monthly budget</div>
-        <div className="noteText">Take-home pay: {formatGBP(netIncome)}</div>
-        <div className="noteText">
-          Total allocated: {formatGBP(totalAllocated)}
-        </div>
-        <div className="noteText">Left to allocate: {formatGBP(moneyLeft)}</div>
-      </div>
-
-      <div className="noteCard">
-        <div className="noteTitle">Budget categories</div>
-        {budgetCategoryConfig.map((category) => (
-          <div
-            key={category.id}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: "8px",
-              fontSize: "14px",
-            }}
-          >
-            <span>{category.label}</span>
-            <span>{formatGBP(budget[category.id])}</span>
-          </div>
-        ))}
       </div>
 
       <input
@@ -181,6 +143,55 @@ function HomeScreen({
       <div className="account-list">
         {filtered.map((account) => (
           <AccountRow key={account.id} account={account} onSelect={onSelect} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BudgetScreen({
+  netIncome,
+  totalAllocated,
+  moneyLeft,
+  budgetCategoryConfig,
+  budget,
+}) {
+  return (
+    <div className="phoneContent">
+      <div className="quickRow">
+        <div className="chip">Take-home pay: {formatGBP(netIncome)}</div>
+        <div className="chip chipWarn">Remaining: {formatGBP(moneyLeft)}</div>
+      </div>
+
+      <div className="noteCard">
+        <div className="noteTitle">Monthly budget</div>
+        <div className="noteText">Take-home pay: {formatGBP(netIncome)}</div>
+        <div className="noteText">
+          Total allocated: {formatGBP(totalAllocated)}
+        </div>
+        <div className="noteText">Left to allocate: {formatGBP(moneyLeft)}</div>
+      </div>
+
+      <div className="sectionHeader">
+        <h3>Budget categories</h3>
+        <span className="mutedSmall">Current plan</span>
+      </div>
+
+      <div className="noteCard">
+        {budgetCategoryConfig.map((category) => (
+          <div
+            key={category.id}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "10px",
+              fontSize: "14px",
+            }}
+          >
+            <span>{category.label}</span>
+            <span>{formatGBP(budget[category.id])}</span>
+          </div>
         ))}
       </div>
     </div>
@@ -259,6 +270,7 @@ function PostPanel({ mailItems, openMailId, onToggle }) {
 
 export default function App() {
   const [screen, setScreen] = useState("home");
+  const [phonePage, setPhonePage] = useState("home");
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
@@ -382,6 +394,11 @@ export default function App() {
     setOpenMailId((current) => (current === mailId ? null : mailId));
   };
 
+  const togglePhonePage = () => {
+    setScreen("home");
+    setPhonePage((current) => (current === "home" ? "budget" : "home"));
+  };
+
   return (
     <div className="app-container">
       <div className="simulatorLayout">
@@ -396,6 +413,15 @@ export default function App() {
               <div className="topbar-actions">
                 <button
                   className="iconBtn"
+                  aria-label="Budget"
+                  title="Budget"
+                  onClick={togglePhonePage}
+                >
+                  {phonePage === "home" ? "£" : "⌂"}
+                </button>
+
+                <button
+                  className="iconBtn"
                   aria-label="Home"
                   title="Home"
                   onClick={goHome}
@@ -405,12 +431,18 @@ export default function App() {
               </div>
             </div>
 
-            {screen === "home" && (
+            {screen === "home" && phonePage === "home" && (
               <HomeScreen
                 accounts={accounts}
                 query={query}
                 setQuery={setQuery}
                 onSelect={openDetail}
+                moneyLeft={moneyLeft}
+              />
+            )}
+
+            {screen === "home" && phonePage === "budget" && (
+              <BudgetScreen
                 netIncome={netIncome}
                 totalAllocated={totalAllocated}
                 moneyLeft={moneyLeft}
