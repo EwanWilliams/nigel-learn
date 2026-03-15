@@ -153,17 +153,9 @@ function BudgetScreen({
 }) {
   return (
     <div className="phoneContent">
-      <div className="quickRow">
-        <div className="chip">Take-home pay: {formatGBP(netIncome)}</div>
-        <div className="chip chipWarn">Remaining: {formatGBP(moneyLeft)}</div>
-      </div>
-
       <div className="noteCard">
         <div className="noteTitle">Monthly budget</div>
         <div className="noteText">Take-home pay: {formatGBP(netIncome)}</div>
-        <div className="noteText">
-          Total allocated: {formatGBP(totalAllocated)}
-        </div>
         <div className="noteText">Left to allocate: {formatGBP(moneyLeft)}</div>
       </div>
 
@@ -398,13 +390,6 @@ export default function App() {
                 >
                   {phonePage === "home" ? "£" : "⌂"}
                 </button>
-
-                <button
-                  className="iconBtn"
-                  onClick={goHome}
-                >
-                  ⌂
-                </button>
               </div>
             </div>
 
@@ -421,7 +406,6 @@ export default function App() {
             {screen === "home" && phonePage === "budget" && (
               <BudgetScreen
                 netIncome={netIncome}
-                totalAllocated={totalAllocated}
                 moneyLeft={moneyLeft}
                 budgetCategoryConfig={budgetCategoryConfig}
                 budget={budget}
