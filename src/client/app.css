@@ -476,3 +476,55 @@ input {
     transform: translateY(0);
   }
 }
+
+/* BUDGET CARD */
+
+.noteCard {
+  background: white;
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.noteTitle {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--textDark);
+}
+
+.noteText {
+  font-size: 14px;
+  color: var(--textMuted);
+}
+
+/* BUDGET CATEGORY ROWS */
+
+.budgetRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 12px;
+  border-radius: 12px;
+  transition: background .15s ease;
+}
+
+.budgetRow:hover {
+  background: #f5f6ff;
+}
+
+.budgetAmount {
+  font-weight: 700;
+}
+
+/* IMPROVED WARNING CHIP */
+
+.chipWarn {
+  background: #f5edff;
+  border-color: #e9d5ff;
+  color: #5b21b6;
+  font-weight: 600;
+}

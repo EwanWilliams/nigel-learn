@@ -179,18 +179,11 @@ function BudgetScreen({
 
       <div className="noteCard">
         {budgetCategoryConfig.map((category) => (
-          <div
-            key={category.id}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: "10px",
-              fontSize: "14px",
-            }}
-          >
+          <div key={category.id} className="budgetRow">
             <span>{category.label}</span>
-            <span>{formatGBP(budget[category.id])}</span>
+            <span className="budgetAmount">
+              {formatGBP(budget[category.id])}
+            </span>
           </div>
         ))}
       </div>
