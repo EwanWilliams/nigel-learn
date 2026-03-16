@@ -549,20 +549,26 @@ input {
   background: #f4f4ff;
 }
 
-.budgetInput {
-  width: 70px;
+.budgetInputWrapper {
+  display: flex;
+  align-items: center;
   border: 1px solid var(--stroke);
   border-radius: 8px;
-  text-align: center;
-  padding: 4px;
+  padding: 2px 6px;
+  background: white;
+}
+
+.currencySymbol {
   font-weight: 700;
+  margin-right: 2px;
+  color: var(--textDark);
 }
 
 .budgetInput {
-  width: 70px;
-  border: 1px solid var(--stroke);
-  border-radius: 8px;
+  width: 60px;
+  border: none;
+  outline: none;
   text-align: center;
-  padding: 4px;
   font-weight: 700;
+  background: transparent;
 }

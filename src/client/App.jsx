@@ -201,17 +201,21 @@ function BudgetScreen({
                 −
               </button>
 
-              <input
-                className="budgetInput"
-                type="number"
-                value={budget[category.id]}
-                onChange={(e) =>
-                  changeBudget(
-                    category.id,
-                    Number(e.target.value) - budget[category.id]
-                  )
-                }
-              />
+              <div className="budgetInputWrapper">
+  <span className="currencySymbol">£</span>
+
+  <input
+    className="budgetInput"
+    type="number"
+    value={budget[category.id]}
+    onChange={(e) =>
+      changeBudget(
+        category.id,
+        Number(e.target.value) - budget[category.id]
+      )
+    }
+  />
+</div>
 
               <button
                 className="budgetBtn"
