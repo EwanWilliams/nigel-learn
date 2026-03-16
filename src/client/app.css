@@ -548,3 +548,21 @@ input {
 .budgetBtn:hover {
   background: #f4f4ff;
 }
+
+.budgetInput {
+  width: 70px;
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  text-align: center;
+  padding: 4px;
+  font-weight: 700;
+}
+
+.budgetInput {
+  width: 70px;
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  text-align: center;
+  padding: 4px;
+  font-weight: 700;
+}

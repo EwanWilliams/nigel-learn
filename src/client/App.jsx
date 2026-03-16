@@ -32,12 +32,15 @@ function AccountRow({ account, onSelect }) {
     >
       <div className="accountLeft">
         <div className="accountIcon">{account.icon}</div>
+
         <div className="accountText">
           <div className="accountName">{account.name}</div>
+
           <div className="accountDesc">
             {account.type === "Card" && account.last4 ? (
               <>
-                {account.desc} • <span className="mono">•••• {account.last4}</span>
+                {account.desc} •{" "}
+                <span className="mono">•••• {account.last4}</span>
               </>
             ) : (
               account.desc
@@ -50,6 +53,7 @@ function AccountRow({ account, onSelect }) {
         <div className={`accountAmount ${account.amount < 0 ? "neg" : ""}`}>
           {formatGBP(account.amount)}
         </div>
+
         <div className="accountMeta">
           <span className="tag">{account.type}</span>
           <span className="chev">›</span>
@@ -69,11 +73,14 @@ function MailLetterCard({ mail, open, onToggle }) {
       {!open ? (
         <div className="envelopeShell">
           <div className="envelopeFlapTop" />
+
           <div className="envelopeFront">
             <div className="envelopeFrontLeft" />
             <div className="envelopeFrontRight" />
           </div>
+
           <div className="envelopeStamp">£</div>
+
           <div className="envelopeFooter" />
         </div>
       ) : (
@@ -83,17 +90,23 @@ function MailLetterCard({ mail, open, onToggle }) {
               <div className="letterOrg">Nigel Learn</div>
               <div className="letterMeta">Financial Life Admin</div>
             </div>
+
             <div className="letterDate">{mail.date}</div>
           </div>
 
           <div className="letterDivider" />
+
           <div className="letterGreeting">Dear Student,</div>
+
           <h3 className="letterSubject">{mail.subject}</h3>
+
           <p className="letterBody">{mail.message}</p>
 
           <div className="letterCostBox">
             <span className="letterCostLabel">Amount due</span>
-            <span className="letterCostValue">{formatGBP(mail.amount)}</span>
+            <span className="letterCostValue">
+              {formatGBP(mail.amount)}
+            </span>
           </div>
 
           <div className="letterActions">
@@ -117,6 +130,7 @@ function HomeScreen({ accounts, query, setQuery, onSelect, moneyLeft }) {
     <div className="phoneContent">
       <div className="quickRow">
         <div className="chip">Month: March</div>
+
         <div className="chip chipWarn">
           Left to allocate: {formatGBP(moneyLeft)}
         </div>
@@ -136,7 +150,11 @@ function HomeScreen({ accounts, query, setQuery, onSelect, moneyLeft }) {
 
       <div className="account-list">
         {filtered.map((account) => (
-          <AccountRow key={account.id} account={account} onSelect={onSelect} />
+          <AccountRow
+            key={account.id}
+            account={account}
+            onSelect={onSelect}
+          />
         ))}
       </div>
     </div>
@@ -149,14 +167,20 @@ function BudgetScreen({
   moneyLeft,
   budgetCategoryConfig,
   budget,
-  changeBudget
+  changeBudget,
 }) {
   return (
     <div className="phoneContent">
       <div className="noteCard">
         <div className="noteTitle">Monthly budget</div>
-        <div className="noteText">Take-home pay: {formatGBP(netIncome)}</div>
-        <div className="noteText">Left to allocate: {formatGBP(moneyLeft)}</div>
+
+        <div className="noteText">
+          Take-home pay: {formatGBP(netIncome)}
+        </div>
+
+        <div className="noteText">
+          Left to allocate: {formatGBP(moneyLeft)}
+        </div>
       </div>
 
       <div className="sectionHeader">
@@ -177,9 +201,17 @@ function BudgetScreen({
                 −
               </button>
 
-              <span className="budgetAmount">
-                {formatGBP(budget[category.id])}
-              </span>
+              <input
+                className="budgetInput"
+                type="number"
+                value={budget[category.id]}
+                onChange={(e) =>
+                  changeBudget(
+                    category.id,
+                    Number(e.target.value) - budget[category.id]
+                  )
+                }
+              />
 
               <button
                 className="budgetBtn"
@@ -205,13 +237,16 @@ function DetailScreen({ account, onBack }) {
       <div className={`detailCard accent-${account.accent}`}>
         <div className="detailTop">
           <div className="detailIcon">{account.icon}</div>
+
           <div>
             <div className="detailName">{account.name}</div>
             <div className="detailDesc">{account.desc}</div>
           </div>
         </div>
 
-        <div className="detailAmount">{formatGBP(account.amount)}</div>
+        <div className="detailAmount">
+          {formatGBP(account.amount)}
+        </div>
       </div>
     </div>
   );
@@ -223,7 +258,9 @@ function PostPanel({ mailItems, openMailId, onToggle }) {
       <div className="postPanelHeader">
         <div>
           <div className="postPanelTitle">Today’s Post</div>
-          <div className="postPanelSub">Letters delivered to your address</div>
+          <div className="postPanelSub">
+            Letters delivered to your address
+          </div>
         </div>
       </div>
 
@@ -284,73 +321,79 @@ export default function App() {
 
   const moneyLeft = netIncome - totalAllocated;
 
-  const accounts = useMemo(() => [
-    {
-      id: "current",
-      name: "Current Account",
-      desc: "Main spending account",
-      amount: 620,
-      type: "Account",
-      icon: "🏦",
-      accent: "blue",
-    },
-    {
-      id: "savings",
-      name: "Savings Account",
-      desc: "Buffer & goals",
-      amount: 150,
-      type: "Account",
-      icon: "💰",
-      accent: "green",
-    },
-    {
-      id: "debit",
-      name: "Debit Card",
-      desc: "Linked to Current Account",
-      amount: 0,
-      type: "Card",
-      icon: "💳",
-      last4: "4821",
-      accent: "purple",
-    },
-    {
-      id: "credit",
-      name: "Credit Card",
-      desc: "Borrow now, pay later",
-      amount: -80,
-      type: "Card",
-      icon: "🧾",
-      last4: "1934",
-      accent: "amber",
-    },
-  ], []);
+  const accounts = useMemo(
+    () => [
+      {
+        id: "current",
+        name: "Current Account",
+        desc: "Main spending account",
+        amount: 620,
+        type: "Account",
+        icon: "🏦",
+        accent: "blue",
+      },
+      {
+        id: "savings",
+        name: "Savings Account",
+        desc: "Buffer & goals",
+        amount: 150,
+        type: "Account",
+        icon: "💰",
+        accent: "green",
+      },
+      {
+        id: "debit",
+        name: "Debit Card",
+        desc: "Linked to Current Account",
+        amount: 0,
+        type: "Card",
+        icon: "💳",
+        last4: "4821",
+        accent: "purple",
+      },
+      {
+        id: "credit",
+        name: "Credit Card",
+        desc: "Borrow now, pay later",
+        amount: -80,
+        type: "Card",
+        icon: "🧾",
+        last4: "1934",
+        accent: "amber",
+      },
+    ],
+    []
+  );
 
-  const mailItems = useMemo(() => [
-    {
-      id: "mail-1",
-      subject: "Bike repair needed",
-      message:
-        "Your bike chain snapped. The repair shop has quoted £60.",
-      amount: 60,
-      date: "Today",
-    },
-    {
-      id: "mail-2",
-      subject: "Rent contribution increased",
-      message:
-        "Your household bills increased so rent rises by £120.",
-      amount: 120,
-      date: "Yesterday",
-    },
-    {
-      id: "mail-3",
-      subject: "Phone screen cracked",
-      message:
-        "Your phone screen repair will cost £90.",
-      amount: 90,
-      date: "Mon",
-    },
-  ], []);
+  const mailItems = useMemo(
+    () => [
+      {
+        id: "mail-1",
+        subject: "Bike repair needed",
+        message:
+          "Your bike chain snapped on the way home. The repair shop has quoted £60.",
+        amount: 60,
+        date: "Today",
+      },
+      {
+        id: "mail-2",
+        subject: "Rent contribution increased",
+        message:
+          "Your household bills increased so rent rises by £120.",
+        amount: 120,
+        date: "Yesterday",
+      },
+      {
+        id: "mail-3",
+        subject: "Phone screen cracked",
+        message:
+          "Your phone screen repair will cost £90.",
+        amount: 90,
+        date: "Mon",
+      },
+    ],
+    []
+  );
 
   const openDetail = (account) => {
     setSelectedAccount(account);
@@ -363,12 +406,16 @@ export default function App() {
   };
 
   const toggleMail = (mailId) => {
-    setOpenMailId((current) => (current === mailId ? null : mailId));
+    setOpenMailId((current) =>
+      current === mailId ? null : mailId
+    );
   };
 
   const togglePhonePage = () => {
     setScreen("home");
-    setPhonePage((current) => (current === "home" ? "budget" : "home"));
+    setPhonePage((current) =>
+      current === "home" ? "budget" : "home"
+    );
   };
 
   return (
@@ -406,6 +453,7 @@ export default function App() {
             {screen === "home" && phonePage === "budget" && (
               <BudgetScreen
                 netIncome={netIncome}
+                totalAllocated={totalAllocated}
                 moneyLeft={moneyLeft}
                 budgetCategoryConfig={budgetCategoryConfig}
                 budget={budget}
@@ -414,7 +462,10 @@ export default function App() {
             )}
 
             {screen === "detail" && selectedAccount && (
-              <DetailScreen account={selectedAccount} onBack={goHome} />
+              <DetailScreen
+                account={selectedAccount}
+                onBack={goHome}
+              />
             )}
 
           </div>
@@ -425,7 +476,6 @@ export default function App() {
           openMailId={openMailId}
           onToggle={toggleMail}
         />
-
       </div>
     </div>
   );
