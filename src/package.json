@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
     "concurrently": "^9.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
@@ -9,7 +10,8 @@
     "morgan": "^1.10.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "tailwindcss": "^4.2.1"
   },
   "scripts": {
     "dev:client": "vite",
