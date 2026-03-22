@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import AccountRow from "../components/accounts";
 
+
 function matchesQuery(account, query) {
   if (!query) return true;
 
@@ -27,7 +28,7 @@ export default function HomeScreen({
   query,
   setQuery,
   onSelect,
-  moneyLeft
+  week,
 }) {
 
   const filtered = useMemo(
@@ -42,7 +43,7 @@ export default function HomeScreen({
         <div className="chip">Month: March</div>
 
         <div className="chip chipWarn">
-          Left to allocate: {formatGBP(moneyLeft)}
+          Week {week} of 4
         </div>
       </div>
 

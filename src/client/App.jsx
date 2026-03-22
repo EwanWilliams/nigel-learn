@@ -14,6 +14,7 @@ export default function App() {
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
   const [showPayslip, setShowPayslip] = useState(true);
+  const [week, setWeek] = useState(1);
 
   // ✅ GROSS income (before deductions)
   const [grossIncome, setGrossIncome] = useState(() =>
@@ -213,7 +214,7 @@ export default function App() {
                 query={query}
                 setQuery={setQuery}
                 onSelect={openDetail}
-                moneyLeft={moneyLeft}
+                week={week}
               />
             )}
 
