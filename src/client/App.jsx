@@ -5,6 +5,7 @@ import HomeScreen from "./screens/home_screen";
 import BudgetScreen from "./screens/budget_screen";
 import DetailScreen from "./screens/detail_screen";
 import PostPanel from "./components/post_panel";
+import Payslip from "./components/payslip";
 
 export default function App() {
 
@@ -13,8 +14,11 @@ export default function App() {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
+  const [showPayslip, setShowPayslip] = useState(true);
 
-  const netIncome = 1270;
+  const [netIncome, setNetIncome] = useState(() =>
+  Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
+  );
 
   const [budget, setBudget] = useState({
     rent: 350,
@@ -50,7 +54,7 @@ export default function App() {
 
   const moneyLeft = netIncome - totalAllocated;
 
-  const accounts = useMemo(() => [
+  const [accounts, setAccounts] = useState([
     {
       id: "current",
       name: "Current Account",
@@ -139,8 +143,32 @@ export default function App() {
     );
   };
 
+  const acceptPayslip = (netPay) => {
+  setAccounts((prev) =>
+    prev.map((acc) =>
+      acc.id === "current"
+        ? { ...acc, amount: acc.amount + netPay }
+        : acc
+    )
+  );
+
+  setNetIncome(
+  Math.round(
+    (Math.random() * (2000 - 1500) + 1500) / 10
+  ) * 10
+);
+
+  setShowPayslip(false);
+};
+
   return (
     <div className="app-container">
+      {showPayslip && (
+  <Payslip
+    income={netIncome}
+    onAccept={acceptPayslip}
+      />
+      )}
 
       <div className="simulatorLayout">
 

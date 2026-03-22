@@ -326,12 +326,13 @@ input {
 
 .envelopeShell {
   position: relative;
-  height: 190px;
+  width: 320px;
+  height: 300px;
   background: #f7f7f7;
   border-radius: 24px;
   border: 1px solid rgba(180,180,180,.28);
   box-shadow: 0 12px 28px rgba(0,0,0,.15);
-  overflow: hidden;
+  overflow: hidden; 
 }
 
 .envelopeFlapTop {
@@ -339,10 +340,10 @@ input {
   top: 0;
   left: 0;
   right: 0;
-  height: 120px;
+  height: 160px;
   background: linear-gradient(180deg,#f1f1f1 0%,#e6e6e6 100%);
   clip-path: polygon(0 0,100% 0,50% 100%);
-  z-index: 2;
+  z-index: 4;
   transform-origin: top center;
   transition: transform .35s ease;
 }
@@ -384,6 +385,13 @@ input {
   place-items: center;
   font-weight: 900;
   z-index: 4;
+}
+
+.envelopeBack {
+  position: absolute;
+  inset: 0;
+  background: #f7f7f7;
+  z-index: 1;
 }
 
 .envelopeFooter {
@@ -571,4 +579,175 @@ input {
   text-align: center;
   font-weight: 700;
   background: transparent;
+}
+
+
+.payslipHeader h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.payslipHeader p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.payslipAmount {
+  font-size: 36px;
+  font-weight: 900;
+  margin: 20px 0;
+  color: #7000E0; 
+}
+
+/* ========================= */
+/* PAYSLIP OVERLAY */
+/* ========================= */
+
+.payslipOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* ========================= */
+/* ENVELOPE WRAPPER */
+/* ========================= */
+
+.payslipWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.payslipEnvelope .envelopeShell {
+  width: 320px;  
+  height: 300px;  
+  position: relative;
+  overflow: hidden;
+}
+
+.payslipEnvelope {
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.payslipEnvelope.fadeOut {
+  opacity: 0;
+}
+
+/* ========================= */
+/* FLAP ANIMATION */
+/* ========================= */
+
+.payslipEnvelope.open .envelopeFlapTop {
+  transform: rotateX(180deg);
+}
+
+/* ========================= */
+/* LETTER SLIDE */
+/* ========================= */
+
+.payslipLetter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(260px); 
+  width: 260px;
+  z-index: 1;
+  transition: transform 0.45s ease;
+}
+.payslipEnvelope.open .payslipLetter {
+  transform: translateX(-50%) translateY(-140px);
+  transition-delay: 0.2s;
+  z-index: 5;
+}
+
+.envelopeFrontLeft,
+.envelopeFrontRight {
+  z-index: 3;
+}
+/* ========================= */
+/* CARD */
+/* ========================= */
+
+.payslipCard {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,.2);
+  color: #111827;
+  animation: fadeSlide 0.3s ease;
+}
+
+/* ========================= */
+/* CONTENT */
+/* ========================= */
+
+.payslipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.payslipInput {
+  width: 80px;
+  padding: 6px;
+  border: 1px solid var(--stroke);
+  border-radius: 6px;
+  text-align: right;
+}
+
+.payslipDivider {
+  height: 1px;
+  background: #eee;
+  margin: 14px 0;
+}
+
+.payslipLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.payslipHint {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* ========================= */
+/* HINT TEXT */
+/* ========================= */
+
+.openHint {
+  margin-top: 12px;
+  font-size: 13px;
+  color: white;
+  opacity: 0.9;
+}
+
+/* ========================= */
+/* ANIMATION */
+/* ========================= */
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
