@@ -18,21 +18,8 @@ export default function BudgetScreen({
 
   return (
     <div className="phoneContent">
-
-      <div className="quickRow">
-        <div className="chip">
-          Take-home pay: {formatGBP(netIncome)}
-        </div>
-
-        <div className="chip chipWarn">
-          Remaining: {formatGBP(moneyLeft)}
-        </div>
-      </div>
-
       <div className="noteCard">
-
         <div className="noteTitle">Monthly budget</div>
-
         <div className="noteText">
           Take-home pay: {formatGBP(netIncome)}
         </div>

@@ -8,18 +8,20 @@ import PostPanel from "./components/post_panel";
 import Payslip from "./components/payslip";
 
 export default function App() {
-
   const [screen, setScreen] = useState("home");
   const [phonePage, setPhonePage] = useState("home");
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
   const [showPayslip, setShowPayslip] = useState(true);
-  const [takeHomePay, setTakeHomePay] = useState(0);
 
-  const [netIncome, setNetIncome] = useState(() =>
+  // ✅ GROSS income (before deductions)
+  const [grossIncome, setGrossIncome] = useState(() =>
     Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
   );
+
+  // ✅ NET income (after payslip)
+  const [takeHomePay, setTakeHomePay] = useState(0);
 
   const [budget, setBudget] = useState({
     rent: 0,
@@ -53,6 +55,7 @@ export default function App() {
     0
   );
 
+  // ✅ Budget now uses NET pay
   const moneyLeft = takeHomePay - totalAllocated;
 
   const [accounts, setAccounts] = useState([
@@ -96,29 +99,32 @@ export default function App() {
     },
   ]);
 
-  const mailItems = useMemo(() => [
-    {
-      id: "mail-1",
-      subject: "Bike repair needed",
-      message: "Your bike repair will cost £60.",
-      amount: 60,
-      date: "Today",
-    },
-    {
-      id: "mail-2",
-      subject: "Rent contribution increased",
-      message: "Your rent has increased by £120.",
-      amount: 120,
-      date: "Yesterday",
-    },
-    {
-      id: "mail-3",
-      subject: "Phone screen cracked",
-      message: "Phone repair will cost £90.",
-      amount: 90,
-      date: "Mon",
-    },
-  ], []);
+  const mailItems = useMemo(
+    () => [
+      {
+        id: "mail-1",
+        subject: "Bike repair needed",
+        message: "Your bike repair will cost £60.",
+        amount: 60,
+        date: "Today",
+      },
+      {
+        id: "mail-2",
+        subject: "Rent contribution increased",
+        message: "Your rent has increased by £120.",
+        amount: 120,
+        date: "Yesterday",
+      },
+      {
+        id: "mail-3",
+        subject: "Phone screen cracked",
+        message: "Phone repair will cost £90.",
+        amount: 90,
+        date: "Mon",
+      },
+    ],
+    []
+  );
 
   const openDetail = (account) => {
     setSelectedAccount(account);
@@ -138,38 +144,41 @@ export default function App() {
 
   const togglePhonePage = () => {
     setScreen("home");
+
     setPhonePage((current) =>
       current === "home" ? "budget" : "home"
     );
   };
 
+  // ✅ Payslip handler (CORE LOGIC)
   const acceptPayslip = (netPay) => {
-  setAccounts((prev) =>
-    prev.map((acc) =>
-      acc.id === "current"
-        ? { ...acc, amount: acc.amount + netPay }
-        : acc
-    )
-  );
+    // add net pay to current account
+    setAccounts((prev) =>
+      prev.map((acc) =>
+        acc.id === "current"
+          ? { ...acc, amount: acc.amount + netPay }
+          : acc
+      )
+    );
 
-  setTakeHomePay(netPay); // ✅ store net pay for budget
+    // store net pay for budgeting
+    setTakeHomePay(netPay);
 
-  setNetIncome(
-    Math.round(
-      (Math.random() * (2000 - 1500) + 1500) / 10
-    ) * 10
-  );
+    // generate next gross income
+    setGrossIncome(
+      Math.round(
+        (Math.random() * (2000 - 1500) + 1500) / 10
+      ) * 10
+    );
 
-  setShowPayslip(false);
-};
+    setShowPayslip(false);
+  };
 
   return (
     <div className="app-container">
-
-      {/* PAYSLIP */}
       {showPayslip && (
         <Payslip
-          income={netIncome}
+          income={grossIncome}   // 👈 still uses gross
           onAccept={acceptPayslip}
         />
       )}
@@ -181,6 +190,7 @@ export default function App() {
           <div className="screen">
 
             <div className="topbar">
+
               <div className="topbar-title">
                 <h2>Student Bank</h2>
                 <span className="topbar-sub">Prototype</span>
@@ -194,6 +204,7 @@ export default function App() {
                   {phonePage === "home" ? "£" : "⌂"}
                 </button>
               </div>
+
             </div>
 
             {screen === "home" && phonePage === "home" && (
@@ -208,7 +219,7 @@ export default function App() {
 
             {screen === "home" && phonePage === "budget" && (
               <BudgetScreen
-                netIncome={netIncome}
+                netIncome={takeHomePay}   // 👈 FIXED
                 totalAllocated={totalAllocated}
                 moneyLeft={moneyLeft}
                 budgetCategoryConfig={budgetCategoryConfig}
@@ -225,6 +236,7 @@ export default function App() {
             )}
 
           </div>
+
         </div>
 
         <PostPanel
