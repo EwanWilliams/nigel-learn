@@ -32,7 +32,7 @@ export default function HomeScreen({
 }) {
 
   const filtered = useMemo(
-    () => accounts.filter((account) => matchesQuery(account, query.trim())),
+    () => accounts.filter((account) => matchesQuery(account, (query || "").trim())),
     [accounts, query]
   );
 

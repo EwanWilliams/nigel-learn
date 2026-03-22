@@ -1,30 +1,27 @@
-import EventCard from "./event_card";
+import MailLetterCard from "./mail";
 
-export default function PostPanel({
-  mailItems,
-  openMailId,
-  onToggle,
-  onAccept,
-  onIgnore,
-}) {
+export default function PostPanel({ mailItems, openMailId, onToggle }) {
   return (
-    <div className="postPanel">
-      <h2>Post</h2>
+    <aside className="postPanel">
+      <div className="postPanelHeader">
+        <div>
+          <div className="postPanelTitle">Today’s Post</div>
+          <div className="postPanelSub">
+            Letters delivered to your address
+          </div>
+        </div>
+      </div>
 
       <div className="mailStack">
-        {mailItems.map((item) => (
-          <EventCard
-            key={item.id}
-            item={item}
-            isOpen={openMailId === item.id}
-            onToggle={() =>
-              onToggle(openMailId === item.id ? null : item.id)
-            }
-            onAccept={onAccept}
-            onIgnore={onIgnore}
+        {mailItems.map((mail) => (
+          <MailLetterCard
+            key={mail.id}
+            mail={mail}
+            open={openMailId === mail.id}
+            onToggle={() => onToggle(mail.id)}
           />
         ))}
       </div>
-    </div>
+    </aside>
   );
 }

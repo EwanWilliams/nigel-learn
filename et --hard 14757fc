@@ -1,0 +1,31 @@
+[33md8eb4e2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m15-initial-simulation-frontend-implementation[m[33m, [m[1;31morigin/15-initial-simulation-frontend-implementation[m[33m)[m refactored the event relate code for easier functionality
+[33m14757fc[m added weekly timings for later when teh events are properly implemented
+[33mf30da32[m took out unnecessary info on budget page
+[33m8dd201f[m payslip amount added t account when user enters correct tax amounts in prompter, guide to calculation in small text
+[33mc6a57ad[m payslip opening added with animation for the envelope to look like its opening
+[33md19eea1[m[33m ([m[1;31morigin/sim/budget-state[m[33m, [m[1;32msim/budget-state[m[33m)[m Merge remote-tracking branch 'origin/main' into sim/budget-state
+[33m49b1ad8[m made the essential files for simulation
+[33m48ddc3b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #20 from EwanWilliams/7-initial-ux-design
+[33m11b67d1[m split the app.jsx file into its relevant files for easier navigation
+[33m11661ef[m made the budget values a currency
+[33mccfba02[m made the budget values clickable instead of only the plus and minus buttons
+[33m2da27aa[m cleaned up budget-state to make it look clean and took out unnecessary features
+[33m0388859[m added functionality that budget can be changed and updates the money left
+[33m3148717[m added css to budget state and also tweaked some changed to make it look better
+[33ma12dfe4[m created a separate page for budget state instead of all on one
+[33m4cb7d69[m added budget state totals to main phone
+[33m9c17930[m[33m ([m[1;31morigin/7-initial-ux-design[m[33m, [m[1;32m7-initial-ux-design[m[33m)[m changed what pay button displayed
+[33m22107db[m pay bill button added to letters
+[33m19fa145[m UI additions mostly completed, adding some more buttons that will have functionality later
+[33me2691bf[m added ailwind config to vite and json
+[33m01ca95a[m added as a side panel to the main UI
+[33mc22ca08[m mailbox functionality added to test
+[33ma9fcd13[m initial ux design mock up added
+[33mf66aa95[m[33m ([m[1;31morigin/feature/module-creation[m[33m)[m Merge pull request #17 from EwanWilliams/backend/initial-setup
+[33m71e8d72[m express, react, vite basic setup complete
+[33m3fd33a0[m Merge pull request #6 from EwanWilliams/admin/pull-request-template
+[33m704ecfa[m Add milestone checklist item to PR template
+[33m97100f8[m Add issue linking section to PR template
+[33mca03bdf[m Update pull request template checklist items
+[33m1f5048f[m Added pull request template
+[33m167e3f3[m Initial commit

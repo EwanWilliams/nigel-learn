@@ -38,7 +38,7 @@ export default function AccountRow({ account, onSelect }) {
 
       <div className="accountRight">
         <div className={`accountAmount ${account.amount < 0 ? "neg" : ""}`}>
-          {formatGBP(account.amount)}
+          {formatGBP(account.amount.toFixed(2))}
         </div>
 
         <div className="accountMeta">

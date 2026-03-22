@@ -37,7 +37,7 @@ export default function DetailScreen({ account, onBack }) {
         </div>
 
         <div className="detailAmount">
-          {formatGBP(account.amount)}
+          {formatGBP(account.amount.toFixed(2))}
         </div>
 
       </div>

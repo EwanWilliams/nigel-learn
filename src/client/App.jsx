@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import "./app.css";
 
 import HomeScreen from "./screens/home_screen";
@@ -8,8 +8,6 @@ import PostPanel from "./components/post_panel";
 import Payslip from "./components/payslip";
 
 export default function App() {
-  const [week, setWeek] = useState(1);
-  const [completedEvents, setCompletedEvents] = useState([]);
 
   const [screen, setScreen] = useState("home");
   const [phonePage, setPhonePage] = useState("home");
@@ -17,76 +15,161 @@ export default function App() {
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
   const [showPayslip, setShowPayslip] = useState(true);
+  const formatCurrency = (value) => `£${value.toFixed(2)}`;
 
-  const [grossIncome, setGrossIncome] = useState(() =>
-    Math.floor(Math.random() * 500 + 1500)
+  // ✅ RANDOM GROSS INCOME (used for payslip)
+  const [grossIncome] = useState(() =>
+    Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
   );
 
-  const [takeHomePay, setTakeHomePay] = useState(0);
+  // ✅ NET INCOME (set AFTER payslip)
+  const [netIncome, setNetIncome] = useState(0);
+
+  // =========================
+  // BUDGET
+  // =========================
+
+  const [budget, setBudget] = useState({
+    rent: 0,
+    travel: 0,
+    food: 0,
+    phone: 0,
+    subscriptions: 0,
+    savings: 0,
+    fun: 0,
+  });
+
+  const changeBudget = (category, amount) => {
+    setBudget((prev) => ({
+      ...prev,
+      [category]: Math.max(0, prev[category] + amount),
+    }));
+  };
+
+  const budgetCategoryConfig = [
+    { id: "rent", label: "Rent / Board" },
+    { id: "travel", label: "Travel" },
+    { id: "food", label: "Food" },
+    { id: "phone", label: "Phone" },
+    { id: "subscriptions", label: "Subscriptions" },
+    { id: "savings", label: "Savings" },
+    { id: "fun", label: "Fun" },
+  ];
+
+  const totalAllocated = Object.values(budget).reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  const moneyLeft = netIncome - totalAllocated;
+
+  // =========================
+  // ACCOUNTS
+  // =========================
 
   const [accounts, setAccounts] = useState([
-    { id: "current", name: "Current Account", amount: 0 },
-    { id: "savings", name: "Savings Account", amount: 0 },
+    {
+      id: "current",
+      name: "Current Account",
+      desc: "Main spending account",
+      amount: 0,
+      type: "Account",
+      icon: "🏦",
+      accent: "blue",
+    },
+    {
+      id: "savings",
+      name: "Savings Account",
+      desc: "Buffer & goals",
+      amount: 0,
+      type: "Account",
+      icon: "💰",
+      accent: "green",
+    },
+    {
+      id: "debit",
+      name: "Debit Card",
+      desc: "Linked to Current Account",
+      amount: 0,
+      type: "Card",
+      icon: "💳",
+      last4: "4821",
+      accent: "purple",
+    },
+    {
+      id: "credit",
+      name: "Credit Card",
+      desc: "Borrow now, pay later",
+      amount: 0,
+      type: "Card",
+      icon: "🧾",
+      last4: "1934",
+      accent: "amber",
+    },
   ]);
 
-  // ✅ EVENTS BY WEEK
-  const mailItems = useMemo(() => {
-    if (week === 1) {
-      return [
-        { id: "1", subject: "Bike repair", amount: 60 },
-        { id: "2", subject: "Phone repair", amount: 90 },
-      ];
-    }
+  // =========================
+  // MAIL
+  // =========================
 
-    if (week === 2) {
-      return [
-        { id: "3", subject: "Rent increase", amount: 120 },
-        { id: "4", subject: "Electric bill", amount: 75 },
-      ];
-    }
+  const mailItems = useMemo(() => [
+    {
+      id: "mail-1",
+      subject: "Bike repair needed",
+      message: "Your bike repair will cost £60.",
+      amount: 60,
+      date: "Today",
+    },
+    {
+      id: "mail-2",
+      subject: "Rent contribution increased",
+      message: "Your rent has increased by £120.",
+      amount: 120,
+      date: "Yesterday",
+    },
+    {
+      id: "mail-3",
+      subject: "Phone screen cracked",
+      message: "Phone repair will cost £90.",
+      amount: 90,
+      date: "Mon",
+    },
+  ], []);
 
-    return [];
-  }, [week]);
+  // =========================
+  // NAVIGATION
+  // =========================
 
-  // ✅ ACCEPT EVENT (money leaves account)
-  const handleAcceptEvent = (event) => {
-    setAccounts((prev) =>
-      prev.map((acc) =>
-        acc.id === "current"
-          ? { ...acc, amount: acc.amount - event.amount }
-          : acc
-      )
-    );
+  const openDetail = (account) => {
+    setSelectedAccount(account);
+    setScreen("detail");
+  };
 
-    setCompletedEvents((prev) =>
-      prev.includes(event.id) ? prev : [...prev, event.id]
+  const goHome = () => {
+    setSelectedAccount(null);
+    setScreen("home");
+  };
+
+  const toggleMail = (mailId) => {
+    setOpenMailId((current) =>
+      current === mailId ? null : mailId
     );
   };
 
-  // ✅ IGNORE EVENT
-  const handleIgnoreEvent = (event) => {
-    setCompletedEvents((prev) =>
-      prev.includes(event.id) ? prev : [...prev, event.id]
+  const togglePhonePage = () => {
+    setScreen("home");
+
+    setPhonePage((current) =>
+      current === "home" ? "budget" : "home"
     );
   };
 
-  // ✅ WEEK PROGRESSION
-  const allEventsCompleted =
-    mailItems.length > 0 &&
-    completedEvents.length === mailItems.length;
+  // =========================
+  // PAYSLIP LOGIC
+  // =========================
 
-  useEffect(() => {
-    if (allEventsCompleted) {
-      setTimeout(() => {
-        setWeek((w) => w + 1);
-        setCompletedEvents([]);
-        setOpenMailId(null);
-      }, 800);
-    }
-  }, [allEventsCompleted]);
-
-  // ✅ PAYSLIP HANDLER
   const acceptPayslip = (netPay) => {
+    // ✅ Add money to current account
     setAccounts((prev) =>
       prev.map((acc) =>
         acc.id === "current"
@@ -95,30 +178,90 @@ export default function App() {
       )
     );
 
-    setTakeHomePay(netPay);
+    // ✅ Store net income for budget
+    setNetIncome(netPay);
 
-    setGrossIncome(Math.floor(Math.random() * 500 + 1500));
     setShowPayslip(false);
   };
 
+  // =========================
+  // RENDER
+  // =========================
+
   return (
     <div className="app-container">
+
       {showPayslip && (
-        <Payslip income={grossIncome} onAccept={acceptPayslip} />
+        <Payslip
+          income={grossIncome}   // ✅ FIXED (was wrong before)
+          onAccept={acceptPayslip}
+        />
       )}
 
-      <HomeScreen
-        accounts={accounts}
-        week={week}
-      />
+      <div className="simulatorLayout">
 
-      <PostPanel
-        mailItems={mailItems}
-        openMailId={openMailId}
-        onToggle={setOpenMailId}
-        onAccept={handleAcceptEvent}
-        onIgnore={handleIgnoreEvent}
-      />
+        <div className="phone">
+
+          <div className="screen">
+
+            <div className="topbar">
+
+              <div className="topbar-title">
+                <h2>Student Bank</h2>
+                <span className="topbar-sub">Prototype</span>
+              </div>
+
+              <div className="topbar-actions">
+                <button
+                  className="iconBtn"
+                  onClick={togglePhonePage}
+                >
+                  {phonePage === "home" ? "£" : "⌂"}
+                </button>
+              </div>
+
+            </div>
+
+            {screen === "home" && phonePage === "home" && (
+              <HomeScreen
+                accounts={accounts}
+                query={query}
+                setQuery={setQuery}
+                onSelect={openDetail}
+                moneyLeft={moneyLeft}
+              />
+            )}
+
+            {screen === "home" && phonePage === "budget" && (
+              <BudgetScreen
+                netIncome={netIncome}   // ✅ now correct
+                totalAllocated={totalAllocated}
+                moneyLeft={moneyLeft}
+                budgetCategoryConfig={budgetCategoryConfig}
+                budget={budget}
+                changeBudget={changeBudget}
+              />
+            )}
+
+            {screen === "detail" && selectedAccount && (
+              <DetailScreen
+                account={selectedAccount}
+                onBack={goHome}
+              />
+            )}
+
+          </div>
+
+        </div>
+
+        <PostPanel
+          mailItems={mailItems}
+          openMailId={openMailId}
+          onToggle={toggleMail}
+        />
+
+      </div>
+
     </div>
   );
 }
