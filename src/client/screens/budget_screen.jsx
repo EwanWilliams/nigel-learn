@@ -1,11 +1,12 @@
 function formatGBP(value) {
-  const sign = value < 0 ? "-" : "";
-  const abs = Math.abs(value);
-
-  return `${sign}£${abs.toLocaleString("en-GB", {
-    maximumFractionDigits: 0,
-  })}`;
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
+
 
 export default function BudgetScreen({
   netIncome,

@@ -1,8 +1,10 @@
 function formatGBP(value) {
   const sign = value < 0 ? "-" : "";
   const abs = Math.abs(value);
+
   return `${sign}£${abs.toLocaleString("en-GB", {
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   })}`;
 }
 
@@ -38,7 +40,7 @@ export default function AccountRow({ account, onSelect }) {
 
       <div className="accountRight">
         <div className={`accountAmount ${account.amount < 0 ? "neg" : ""}`}>
-          {formatGBP(account.amount.toFixed(2))}
+          {formatGBP(account.amount)}
         </div>
 
         <div className="accountMeta">
