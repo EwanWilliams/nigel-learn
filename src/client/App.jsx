@@ -15,19 +15,20 @@ export default function App() {
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
   const [showPayslip, setShowPayslip] = useState(true);
+  const [takeHomePay, setTakeHomePay] = useState(0);
 
   const [netIncome, setNetIncome] = useState(() =>
-  Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
+    Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
   );
 
   const [budget, setBudget] = useState({
-    rent: 350,
-    travel: 120,
-    food: 180,
-    phone: 25,
-    subscriptions: 20,
-    savings: 150,
-    fun: 205,
+    rent: 0,
+    travel: 0,
+    food: 0,
+    phone: 0,
+    subscriptions: 0,
+    savings: 0,
+    fun: 0,
   });
 
   const changeBudget = (category, amount) => {
@@ -52,14 +53,14 @@ export default function App() {
     0
   );
 
-  const moneyLeft = netIncome - totalAllocated;
+  const moneyLeft = takeHomePay - totalAllocated;
 
   const [accounts, setAccounts] = useState([
     {
       id: "current",
       name: "Current Account",
       desc: "Main spending account",
-      amount: 620,
+      amount: 0,
       type: "Account",
       icon: "🏦",
       accent: "blue",
@@ -68,7 +69,7 @@ export default function App() {
       id: "savings",
       name: "Savings Account",
       desc: "Buffer & goals",
-      amount: 150,
+      amount: 0,
       type: "Account",
       icon: "💰",
       accent: "green",
@@ -87,13 +88,13 @@ export default function App() {
       id: "credit",
       name: "Credit Card",
       desc: "Borrow now, pay later",
-      amount: -80,
+      amount: 0,
       type: "Card",
       icon: "🧾",
       last4: "1934",
       accent: "amber",
     },
-  ], []);
+  ]);
 
   const mailItems = useMemo(() => [
     {
@@ -137,7 +138,6 @@ export default function App() {
 
   const togglePhonePage = () => {
     setScreen("home");
-
     setPhonePage((current) =>
       current === "home" ? "budget" : "home"
     );
@@ -152,22 +152,26 @@ export default function App() {
     )
   );
 
+  setTakeHomePay(netPay); // ✅ store net pay for budget
+
   setNetIncome(
-  Math.round(
-    (Math.random() * (2000 - 1500) + 1500) / 10
-  ) * 10
-);
+    Math.round(
+      (Math.random() * (2000 - 1500) + 1500) / 10
+    ) * 10
+  );
 
   setShowPayslip(false);
 };
 
   return (
     <div className="app-container">
+
+      {/* PAYSLIP */}
       {showPayslip && (
-  <Payslip
-    income={netIncome}
-    onAccept={acceptPayslip}
-      />
+        <Payslip
+          income={netIncome}
+          onAccept={acceptPayslip}
+        />
       )}
 
       <div className="simulatorLayout">
@@ -177,7 +181,6 @@ export default function App() {
           <div className="screen">
 
             <div className="topbar">
-
               <div className="topbar-title">
                 <h2>Student Bank</h2>
                 <span className="topbar-sub">Prototype</span>
@@ -191,7 +194,6 @@ export default function App() {
                   {phonePage === "home" ? "£" : "⌂"}
                 </button>
               </div>
-
             </div>
 
             {screen === "home" && phonePage === "home" && (
@@ -223,7 +225,6 @@ export default function App() {
             )}
 
           </div>
-
         </div>
 
         <PostPanel
