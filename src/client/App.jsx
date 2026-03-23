@@ -16,6 +16,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [showPayslip, setShowPayslip] = useState(true);
   const formatCurrency = (value) => `£${value.toFixed(2)}`;
+  const [week, setWeek] = useState(1);
 
  
   const [grossIncome] = useState(() =>
@@ -180,6 +181,19 @@ export default function App() {
     setShowPayslip(false);
   };
 
+  const nextWeek = () => {
+  setWeek((prev) => prev + 1);
+
+  setMailItems([
+    {
+      id: "mail-" + Date.now(),
+      subject: "New weekly expense",
+      message: "You have a new cost of £75.",
+      amount: 75,
+      date: "Today",
+    },
+  ]);
+};
  
 
   return (
@@ -253,6 +267,8 @@ export default function App() {
           openMailId={openMailId}
           onToggle={toggleMail}
           onAction={handleEvent}
+          onNextWeek={nextWeek}   
+          week={week} 
         />
 
       </div>

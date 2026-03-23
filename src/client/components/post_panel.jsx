@@ -1,6 +1,6 @@
 import MailLetterCard from "./mail";
 
-export default function PostPanel({ mailItems, openMailId, onToggle, onAction }) {
+export default function PostPanel({ mailItems, openMailId, onToggle, onAction, onNextWeek, week }) {
   return (
     <aside className="postPanel">
       <div className="postPanelHeader">
@@ -19,10 +19,20 @@ export default function PostPanel({ mailItems, openMailId, onToggle, onAction })
             mail={mail}
             open={openMailId === mail.id}
             onToggle={() => onToggle(mail.id)}
-            onAction={onAction}   
+            onAction={onAction} 
+              
           />
         ))}
       </div>
+      {mailItems.length === 0 && (
+  <div className="weekComplete">
+    <p>You’ve completed the mail for this week!</p>
+
+    <button onClick={onNextWeek}>
+      Move to week {week + 1}
+    </button>
+  </div>
+)}
     </aside>
   );
 }

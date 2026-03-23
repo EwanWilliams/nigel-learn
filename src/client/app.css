@@ -751,3 +751,22 @@ input {
     transform: translateY(0);
   }
 }
+
+.weekComplete {
+  margin-top: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  text-align: center;
+  color: #111;
+}
+
+.weekComplete button {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #7000E0;
+  color: white;
+  cursor: pointer;
+}
