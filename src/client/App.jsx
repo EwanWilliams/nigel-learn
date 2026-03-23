@@ -17,6 +17,7 @@ export default function App() {
   const [showPayslip, setShowPayslip] = useState(true);
   const formatCurrency = (value) => `£${value.toFixed(2)}`;
   const [week, setWeek] = useState(1);
+  
 
  
   const [grossIncome] = useState(() =>
@@ -57,6 +58,8 @@ export default function App() {
     (sum, value) => sum + value,
     0
   );
+
+  const isBudgetComplete = totalAllocated === netIncome;
 
   const moneyLeft = netIncome - totalAllocated;
 
@@ -145,18 +148,28 @@ export default function App() {
   };
 
   const handleEvent = (mailId, amount) => {
-  setAccounts((prev) =>
-    prev.map((acc) =>
-      acc.id === "current"
-        ? { ...acc, amount: acc.amount - amount }
-        : acc
-    )
-  );
 
+  // 🧠 find a category to deduct from (simple version = "fun")
+  const category = "fun";
+
+  setBudget((prev) => {
+    const current = prev[category];
+
+    const newAmount = Math.max(0, current - amount);
+
+    return {
+      ...prev,
+      [category]: newAmount,
+    };
+  });
+
+  // 📨 remove mail
   setMailItems((prev) =>
     prev.filter((mail) => mail.id !== mailId)
   );
 };
+
+ 
 
   const togglePhonePage = () => {
     setScreen("home");
@@ -269,6 +282,7 @@ export default function App() {
           onAction={handleEvent}
           onNextWeek={nextWeek}   
           week={week} 
+          isBudgetComplete={isBudgetComplete}
         />
 
       </div>

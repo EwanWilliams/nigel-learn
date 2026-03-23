@@ -1,6 +1,6 @@
 import MailLetterCard from "./mail";
 
-export default function PostPanel({ mailItems, openMailId, onToggle, onAction, onNextWeek, week }) {
+export default function PostPanel({ mailItems, openMailId, onToggle, onAction, onNextWeek, week, isBudgetComplete }) {
   return (
     <aside className="postPanel">
       <div className="postPanelHeader">
@@ -12,18 +12,23 @@ export default function PostPanel({ mailItems, openMailId, onToggle, onAction, o
         </div>
       </div>
 
+      {!isBudgetComplete && (
+  <div className="budgetWarning">
+    Please allocate your full budget before opening mail
+  </div>
+)}
+
       <div className="mailStack">
-        {mailItems.map((mail) => (
-          <MailLetterCard
-            key={mail.id}
-            mail={mail}
-            open={openMailId === mail.id}
-            onToggle={() => onToggle(mail.id)}
-            onAction={onAction} 
-              
-          />
-        ))}
-      </div>
+  {mailItems.map((mail) => (
+    <MailLetterCard
+      key={mail.id}
+      mail={mail}
+      open={openMailId === mail.id && isBudgetComplete}
+      onToggle={() => isBudgetComplete && onToggle(mail.id)}
+      onAction={onAction}
+    />
+  ))}
+</div>
       {mailItems.length === 0 && (
   <div className="weekComplete">
     <p>You’ve completed the mail for this week!</p>
