@@ -15,6 +15,7 @@ export default function BudgetScreen({
   budgetCategoryConfig,
   budget,
   changeBudget
+  ,selectedCategory,setSelectedCategory
 }) {
 
   return (
@@ -40,18 +41,25 @@ export default function BudgetScreen({
 
         {budgetCategoryConfig.map((category) => (
 
-          <div key={category.id} className="budgetRow">
+          <div
+  key={category.id}
+  className={`budgetRow ${selectedCategory === category.id ? "active" : ""}`}
+  onClick={() => setSelectedCategory(category.id)}
+>
 
             <span>{category.label}</span>
 
             <div className="budgetControls">
 
               <button
-                className="budgetBtn"
-                onClick={() => changeBudget(category.id, -10)}
-              >
-                −
-              </button>
+  className="budgetBtn"
+  onClick={(e) => {
+    e.stopPropagation(); 
+    changeBudget(category.id, -10);
+  }}
+>
+  −
+</button>
 
               <div className="budgetInputWrapper">
 
@@ -73,7 +81,10 @@ export default function BudgetScreen({
 
               <button
                 className="budgetBtn"
-                onClick={() => changeBudget(category.id, 10)}
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  changeBudget(category.id, 10);
+                }}
               >
                 +
               </button>

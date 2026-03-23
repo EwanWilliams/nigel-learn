@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./app.css";
 
 import HomeScreen from "./screens/home_screen";
@@ -17,7 +17,11 @@ export default function App() {
   const [showPayslip, setShowPayslip] = useState(true);
   const formatCurrency = (value) => `£${value.toFixed(2)}`;
   const [week, setWeek] = useState(1);
-  
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [spent, setSpent] = useState(0);
+  const [spentByCategory, setSpentByCategory] = useState({});
+  const [initialBudget, setInitialBudget] = useState(null);
+  const [budgetLocked, setBudgetLocked] = useState(false);
 
  
   const [grossIncome] = useState(() =>
@@ -59,11 +63,24 @@ export default function App() {
     0
   );
 
-  const isBudgetComplete = totalAllocated === netIncome;
+ const leftToAllocate = Math.max(0, netIncome - totalAllocated - spent);
 
-  const moneyLeft = netIncome - totalAllocated;
+  const isBudgetComplete = budgetLocked;
 
-  
+  const moneyLeft = netIncome - spent;
+
+  useEffect(() => {
+  if (isBudgetComplete && !initialBudget) {
+    setInitialBudget(budget);
+  }
+}, [isBudgetComplete, budget]);
+
+useEffect(() => {
+  if (totalAllocated >= netIncome && !budgetLocked) {
+    setBudgetLocked(true);
+  }
+}, [totalAllocated, netIncome, budgetLocked]);
+
   const [accounts, setAccounts] = useState([
     {
       id: "current",
@@ -107,28 +124,28 @@ export default function App() {
 
  
   const [mailItems, setMailItems] = useState([
-    {
-      id: "mail-1",
-      subject: "Bike repair needed",
-      message: "Your bike repair will cost £60.",
-      amount: 60,
-      date: "Today",
-    },
-    {
-      id: "mail-2",
-      subject: "Rent contribution increased",
-      message: "Your rent has increased by £120.",
-      amount: 120,
-      date: "Yesterday",
-    },
-    {
-      id: "mail-3",
-      subject: "Phone screen cracked",
-      message: "Phone repair will cost £90.",
-      amount: 90,
-      date: "Mon",
-    },
-  ], []);
+  {
+    id: "mail-1",
+    subject: "Bike repair needed",
+    message: "Your bike repair will cost £60.",
+    amount: 60,
+    date: "Today",
+  },
+  {
+    id: "mail-2",
+    subject: "Rent contribution increased",
+    message: "Your rent has increased by £120.",
+    amount: 120,
+    date: "Yesterday",
+  },
+  {
+    id: "mail-3",
+    subject: "Phone screen cracked",
+    message: "Phone repair will cost £90.",
+    amount: 90,
+    date: "Mon",
+  },
+]);
 
   
   const openDetail = (account) => {
@@ -149,27 +166,33 @@ export default function App() {
 
   const handleEvent = (mailId, amount) => {
 
-  // 🧠 find a category to deduct from (simple version = "fun")
-  const category = "fun";
+  if (!selectedCategory) {
+    alert("Select a category first");
+    return;
+  }
 
   setBudget((prev) => {
-    const current = prev[category];
+    const current = prev[selectedCategory];
 
-    const newAmount = Math.max(0, current - amount);
+    if (current < amount) {
+      alert("Not enough in this category!");
+      return prev;
+    }
 
     return {
       ...prev,
-      [category]: newAmount,
+      [selectedCategory]: current - amount, 
     };
   });
 
-  // 📨 remove mail
+  setSpent((prev) => prev + amount);
+
   setMailItems((prev) =>
     prev.filter((mail) => mail.id !== mailId)
   );
-};
 
- 
+  setSelectedCategory(null);
+};
 
   const togglePhonePage = () => {
     setScreen("home");
@@ -257,10 +280,12 @@ export default function App() {
               <BudgetScreen
                 netIncome={netIncome}  
                 totalAllocated={totalAllocated}
-                moneyLeft={moneyLeft}
+                moneyLeft={leftToAllocate}
                 budgetCategoryConfig={budgetCategoryConfig}
                 budget={budget}
                 changeBudget={changeBudget}
+                selectedCategory={selectedCategory}      
+                setSelectedCategory={setSelectedCategory}
               />
             )}
 

@@ -23,9 +23,10 @@ export default function PostPanel({ mailItems, openMailId, onToggle, onAction, o
     <MailLetterCard
       key={mail.id}
       mail={mail}
-      open={openMailId === mail.id && isBudgetComplete}
-      onToggle={() => isBudgetComplete && onToggle(mail.id)}
+      open={openMailId === mail.id}
+      onToggle={() => onToggle(mail.id)}
       onAction={onAction}
+      isBudgetComplete={isBudgetComplete}
     />
   ))}
 </div>

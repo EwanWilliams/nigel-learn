@@ -425,6 +425,7 @@ input {
   box-shadow: 0 16px 40px rgba(0,0,0,.15);
   padding: 16px;
   animation: paperPullOut .34s ease;
+  z-index: 10;
 }
 
 .letterHeader {
@@ -769,4 +770,21 @@ input {
   background: #7000E0;
   color: white;
   cursor: pointer;
+}
+
+.budgetRow.active {
+  background: #ede9fe;
+  border: 2px solid #7000E0;
+}
+
+.letterShell {
+  color: #111827; /* force dark text */
+}
+
+.letterSubject {
+  color: #111827;
+}
+
+.letterBody {
+  color: #374151;
 }
