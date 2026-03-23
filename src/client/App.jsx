@@ -17,18 +17,14 @@ export default function App() {
   const [showPayslip, setShowPayslip] = useState(true);
   const formatCurrency = (value) => `£${value.toFixed(2)}`;
 
-  // ✅ RANDOM GROSS INCOME (used for payslip)
+ 
   const [grossIncome] = useState(() =>
     Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
   );
 
-  // ✅ NET INCOME (set AFTER payslip)
   const [netIncome, setNetIncome] = useState(0);
 
-  // =========================
-  // BUDGET
-  // =========================
-
+  
   const [budget, setBudget] = useState({
     rent: 0,
     travel: 0,
@@ -63,10 +59,7 @@ export default function App() {
 
   const moneyLeft = netIncome - totalAllocated;
 
-  // =========================
-  // ACCOUNTS
-  // =========================
-
+  
   const [accounts, setAccounts] = useState([
     {
       id: "current",
@@ -108,10 +101,7 @@ export default function App() {
     },
   ]);
 
-  // =========================
-  // MAIL
-  // =========================
-
+ 
   const mailItems = useMemo(() => [
     {
       id: "mail-1",
@@ -136,10 +126,7 @@ export default function App() {
     },
   ], []);
 
-  // =========================
-  // NAVIGATION
-  // =========================
-
+  
   const openDetail = (account) => {
     setSelectedAccount(account);
     setScreen("detail");
@@ -156,6 +143,16 @@ export default function App() {
     );
   };
 
+  const handleEvent = (amount) => {
+  setAccounts((prev) =>
+    prev.map((acc) =>
+      acc.id === "current"
+        ? { ...acc, amount: acc.amount - amount }
+        : acc
+    )
+  );
+};
+
   const togglePhonePage = () => {
     setScreen("home");
 
@@ -164,12 +161,8 @@ export default function App() {
     );
   };
 
-  // =========================
-  // PAYSLIP LOGIC
-  // =========================
 
   const acceptPayslip = (netPay) => {
-    // ✅ Add money to current account
     setAccounts((prev) =>
       prev.map((acc) =>
         acc.id === "current"
@@ -178,22 +171,19 @@ export default function App() {
       )
     );
 
-    // ✅ Store net income for budget
     setNetIncome(netPay);
 
     setShowPayslip(false);
   };
 
-  // =========================
-  // RENDER
-  // =========================
+ 
 
   return (
     <div className="app-container">
 
       {showPayslip && (
         <Payslip
-          income={grossIncome}   // ✅ FIXED (was wrong before)
+          income={grossIncome}   
           onAccept={acceptPayslip}
         />
       )}
@@ -234,7 +224,7 @@ export default function App() {
 
             {screen === "home" && phonePage === "budget" && (
               <BudgetScreen
-                netIncome={netIncome}   // ✅ now correct
+                netIncome={netIncome}  
                 totalAllocated={totalAllocated}
                 moneyLeft={moneyLeft}
                 budgetCategoryConfig={budgetCategoryConfig}
@@ -258,6 +248,7 @@ export default function App() {
           mailItems={mailItems}
           openMailId={openMailId}
           onToggle={toggleMail}
+          onAction={handleEvent}
         />
 
       </div>

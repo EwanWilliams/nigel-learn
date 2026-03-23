@@ -6,7 +6,7 @@ function formatGBP(value) {
   })}`;
 }
 
-export default function MailLetterCard({ mail, open, onToggle }) {
+export default function MailLetterCard({ mail, open, onToggle, onAction }) {
   return (
     <button
       type="button"
@@ -53,9 +53,15 @@ export default function MailLetterCard({ mail, open, onToggle }) {
           </div>
 
           <div className="letterActions">
-            <button className="btn primary" disabled>
-              Pay {formatGBP(mail.amount)}
-            </button>
+            <button
+  onClick={() => {
+    console.log("Paying bill of", mail.amount);
+    onAction(mail.amount);   
+    onToggle();              
+  }}
+>
+  Pay £{mail.amount}
+</button>
           </div>
         </div>
       )}

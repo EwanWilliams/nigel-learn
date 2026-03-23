@@ -1,6 +1,6 @@
 import MailLetterCard from "./mail";
 
-export default function PostPanel({ mailItems, openMailId, onToggle }) {
+export default function PostPanel({ mailItems, openMailId, onToggle, onAction }) {
   return (
     <aside className="postPanel">
       <div className="postPanelHeader">
@@ -19,6 +19,7 @@ export default function PostPanel({ mailItems, openMailId, onToggle }) {
             mail={mail}
             open={openMailId === mail.id}
             onToggle={() => onToggle(mail.id)}
+            onAction={onAction}   // ✅ FIXED
           />
         ))}
       </div>
