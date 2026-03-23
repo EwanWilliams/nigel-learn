@@ -102,7 +102,7 @@ export default function App() {
   ]);
 
  
-  const mailItems = useMemo(() => [
+  const [mailItems, setMailItems] = useState([
     {
       id: "mail-1",
       subject: "Bike repair needed",
@@ -143,13 +143,17 @@ export default function App() {
     );
   };
 
-  const handleEvent = (amount) => {
+  const handleEvent = (mailId, amount) => {
   setAccounts((prev) =>
     prev.map((acc) =>
       acc.id === "current"
         ? { ...acc, amount: acc.amount - amount }
         : acc
     )
+  );
+
+  setMailItems((prev) =>
+    prev.filter((mail) => mail.id !== mailId)
   );
 };
 

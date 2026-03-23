@@ -19,7 +19,7 @@ export default function PostPanel({ mailItems, openMailId, onToggle, onAction })
             mail={mail}
             open={openMailId === mail.id}
             onToggle={() => onToggle(mail.id)}
-            onAction={onAction}   // ✅ FIXED
+            onAction={onAction}   
           />
         ))}
       </div>

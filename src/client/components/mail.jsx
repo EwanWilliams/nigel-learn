@@ -55,10 +55,8 @@ export default function MailLetterCard({ mail, open, onToggle, onAction }) {
           <div className="letterActions">
             <button
   onClick={() => {
-    console.log("Paying bill of", mail.amount);
-    onAction(mail.amount);   
-    onToggle();              
-  }}
+  onAction(mail.id, mail.amount);
+}}
 >
   Pay £{mail.amount}
 </button>
