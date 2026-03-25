@@ -11,15 +11,28 @@ const mailSchema = new mongoose.Schema({
 });
 
 const incomeSchema = new mongoose.Schema({
-    label: {type: String, required: true},
-    catagory: {type: String, required: true, enum: ['paye', 'invoice', 'casual']},
+    label: {type: String, required: true, maxLength: 20},
+    category: {type: String, required: true, enum: ['paye', 'invoice', 'casual']},
     amount: {type: Double, required: true}
 });
 
-const moduleSchema = new mongoose.Schema({
-    title: {type: String, required: true},
+const expenseSchema = new mongoose.Schema({
+    label: {type: String, required: true, maxLength: 20},
+    category: {type: String, required: true, enum: ['rent', 'travel', 'food', 'phone', 'subscriptions', 'savings', 'fun', 'other']},
+    amount: {type: Double, required: true} 
+});
+
+const weekSchema = new mongoose.Schema({
+    dateStarting: {type: Date, required: true},
     mailPool: [mailSchema],
-    incomePool: [incomeSchema]
+    incomePool: [incomeSchema],
+    expensePool: [expenseSchema]
+});
+
+const moduleSchema = new mongoose.Schema({
+    title: {type: String, required: true, maxLength: 30},
+    brief: {type: String, required: true, maxLength: 1000},
+    weekPool: [weekSchema]
 });
 
 const Module = mongoose.model('Modules', moduleSchema, 'Modules');
