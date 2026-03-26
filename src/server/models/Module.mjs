@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const mailSchema = new mongoose.Schema({
     label: {type: String, required: true, maxLength: 20},
@@ -7,19 +7,19 @@ const mailSchema = new mongoose.Schema({
     date: {type: Date, required: true},
     subject: {type: String, required: true, maxLength: 50},
     body: {type: String, required: true, maxLength: 300},
-    amount: {type: Double}
+    amount: {type: Number}
 });
 
 const incomeSchema = new mongoose.Schema({
     label: {type: String, required: true, maxLength: 20},
     category: {type: String, required: true, enum: ['paye', 'invoice', 'casual']},
-    amount: {type: Double, required: true}
+    amount: {type: Number, required: true}
 });
 
 const expenseSchema = new mongoose.Schema({
     label: {type: String, required: true, maxLength: 20},
     category: {type: String, required: true, enum: ['rent', 'travel', 'food', 'phone', 'subscriptions', 'savings', 'fun', 'other']},
-    amount: {type: Double, required: true} 
+    amount: {type: Number, required: true} 
 });
 
 const weekSchema = new mongoose.Schema({
