@@ -23,6 +23,7 @@ export default function App() {
   const [initialBudget, setInitialBudget] = useState(null);
   const [budgetLocked, setBudgetLocked] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [started, setStarted] = useState(false);
 
  
   const [grossIncome] = useState(() =>
@@ -242,7 +243,35 @@ useEffect(() => {
   return (
     <div className="app-container">
 
-      {showPayslip && (
+      {!started && (
+  <div className="introOverlay">
+    <div className="introCard">
+      <h1>Welcome to Student Bank</h1>
+
+      <p>
+        You have just been paid.
+        Your goal is to manage your money across 4 weeks.
+      </p>
+
+      <ul>
+        <li>Allocate your budget wisely</li>
+        <li>Handle unexpected expenses</li>
+        <li>Avoid running out of money</li>
+      </ul>
+
+      <button
+        onClick={() => {
+          setStarted(true);
+          setShowPayslip(true);
+        }}
+      >
+        Start Simulation
+      </button>
+    </div>
+  </div>
+)}
+
+      {started && showPayslip && (
         <Payslip
           income={grossIncome}   
           onAccept={acceptPayslip}
