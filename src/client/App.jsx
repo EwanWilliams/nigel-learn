@@ -280,6 +280,7 @@ useEffect(() => {
         />
       )}
 
+      (!!showFinal && (
       <div className="simulatorLayout">
 
         <div className="phone">
@@ -358,7 +359,6 @@ useEffect(() => {
 
       <button
   onClick={() => {
-    // save this week's data
     setHistory(prev => [
       ...prev,
       {
@@ -371,7 +371,6 @@ useEffect(() => {
 
     setShowSummary(false);
 
-    // check if final week
     if (week === 4) {
       setShowFinal(true);
     } else {
@@ -379,7 +378,9 @@ useEffect(() => {
     }
   }}
 >
-  Continue to Week {week + 1}
+  {week === 4
+    ? "View Final Results"
+    : `Continue to Week ${week + 1}`}
 </button>
     </div>
   </div>
@@ -428,6 +429,7 @@ useEffect(() => {
 )}
 
       </div>
+      )
 
     </div>
   );
