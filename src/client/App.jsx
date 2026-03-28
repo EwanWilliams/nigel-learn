@@ -22,6 +22,7 @@ export default function App() {
   const [spentByCategory, setSpentByCategory] = useState({});
   const [initialBudget, setInitialBudget] = useState(null);
   const [budgetLocked, setBudgetLocked] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
  
   const [grossIncome] = useState(() =>
@@ -192,6 +193,12 @@ useEffect(() => {
   );
 
   setSelectedCategory(null);
+
+  if (mailItems.length === 1) {
+  setTimeout(() => {
+    setShowSummary(true);
+  }, 300);
+}
 };
 
   const togglePhonePage = () => {
@@ -273,6 +280,7 @@ useEffect(() => {
                 setQuery={setQuery}
                 onSelect={openDetail}
                 moneyLeft={moneyLeft}
+                week={week}
               />
             )}
 
@@ -300,15 +308,46 @@ useEffect(() => {
 
         </div>
 
-        <PostPanel
-          mailItems={mailItems}
-          openMailId={openMailId}
-          onToggle={toggleMail}
-          onAction={handleEvent}
-          onNextWeek={nextWeek}   
-          week={week} 
-          isBudgetComplete={isBudgetComplete}
-        />
+        {showSummary && (
+  <div className="summaryOverlay">
+    <div className="summaryCard">
+      <h2>Week {week} Summary</h2>
+
+      <p>Total spent: £{spent.toFixed(2)}</p>
+      <p>Money remaining: £{moneyLeft.toFixed(2)}</p>
+
+      <h4>Remaining budget:</h4>
+      <ul>
+        {Object.entries(budget).map(([key, value]) => (
+          <li key={key}>
+            {key}: £{value.toFixed(2)}
+          </li>
+        ))}
+      </ul>
+
+      <button
+        onClick={() => {
+          setShowSummary(false);
+          nextWeek();
+        }}
+      >
+        Continue to Week {week + 1}
+      </button>
+    </div>
+  </div>
+)}
+
+        {!showSummary && (
+  <PostPanel
+    mailItems={mailItems}
+    openMailId={openMailId}
+    onToggle={toggleMail}
+    onAction={handleEvent}
+    onNextWeek={nextWeek}
+    week={week}
+    isBudgetComplete={isBudgetComplete}
+  />
+)}
 
       </div>
 
