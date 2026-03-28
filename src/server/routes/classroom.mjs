@@ -64,8 +64,6 @@ router.post('/new', async (req, res) => {
     try { // validate inputs
         if (checkValidUser(req.body.username) == false) {
             res.status(400).json({error: "username bad"});
-        } else if (await checkModule(req.body.moduleId) == false) {
-            res.status(400).json({error: "moduleId bad"});
         } else if (req.body.classSize > 50 || req.body.classSize < 1) {
             res.status(400).json({error: "class size bad"});
         } else { // validation passed
