@@ -4,8 +4,25 @@ import Classroom from '../models/Classroom.mjs';
 const router = express.Router();
 
 
-function generateClassCode() {
-    // generate class code
+// logic to generate valid class code and check it isn't already in use
+async function generateClassCode() {
+    const codeLength = 6;
+    const allowedChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var codeChecked = false;
+
+    while (codeChecked == false) {
+        // generate valid class code
+        var code = "";
+        for (let i = 0; i < codeLength; i++ ) {
+            code += allowedChars.charAt(Math.floor(Math.random() * allowedChars.length));
+        }
+
+        // check code isn't already in use
+        const existingCode = await Classroom.findOne({ classCode: code });
+        if (!existingCode) { codeChecked = true }
+    }
+
+    return code;
 }
 
 
@@ -24,7 +41,7 @@ function generateStudents(classSize) {
         const student = {
             studentCode: codes[i],
             mark: null,
-            completedAt: new Date(0)
+            completedAt: new Date(0) // default to unix epoch as our null state
         }
         students.push(student);
     }
