@@ -24,7 +24,8 @@ export default function App() {
   const [budgetLocked, setBudgetLocked] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [started, setStarted] = useState(false);
-
+  const [history, setHistory] = useState([]);
+  const [showFinal, setShowFinal] = useState(false);
  
   const [grossIncome] = useState(() =>
     Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
@@ -227,6 +228,7 @@ useEffect(() => {
 
   const nextWeek = () => {
   setWeek((prev) => prev + 1);
+  setSpent(0); // reset
 
   setMailItems([
     {
@@ -355,13 +357,60 @@ useEffect(() => {
       </ul>
 
       <button
-        onClick={() => {
-          setShowSummary(false);
-          nextWeek();
-        }}
-      >
-        Continue to Week {week + 1}
-      </button>
+  onClick={() => {
+    // save this week's data
+    setHistory(prev => [
+      ...prev,
+      {
+        week,
+        spent,
+        remaining: moneyLeft,
+        budget: { ...budget }
+      }
+    ]);
+
+    setShowSummary(false);
+
+    // check if final week
+    if (week === 4) {
+      setShowFinal(true);
+    } else {
+      nextWeek();
+    }
+  }}
+>
+  Continue to Week {week + 1}
+</button>
+    </div>
+  </div>
+)}
+
+{showFinal && (
+  <div className="summaryOverlay">
+    <div className="summaryCard">
+      <h2>Simulation Complete 🎉</h2>
+
+      <h3>Weekly Breakdown</h3>
+
+      {history.map((weekData) => (
+        <div key={weekData.week} style={{ marginBottom: "12px" }}>
+          <strong>Week {weekData.week}</strong>
+          <div>Spent: £{weekData.spent.toFixed(2)}</div>
+          <div>Remaining: £{weekData.remaining.toFixed(2)}</div>
+        </div>
+      ))}
+
+      <hr />
+
+      <h3>Final Result</h3>
+
+      {moneyLeft > 0 ? (
+        <p>You managed your money well ✅</p>
+      ) : (
+        <p>You ran out of money ⚠️</p>
+      )}
+
+      <p>Final balance: £{moneyLeft.toFixed(2)}</p>
     </div>
   </div>
 )}
