@@ -1,7 +1,18 @@
 import express from 'express';
 import Classroom from '../models/Classroom.mjs';
+import Module from '../models/Module.mjs';
 
 const router = express.Router();
+
+
+// UPDATE THIS FUNCTION
+// placeholder username check!!!
+function checkValidUser(username) {
+    if (username) {
+        return true;
+    }
+    return false;
+}
 
 
 // logic to generate valid class code and check it isn't already in use
@@ -50,12 +61,25 @@ function generateStudents(classSize) {
 
 
 router.post('/new', async (req, res) => {
-    try {
-        const newClassroom = {
-            classCode: generateClassCode(),
-            user: req.body.username,
-            module: req.body.moduleId,
-            students: generateStudents(req.body.classSize)
+    try { // validate inputs
+        if (checkValidUser(req.body.username) == false) {
+            res.status(400).json({error: "username bad"});
+        } else if (await checkModule(req.body.moduleId) == false) {
+            res.status(400).json({error: "moduleId bad"});
+        } else if (req.body.classSize > 50 || req.body.classSize < 1) {
+            res.status(400).json({error: "class size bad"});
+        } else { // validation passed
+            const newClassroom = {
+                classCode: await generateClassCode(),
+                user: req.body.username,
+                module: req.body.moduleId,
+                students: generateStudents(req.body.classSize)
+            }
+            const classroom = await Classroom.create(newClassroom);
+            res.status(200).json({
+                classroomId: classroom._id,
+                message: "Classroom created successfully"
+            });
         }
     } catch (err) {
         console.error("New classroom error: ", err);
