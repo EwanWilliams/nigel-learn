@@ -103,4 +103,22 @@ router.get('/:classId', async (req, res) => {
 });
 
 
+// get list of classrooms by teacher username
+router.get('/userClasses/:username', async (req, res) => {
+    try {
+        const classrooms = await Classroom.find(
+            {user: req.params.username},
+            "_id label"
+        ).exec();
+        if (!classrooms) {
+            res.status(404).json({error: "No classrooms found under username"});
+        } else {
+            res.status(200).json(classrooms);
+        }
+    } catch (err) {
+        console.error("Find classes by user error: ", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 export default router;
