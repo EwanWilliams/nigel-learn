@@ -59,6 +59,7 @@ function generateStudents(classSize) {
 }
 
 
+// create new classroom
 router.post('/new', async (req, res) => {
     try { // validate inputs
         if (checkValidUser(req.body.username) == false) {
@@ -80,6 +81,22 @@ router.post('/new', async (req, res) => {
         }
     } catch (err) {
         console.error("New classroom error: ", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+// get classroom details by id
+router.get('/:classId', async (req, res) => {
+    try {
+        const classroom = await Classroom.findById(req.params.classId);
+        if (!classroom) {
+            res.status(404).json({error: "No classroom found with that id"});
+        } else {
+            res.status(200).json(classroom);
+        }
+    } catch (err) {
+        console.error("Find class by ID error: ", err);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
