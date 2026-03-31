@@ -68,6 +68,7 @@ router.post('/new', async (req, res) => {
             res.status(400).json({error: "class size bad"});
         } else { // validation passed
             const newClassroom = {
+                label: req.body.label,
                 classCode: await generateClassCode(),
                 user: req.body.username,
                 module: req.body.moduleId,
