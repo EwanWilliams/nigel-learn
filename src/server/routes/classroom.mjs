@@ -88,7 +88,7 @@ router.post('/new', async (req, res) => {
 
 
 // get classroom details by id
-router.get('/:classId', async (req, res) => {
+router.get('/byId/:classId', async (req, res) => {
     try {
         const classroom = await Classroom.findById(req.params.classId);
         if (!classroom) {
@@ -120,5 +120,25 @@ router.get('/userClasses/:username', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+
+// get module id from class and student code
+router.get('/study/:classCode/:studentCode', async (req, res) => {
+    try {
+        const moduleId = await Classroom.findOne(
+            {classCode: req.params.classCode, students: { $elemMatch: { studentCode: req.params.studentCode } }},
+            "module"
+        ).exec();
+        if (!moduleId) {
+            res.status(404).json({error: "No module found"});
+        } else {
+            res.status(200).json({moduleId: moduleId.module});
+        }
+    } catch (err) {
+        console.error("Find module id for class error: ", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 
 export default router;
