@@ -88,13 +88,29 @@ router.post('/new', async (req, res) => {
 
 
 // get classroom details by id
-router.get('/byId/:classId', async (req, res) => {
+router.get('/:classId', async (req, res) => {
     try {
         const classroom = await Classroom.findById(req.params.classId);
         if (!classroom) {
             res.status(404).json({error: "No classroom found with that id"});
         } else {
             res.status(200).json(classroom);
+        }
+    } catch (err) {
+        console.error("Find class by ID error: ", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+// get just the list of students and marks by classId for easy mark updates
+router.get('/:classId/marks', async (req, res) => {
+    try {
+        const students = await Classroom.findById(req.params.classId, "students");
+        if (!students) {
+            res.status(404).json({error: "No classroom found with that id"});
+        } else {
+            res.status(200).json(students.students);
         }
     } catch (err) {
         console.error("Find class by ID error: ", err);
