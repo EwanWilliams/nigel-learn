@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import moduleRoutes from './routes/module.mjs';
+import classroomRoutes from './routes/classroom.mjs';
 
 
 // define server details
@@ -30,5 +31,6 @@ mongoose.connect(DB_URI).then(() => console.log("Connected to DB.")).catch(error
 
 // use API routes from route folder
 app.use('/api/module', moduleRoutes);
+app.use('/api/classroom', classroomRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

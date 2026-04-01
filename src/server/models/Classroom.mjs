@@ -24,6 +24,11 @@ const studentSchema = new mongoose.Schema({
 });
 
 const classroomSchema = new mongoose.Schema({
+    label: {
+        type: String,
+        required: true,
+        maxLength: 30
+    },
     classCode: { // classroom code rules
         type: String,
         required: true,
