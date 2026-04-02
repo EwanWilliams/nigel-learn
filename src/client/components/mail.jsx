@@ -6,12 +6,11 @@ function formatGBP(value) {
   })}`;
 }
 
-export default function MailLetterCard({ mail, open, onToggle }) {
+export default function MailLetterCard({ mail, open, onToggle, onAction, isBudgetComplete }) {
   return (
-    <button
-      type="button"
+    <div
       className={`mailPiece ${open ? "mailPieceOpen" : ""}`}
-      onClick={onToggle}
+      onClick={!open ? onToggle : undefined}
     >
       {!open ? (
         <div className="envelopeShell">
@@ -53,12 +52,18 @@ export default function MailLetterCard({ mail, open, onToggle }) {
           </div>
 
           <div className="letterActions">
-            <button className="btn primary" disabled>
-              Pay {formatGBP(mail.amount)}
-            </button>
+            <button
+  disabled={!isBudgetComplete}
+  onClick={(e) => {
+    e.stopPropagation();
+    onAction(mail.id, mail.amount);
+  }}
+>
+  Pay £{mail.amount}
+</button>
           </div>
         </div>
       )}
-    </button>
+    </div>
   );
 }
