@@ -1,4 +1,0 @@
-_PORT = 3000
-db_user = "node-server-user"
-db_password = "J5bUgHenL3tYdUba"
-db_cluster = "nigel-learn.me2whry.mongodb.net/nigel-learn?retryWrites=true&w=majority&appName=nigel-learn"
