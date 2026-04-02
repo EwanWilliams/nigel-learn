@@ -228,7 +228,7 @@ useEffect(() => {
 
   const nextWeek = () => {
   setWeek((prev) => prev + 1);
-  setSpent(0); // reset
+  setSpent(0); 
 
   setMailItems([
     {

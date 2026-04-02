@@ -7,7 +7,7 @@ export default function Payslip({ income, onAccept }) {
   const [openedFully, setOpenedFully] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
 
-  // ✅ money formatter
+  
   const formatGBP = (value) =>
     `£${Number(value).toLocaleString("en-GB", {
       minimumFractionDigits: 2,
