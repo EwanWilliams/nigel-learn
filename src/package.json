@@ -9,7 +9,6 @@
     "mongoose": "^9.2.2",
     "morgan": "^1.10.1",
     "react": "^19.2.4",
-    "react-redux": "9.2.0",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.1",
     "tailwindcss": "^4.2.1"
