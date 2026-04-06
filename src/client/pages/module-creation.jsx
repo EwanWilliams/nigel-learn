@@ -310,7 +310,7 @@ export default function ModuleCreation() {
               <label>Label: </label>
               <input
                 type="text"
-                value={weekInstance.label}
+                value={"Week " + (i + 1)}
                 onChange={(e) => {
                   const newWeek = [...week];
                   newWeek[i].label = e.target.value;
@@ -392,6 +392,39 @@ export default function ModuleCreation() {
             </div>
           ))}
           <button type="button" onClick={handleAddWeek} >Add Week</button>
+          </div>
+          <br></br>
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Label</th>
+                  {week.map((weekInstance, i) => (
+                    <th key={i}>{weekInstance.label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {mail.map((mailInstance, i) => (
+                  <tr key={i}>
+                    <td>{mailInstance.label}</td>
+                    {week.map((weekInstance, j) => (
+                      <td><input type="checkbox"></input></td>
+                    ))}
+                  </tr>
+                ))}
+                {income.map((incomeInstance, i) => (
+                  <tr key={i}>
+                    <td>{incomeInstance.label}</td>
+                  </tr>
+                ))}
+                {expense.map((expenseInstance, i) => (
+                  <tr key={i}>
+                    <td>{expenseInstance.label}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
           <br></br>
             <br></br>
