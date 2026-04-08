@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./app.css";
 
 import HomeScreen from "./screens/home_screen";
 import BudgetScreen from "./screens/budget_screen";
 import DetailScreen from "./screens/detail_screen";
 import PostPanel from "./components/post_panel";
+import Payslip from "./components/payslip";
 
 export default function App() {
 
@@ -13,17 +14,34 @@ export default function App() {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
+  const [showPayslip, setShowPayslip] = useState(true);
+  const formatCurrency = (value) => `£${value.toFixed(2)}`;
+  const [week, setWeek] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [spent, setSpent] = useState(0);
+  const [spentByCategory, setSpentByCategory] = useState({});
+  const [initialBudget, setInitialBudget] = useState(null);
+  const [budgetLocked, setBudgetLocked] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [showFinal, setShowFinal] = useState(false);
+ 
+  const [grossIncome] = useState(() =>
+    Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
+  );
 
-  const netIncome = 1270;
+  const [netIncome, setNetIncome] = useState(0);
 
+  
   const [budget, setBudget] = useState({
-    rent: 350,
-    travel: 120,
-    food: 180,
-    phone: 25,
-    subscriptions: 20,
-    savings: 150,
-    fun: 205,
+    rent: 0,
+    travel: 0,
+    food: 0,
+    phone: 0,
+    subscriptions: 0,
+    savings: 0,
+    fun: 0,
   });
 
   const changeBudget = (category, amount) => {
@@ -48,14 +66,30 @@ export default function App() {
     0
   );
 
-  const moneyLeft = netIncome - totalAllocated;
+ const leftToAllocate = Math.max(0, netIncome - totalAllocated - spent);
 
-  const accounts = useMemo(() => [
+  const isBudgetComplete = budgetLocked;
+
+  const moneyLeft = netIncome - spent;
+
+  useEffect(() => {
+  if (isBudgetComplete && !initialBudget) {
+    setInitialBudget(budget);
+  }
+}, [isBudgetComplete, budget]);
+
+useEffect(() => {
+  if (totalAllocated >= netIncome && !budgetLocked) {
+    setBudgetLocked(true);
+  }
+}, [totalAllocated, netIncome, budgetLocked]);
+
+  const [accounts, setAccounts] = useState([
     {
       id: "current",
       name: "Current Account",
       desc: "Main spending account",
-      amount: 620,
+      amount: 0,
       type: "Account",
       icon: "🏦",
       accent: "blue",
@@ -64,7 +98,7 @@ export default function App() {
       id: "savings",
       name: "Savings Account",
       desc: "Buffer & goals",
-      amount: 150,
+      amount: 0,
       type: "Account",
       icon: "💰",
       accent: "green",
@@ -83,38 +117,40 @@ export default function App() {
       id: "credit",
       name: "Credit Card",
       desc: "Borrow now, pay later",
-      amount: -80,
+      amount: 0,
       type: "Card",
       icon: "🧾",
       last4: "1934",
       accent: "amber",
     },
-  ], []);
+  ]);
 
-  const mailItems = useMemo(() => [
-    {
-      id: "mail-1",
-      subject: "Bike repair needed",
-      message: "Your bike repair will cost £60.",
-      amount: 60,
-      date: "Today",
-    },
-    {
-      id: "mail-2",
-      subject: "Rent contribution increased",
-      message: "Your rent has increased by £120.",
-      amount: 120,
-      date: "Yesterday",
-    },
-    {
-      id: "mail-3",
-      subject: "Phone screen cracked",
-      message: "Phone repair will cost £90.",
-      amount: 90,
-      date: "Mon",
-    },
-  ], []);
+ 
+  const [mailItems, setMailItems] = useState([
+  {
+    id: "mail-1",
+    subject: "Bike repair needed",
+    message: "Your bike repair will cost £60.",
+    amount: 60,
+    date: "Today",
+  },
+  {
+    id: "mail-2",
+    subject: "Rent contribution increased",
+    message: "Your rent has increased by £120.",
+    amount: 120,
+    date: "Yesterday",
+  },
+  {
+    id: "mail-3",
+    subject: "Phone screen cracked",
+    message: "Phone repair will cost £90.",
+    amount: 90,
+    date: "Mon",
+  },
+]);
 
+  
   const openDetail = (account) => {
     setSelectedAccount(account);
     setScreen("detail");
@@ -131,6 +167,42 @@ export default function App() {
     );
   };
 
+  const handleEvent = (mailId, amount) => {
+
+  if (!selectedCategory) {
+    alert("Select a category first");
+    return;
+  }
+
+  setBudget((prev) => {
+    const current = prev[selectedCategory];
+
+    if (current < amount) {
+      alert("Not enough in this category!");
+      return prev;
+    }
+
+    return {
+      ...prev,
+      [selectedCategory]: current - amount, 
+    };
+  });
+
+  setSpent((prev) => prev + amount);
+
+  setMailItems((prev) =>
+    prev.filter((mail) => mail.id !== mailId)
+  );
+
+  setSelectedCategory(null);
+
+  if (mailItems.length === 1) {
+  setTimeout(() => {
+    setShowSummary(true);
+  }, 300);
+}
+};
+
   const togglePhonePage = () => {
     setScreen("home");
 
@@ -139,9 +211,76 @@ export default function App() {
     );
   };
 
+
+  const acceptPayslip = (netPay) => {
+    setAccounts((prev) =>
+      prev.map((acc) =>
+        acc.id === "current"
+          ? { ...acc, amount: acc.amount + netPay }
+          : acc
+      )
+    );
+
+    setNetIncome(netPay);
+
+    setShowPayslip(false);
+  };
+
+  const nextWeek = () => {
+  setWeek((prev) => prev + 1);
+  setSpent(0); 
+
+  setMailItems([
+    {
+      id: "mail-" + Date.now(),
+      subject: "New weekly expense",
+      message: "You have a new cost of £75.",
+      amount: 75,
+      date: "Today",
+    },
+  ]);
+};
+ 
+
   return (
     <div className="app-container">
 
+      {!started && (
+  <div className="introOverlay">
+    <div className="introCard">
+      <h1>Welcome to Student Bank</h1>
+
+      <p>
+        You have just been paid.
+        Your goal is to manage your money across 4 weeks.
+      </p>
+
+      <ul>
+        <li>Allocate your budget wisely</li>
+        <li>Handle unexpected expenses</li>
+        <li>Avoid running out of money</li>
+      </ul>
+
+      <button
+        onClick={() => {
+          setStarted(true);
+          setShowPayslip(true);
+        }}
+      >
+        Start Simulation
+      </button>
+    </div>
+  </div>
+)}
+
+      {started && showPayslip && (
+        <Payslip
+          income={grossIncome}   
+          onAccept={acceptPayslip}
+        />
+      )}
+
+      (!!showFinal && (
       <div className="simulatorLayout">
 
         <div className="phone">
@@ -173,17 +312,20 @@ export default function App() {
                 setQuery={setQuery}
                 onSelect={openDetail}
                 moneyLeft={moneyLeft}
+                week={week}
               />
             )}
 
             {screen === "home" && phonePage === "budget" && (
               <BudgetScreen
-                netIncome={netIncome}
+                netIncome={netIncome}  
                 totalAllocated={totalAllocated}
-                moneyLeft={moneyLeft}
+                moneyLeft={leftToAllocate}
                 budgetCategoryConfig={budgetCategoryConfig}
                 budget={budget}
                 changeBudget={changeBudget}
+                selectedCategory={selectedCategory}      
+                setSelectedCategory={setSelectedCategory}
               />
             )}
 
@@ -198,13 +340,96 @@ export default function App() {
 
         </div>
 
-        <PostPanel
-          mailItems={mailItems}
-          openMailId={openMailId}
-          onToggle={toggleMail}
-        />
+        {showSummary && (
+  <div className="summaryOverlay">
+    <div className="summaryCard">
+      <h2>Week {week} Summary</h2>
+
+      <p>Total spent: £{spent.toFixed(2)}</p>
+      <p>Money remaining: £{moneyLeft.toFixed(2)}</p>
+
+      <h4>Remaining budget:</h4>
+      <ul>
+        {Object.entries(budget).map(([key, value]) => (
+          <li key={key}>
+            {key}: £{value.toFixed(2)}
+          </li>
+        ))}
+      </ul>
+
+      <button
+  onClick={() => {
+    setHistory(prev => [
+      ...prev,
+      {
+        week,
+        spent,
+        remaining: moneyLeft,
+        budget: { ...budget }
+      }
+    ]);
+
+    setShowSummary(false);
+
+    if (week === 4) {
+      setShowFinal(true);
+    } else {
+      nextWeek();
+    }
+  }}
+>
+  {week === 4
+    ? "View Final Results"
+    : `Continue to Week ${week + 1}`}
+</button>
+    </div>
+  </div>
+)}
+
+{showFinal && (
+  <div className="summaryOverlay">
+    <div className="summaryCard">
+      <h2>Simulation Complete 🎉</h2>
+
+      <h3>Weekly Breakdown</h3>
+
+      {history.map((weekData) => (
+        <div key={weekData.week} style={{ marginBottom: "12px" }}>
+          <strong>Week {weekData.week}</strong>
+          <div>Spent: £{weekData.spent.toFixed(2)}</div>
+          <div>Remaining: £{weekData.remaining.toFixed(2)}</div>
+        </div>
+      ))}
+
+      <hr />
+
+      <h3>Final Result</h3>
+
+      {moneyLeft > 0 ? (
+        <p>You managed your money well ✅</p>
+      ) : (
+        <p>You ran out of money ⚠️</p>
+      )}
+
+      <p>Final balance: £{moneyLeft.toFixed(2)}</p>
+    </div>
+  </div>
+)}
+
+        {!showSummary && (
+  <PostPanel
+    mailItems={mailItems}
+    openMailId={openMailId}
+    onToggle={toggleMail}
+    onAction={handleEvent}
+    onNextWeek={nextWeek}
+    week={week}
+    isBudgetComplete={isBudgetComplete}
+  />
+)}
 
       </div>
+      )
 
     </div>
   );

@@ -1,11 +1,12 @@
 function formatGBP(value) {
-  const sign = value < 0 ? "-" : "";
-  const abs = Math.abs(value);
-
-  return `${sign}£${abs.toLocaleString("en-GB", {
-    maximumFractionDigits: 0,
-  })}`;
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
+
 
 export default function BudgetScreen({
   netIncome,
@@ -14,25 +15,13 @@ export default function BudgetScreen({
   budgetCategoryConfig,
   budget,
   changeBudget
+  ,selectedCategory,setSelectedCategory
 }) {
 
   return (
     <div className="phoneContent">
-
-      <div className="quickRow">
-        <div className="chip">
-          Take-home pay: {formatGBP(netIncome)}
-        </div>
-
-        <div className="chip chipWarn">
-          Remaining: {formatGBP(moneyLeft)}
-        </div>
-      </div>
-
       <div className="noteCard">
-
         <div className="noteTitle">Monthly budget</div>
-
         <div className="noteText">
           Take-home pay: {formatGBP(netIncome)}
         </div>
@@ -52,18 +41,25 @@ export default function BudgetScreen({
 
         {budgetCategoryConfig.map((category) => (
 
-          <div key={category.id} className="budgetRow">
+          <div
+  key={category.id}
+  className={`budgetRow ${selectedCategory === category.id ? "active" : ""}`}
+  onClick={() => setSelectedCategory(category.id)}
+>
 
             <span>{category.label}</span>
 
             <div className="budgetControls">
 
               <button
-                className="budgetBtn"
-                onClick={() => changeBudget(category.id, -10)}
-              >
-                −
-              </button>
+  className="budgetBtn"
+  onClick={(e) => {
+    e.stopPropagation(); 
+    changeBudget(category.id, -10);
+  }}
+>
+  −
+</button>
 
               <div className="budgetInputWrapper">
 
@@ -85,7 +81,10 @@ export default function BudgetScreen({
 
               <button
                 className="budgetBtn"
-                onClick={() => changeBudget(category.id, 10)}
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  changeBudget(category.id, 10);
+                }}
               >
                 +
               </button>

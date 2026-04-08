@@ -24,7 +24,7 @@ router.post('/new', async (req, res) => {
 
 
 // find and return entire module by _id
-router.get('/:id', async (req, res) => {
+router.get('/data/:id', async (req, res) => {
     try {
         const foundModule = await Module.findById(req.params.id);
         if (!foundModule) {
@@ -34,6 +34,22 @@ router.get('/:id', async (req, res) => {
         }
     } catch (err) {
         console.error("Get module error: ", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+// return list of module titles and ids
+router.get('/list', async (req, res) => {
+    try {
+        const allModules = await Module.find({}, 'title');
+        if (!allModules) {
+            res.status(404).json({ error: "No modules found." });
+        } else {
+            res.status(200).json(allModules);
+        }
+    } catch (err) {
+        console.error("Get module list error: ", err);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

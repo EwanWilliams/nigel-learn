@@ -79,6 +79,25 @@ const weekSchema = new mongoose.Schema({
     expensePool: [expenseSchema]
 });
 
+const questionSchema = new mongoose.Schema({
+    question: {
+        type: String,
+        required: true,
+        maxLength: 100
+    },
+    options: [{
+        text: {
+            type: String,
+            required: true,
+            maxLength: 50
+        },
+        correct: {
+            type: Boolean,
+            required: true
+        }
+    }]
+});
+
 const moduleSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -90,7 +109,8 @@ const moduleSchema = new mongoose.Schema({
         required: true,
         maxLength: 1000
     },
-    weekPool: [weekSchema]
+    weekPool: [weekSchema],
+    quiz: [questionSchema]
 });
 
 const Module = mongoose.model('Modules', moduleSchema, 'Modules');

@@ -1,8 +1,10 @@
 function formatGBP(value) {
   const sign = value < 0 ? "-" : "";
   const abs = Math.abs(value);
+
   return `${sign}£${abs.toLocaleString("en-GB", {
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   })}`;
 }
 
