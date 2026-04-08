@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
 
+// Teacher landing page.
+// Note: This repo currently renders the student app by default.
+// These links assume the main app/router will later mount teacher routes.
 export default function TeacherDashboard() {
   const [username, setUsername] = useState('');
 

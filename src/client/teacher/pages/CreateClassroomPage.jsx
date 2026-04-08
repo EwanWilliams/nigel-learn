@@ -1,19 +1,24 @@
-import React, { useMemo, useState } from 'react';
-import { createClassroom, getClassroomById } from '../api.js';
+import React, { useEffect, useMemo, useState } from 'react';
+import { createClassroom, getClassroomById, listModules } from '../api.js';
 import { loadLocalNames, setLocalName } from '../localNames.js';
 
-// TODO: replace hardcoded module list with backend module API when available
-const TEMP_MODULES = [
-  { id: 'TEMP_MODULE_ID_1', name: 'Example Module 1' },
-  { id: 'TEMP_MODULE_ID_2', name: 'Example Module 2' },
-  { id: 'TEMP_MODULE_ID_3', name: 'Example Module 3' },
-];
-
-export default function CreateClassroomPage() {
-  const [username, setUsername] = useState('');
+// Creates a classroom and displays the generated student hex codes.
+// Backend endpoints used:
+// - POST /api/classroom/new
+// - GET  /api/classroom/:classId
+// - GET  /api/module/list (for module dropdown)
+// Local-only display names:
+// - stored in localStorage via localNames.js
+// - never sent to backend
+// Module list:
+// - this page loads modules via listModules() which maps to GET /api/module/list.
+export default function CreateClassroomPage({ initialUsername = '' }) {
+  const [username, setUsername] = useState(initialUsername);
   const [label, setLabel] = useState('');
-  const [moduleId, setModuleId] = useState(TEMP_MODULES[0]?.id || '');
+  const [moduleId, setModuleId] = useState('');
   const [classSize, setClassSize] = useState(10);
+  const [modules, setModules] = useState([]);
+  const [isLoadingModules, setIsLoadingModules] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -30,6 +35,34 @@ export default function CreateClassroomPage() {
       Number.isFinite(Number(classSize))
     );
   }, [username, label, moduleId, classSize]);
+
+  useEffect(() => {
+    let isActive = true;
+    setIsLoadingModules(true);
+    listModules()
+      .then((result) => {
+        if (!isActive) return;
+        const nextModules = Array.isArray(result) ? result : [];
+        setModules(nextModules);
+        if (nextModules.length > 0) {
+          setModuleId(nextModules[0]._id);
+        }
+      })
+      .catch((err) => {
+        if (!isActive) return;
+        setError(err?.message || 'Failed to load modules');
+      })
+      .finally(() => {
+        if (isActive) setIsLoadingModules(false);
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setUsername(initialUsername);
+  }, [initialUsername]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -96,14 +129,19 @@ export default function CreateClassroomPage() {
             className="teacher-select"
             value={moduleId}
             onChange={(e) => setModuleId(e.target.value)}
+            disabled={isLoadingModules || modules.length === 0}
           >
-            {TEMP_MODULES.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name} ({m.id})
+            {modules.map((m) => (
+              <option key={m._id} value={m._id}>
+                {m.title} ({m._id})
               </option>
             ))}
           </select>
         </label>
+
+        {!isLoadingModules && modules.length === 0 && (
+          <p className="teacher-hint">No modules found. Create a module first.</p>
+        )}
 
         <label className="teacher-label">
           Number of students

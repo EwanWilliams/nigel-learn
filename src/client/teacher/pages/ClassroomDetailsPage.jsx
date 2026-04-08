@@ -2,6 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { getClassroomById } from '../api.js';
 import { loadLocalNames, setLocalName } from '../localNames.js';
 
+// Fetches classroom data by classroom id and allows local-only display names.
+// Backend endpoint used:
+// - GET /api/classroom/:classId
+//
+// Display names are stored in localStorage (see localNames.js) and never sent to backend.
 export default function ClassroomDetailsPage({ initialClassId = '' }) {
   const [classId, setClassId] = useState(initialClassId);
   const [isLoading, setIsLoading] = useState(false);

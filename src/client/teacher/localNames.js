@@ -1,5 +1,9 @@
 // Local-only student display names.
+//
+// Requirement: do NOT send names to backend.
 // Storage key format: names_<classroomCode>
+// Stored value example:
+//   { "03F": "Alex", "A12": "Sam" }
 
 function storageKeyForClassCode(classCode) {
   return `names_${classCode}`;

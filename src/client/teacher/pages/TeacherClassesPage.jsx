@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { getUserClasses } from '../api.js';
 
+// Lists classrooms for a given teacher username.
+// Backend endpoint used:
+// - GET /api/classroom/userClasses/:username
+//
+// The classroom links assume the main app/router will later mount a teacher classroom-details route.
 export default function TeacherClassesPage({ initialUsername = '' }) {
   const [username, setUsername] = useState(initialUsername);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +72,11 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
               {classes.map((c) => (
                 <tr key={c._id}>
                   <td>{c.label}</td>
-                  <td className="teacher-mono">{c._id}</td>
+                  <td>
+                    <a className="teacher-link teacher-mono" href={`/teacher/classroom?id=${encodeURIComponent(c._id)}`}>
+                      {c._id}
+                    </a>
+                  </td>
                 </tr>
               ))}
             </tbody>
