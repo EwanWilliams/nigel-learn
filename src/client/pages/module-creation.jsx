@@ -17,7 +17,7 @@ export default function ModuleCreation() {
     setExpense([...expense, { label: "", category: "", amount: 0 }]);
   };
   const handleAddWeek = () => {
-    setWeek([...week, { label: "", mail: [], income: [], expenses: [] }]);
+    setWeek([...week, { label: "Week " + (week.length + 1), mail: [], income: [], expenses: [] }]);
   }
   
   const handleRemoveMail = (index) => {
@@ -45,12 +45,24 @@ export default function ModuleCreation() {
     }
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const moduleData = {
+        //title: moduleName,
+        weekPool: week
+    };
+
+    alert(JSON.stringify(moduleData, null, 2));
+
+  };
+
   return (
     <div>
         <h1>Module Creation</h1>
         <p>This is where you can create new modules for your application.</p>
 
-        <form onSubmit={null}>
+        <form onSubmit={handleSubmit}>
           <label>
             Module Name:
             <input type="text" name="moduleName" />
@@ -308,17 +320,7 @@ export default function ModuleCreation() {
             {week.map((weekInstance, i) => (
             <div key={i} style={{ marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
               <label>Label: </label>
-              <input
-                type="text"
-                value={"Week " + (i + 1)}
-                onChange={(e) => {
-                  const newWeek = [...week];
-                  newWeek[i].label = e.target.value;
-                  setWeek(newWeek);
-                }}
-                required
-                style={{ marginRight: "10px", padding: "5px" }}
-              />
+              
 
               <label>Mail: </label>
               <select
@@ -416,11 +418,17 @@ export default function ModuleCreation() {
                 {income.map((incomeInstance, i) => (
                   <tr key={i}>
                     <td>{incomeInstance.label}</td>
+                    {week.map((weekInstance, j) => (
+                      <td><input type="checkbox"></input></td>
+                    ))}
                   </tr>
                 ))}
                 {expense.map((expenseInstance, i) => (
                   <tr key={i}>
                     <td>{expenseInstance.label}</td>
+                    {week.map((weekInstance, j) => (
+                      <td><input type="checkbox"></input></td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
