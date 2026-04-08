@@ -319,62 +319,23 @@ export default function ModuleCreation() {
           <div>
             {week.map((weekInstance, i) => (
             <div key={i} style={{ marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
-              <label>Label: </label>
-              
+           
 
               <label>Mail: </label>
-              <select
-                type="string"
+              <input
+                type="date"
                 value={weekInstance.type}
                 onChange={(e) => {
-                  const newMail = [...mail];
-                  newMail[i].type = e.target.value;
-                  setMail(newMail);
+                  const newWeek = [...week];
+                  newWeek[i].dateStarting = e.target.value;
+                  setWeek(newWeek);
                 }}
                 required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               >
-                {mail.map((mailInstance, i) => (
-                  <option value={mailInstance.type}>{mailInstance.label}</option>
-                ))}
-              </select>
+              </input>
 
-              <label>Income: </label>
-              <select
-                type="string"
-                value={weekInstance.type}
-                onChange={(e) => {
-                  const newIncome = [...income];
-                  newIncome[i].type = e.target.value;
-                  setIncome(newIncome);
-                }}
-                required
-                style={{ marginRight: "10px", padding: "5px", width: "80px" }}
-              >
-                {income.map((incomeInstance, i) => (
-                  <option value={incomeInstance.type}>{incomeInstance.label}</option>
-                ))}
-              </select>
-
-
-              <label>Expenses: </label>
-              <select
-                type="string"
-                value={weekInstance.type}
-                onChange={(e) => {
-                  const newExpense = [...expense];
-                  newExpense[i].type = e.target.value;
-                  setExpense(newExpense);
-                }}
-                required
-                style={{ marginRight: "10px", padding: "5px", width: "80px" }}
-              >
-                {expense.map((expenseInstance, i) => (
-                  <option value={expenseInstance.type}>{expenseInstance.label}</option>
-                ))}
-              </select>              
-
-              {income.length > 1 && (
+              {week.length > 1 && (
                 <button 
                   type="button"
                   onClick={() => handleRemoveWeek(i)}
