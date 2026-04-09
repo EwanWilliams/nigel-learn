@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import HomeScreen from "./home_screen";
-import BudgetScreen from "./budget_screen";
-import DetailScreen from "./detail_screen";
+import HomeScreen from "../inners/home_screen";
+import BudgetScreen from "../inners/budget_screen";
+import DetailScreen from "../inners/detail_screen";
 import PostPanel from "../components/post_panel";
 import Payslip from "../components/payslip";
 
