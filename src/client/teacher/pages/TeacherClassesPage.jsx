@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getUserClasses } from '../api.js';
 
 // Lists classrooms for a given teacher username.
@@ -13,6 +14,11 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
   const [classes, setClasses] = useState([]);
 
   const canLoad = useMemo(() => username.trim().length > 0, [username]);
+
+  const linkStyle = useMemo(
+    () => ({ color: '#ffffff', textDecoration: 'underline', fontWeight: 700 }),
+    []
+  );
 
   async function load() {
     if (!canLoad || isLoading) return;
@@ -73,9 +79,13 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
                 <tr key={c._id}>
                   <td>{c.label}</td>
                   <td>
-                    <a className="teacher-link teacher-mono" href={`/teacher/classroom?id=${encodeURIComponent(c._id)}`}>
+                    <Link
+                      className="teacher-link teacher-mono"
+                      to={`/Teach/classroom?id=${encodeURIComponent(c._id)}`}
+                      style={linkStyle}
+                    >
                       {c._id}
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               ))}

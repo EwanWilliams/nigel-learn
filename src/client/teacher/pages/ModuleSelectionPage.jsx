@@ -9,6 +9,7 @@ export default function ModuleSelectionPage() {
   const [modules, setModules] = useState([]);
   const [selectedId, setSelectedId] = useState('');
   const [selectedModule, setSelectedModule] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,6 +17,25 @@ export default function ModuleSelectionPage() {
     () => modules.find((m) => m._id === selectedId) || null,
     [modules, selectedId]
   );
+
+  const filteredModules = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return modules;
+
+    return modules.filter((m) => {
+      const title = String(m?.title ?? '').toLowerCase();
+      const id = String(m?._id ?? '').toLowerCase();
+      return title.includes(q) || id.includes(q);
+    });
+  }, [modules, searchQuery]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    if (filteredModules.length === 0) return;
+    if (filteredModules.some((m) => m._id === selectedId)) return;
+
+    setSelectedId(filteredModules[0]._id);
+  }, [filteredModules, selectedId]);
 
   useEffect(() => {
     let isActive = true;
@@ -74,14 +94,29 @@ export default function ModuleSelectionPage() {
         {error && <p className="teacher-error">{error}</p>}
 
         <label className="teacher-label">
+          Search modules
+          <input
+            className="teacher-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Type to filter by title or id"
+            disabled={isLoading || modules.length === 0}
+          />
+        </label>
+
+        <p className="teacher-hint">
+          Showing {filteredModules.length} of {modules.length} modules.
+        </p>
+
+        <label className="teacher-label">
           Select a module
           <select
             className="teacher-select"
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
-            disabled={isLoading || modules.length === 0}
+            disabled={isLoading || filteredModules.length === 0}
           >
-            {modules.map((m) => (
+            {filteredModules.map((m) => (
               <option key={m._id} value={m._id}>
                 {m.title} ({m._id})
               </option>
