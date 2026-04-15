@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getClassroomById, getClassroomMarks } from '../api.mjs';
 import { loadLocalNames, setLocalName } from '../localNames.mjs';
 
@@ -8,6 +9,7 @@ import { loadLocalNames, setLocalName } from '../localNames.mjs';
 //
 // Display names are stored in localStorage (see localNames.mjs) and never sent to backend.
 export default function ClassroomDetailsPage({ initialClassId = '' }) {
+  const [searchParams] = useSearchParams();
   const [classId, setClassId] = useState(initialClassId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -61,6 +63,12 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
       setClassId(initialClassId);
     }
   }, [initialClassId]);
+
+  useEffect(() => {
+    if (initialClassId) return;
+    const fromQuery = searchParams.get('id') || '';
+    if (fromQuery) setClassId(fromQuery);
+  }, [initialClassId, searchParams]);
 
   useEffect(() => {
     if (!classroom?._id) return;

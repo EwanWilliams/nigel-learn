@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getUserClasses } from '../api.mjs';
 
 // Lists classrooms for a given teacher username.
@@ -8,10 +8,17 @@ import { getUserClasses } from '../api.mjs';
 //
 // The classroom links assume the main app/router will later mount a teacher classroom-details route.
 export default function TeacherClassesPage({ initialUsername = '' }) {
+  const [searchParams] = useSearchParams();
   const [username, setUsername] = useState(initialUsername);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [classes, setClasses] = useState([]);
+
+  useEffect(() => {
+    if (initialUsername) return;
+    const fromQuery = searchParams.get('username') || '';
+    if (fromQuery) setUsername(fromQuery);
+  }, [initialUsername, searchParams]);
 
   const canLoad = useMemo(() => username.trim().length > 0, [username]);
 
@@ -81,7 +88,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
                   <td>
                     <Link
                       className="teacher-link teacher-mono"
-                      to={`/Teach/classroom?id=${encodeURIComponent(c._id)}`}
+                      to={`/teach/classroom?id=${encodeURIComponent(c._id)}`}
                       style={linkStyle}
                     >
                       {c._id}

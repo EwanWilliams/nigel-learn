@@ -3,8 +3,12 @@ import "./app.css";
 
 import LandingPage from "./screens/landing";
 import StudyPage from "./screens/study";
-import TeachPage from "./screens/teach";
 import BuildPage from "./screens/build";
+
+import TeacherDashboard from "./teacher/pages/TeacherDashboard.jsx";
+import CreateClassroomPage from "./teacher/pages/CreateClassroomPage.jsx";
+import TeacherClassesPage from "./teacher/pages/TeacherClassesPage.jsx";
+import ClassroomDetailsPage from "./teacher/pages/ClassroomDetailsPage.jsx";
 
 export default function App() {
   return (
@@ -12,7 +16,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/study" element={<StudyPage />} />
-        <Route path="/teach" element={<TeachPage />} />
+        <Route path="/teach" element={<TeacherDashboard />} />
+        <Route path="/teach/create" element={<CreateClassroomPage />} />
+        <Route path="/teach/classes" element={<TeacherClassesPage />} />
+        <Route path="/teach/classroom" element={<ClassroomDetailsPage />} />
         <Route path="/build" element={<BuildPage />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>

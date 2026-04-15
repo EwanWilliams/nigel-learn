@@ -9,14 +9,12 @@ import { loadLocalNames, setLocalName } from '../localNames.mjs';
 // - GET  /api/module/list (for module dropdown)
 // Local-only display names:
 // - stored in localStorage via localNames.mjs
-// - never sent to backend
 // Module list:
 // - this page loads modules via listModules() which maps to GET /api/module/list.
-export default function CreateClassroomPage({ initialUsername = '' }) {
-  const [username, setUsername] = useState(initialUsername);
+export default function CreateClassroomPage() {
+  const username = 'Ms_Smith';
   const [label, setLabel] = useState('');
   const [moduleId, setModuleId] = useState('');
-  const [moduleSearch, setModuleSearch] = useState('');
   const [classSize, setClassSize] = useState(10);
   const [modules, setModules] = useState([]);
   const [isLoadingModules, setIsLoadingModules] = useState(false);
@@ -129,30 +127,18 @@ export default function CreateClassroomPage({ initialUsername = '' }) {
 
   const canSubmit = useMemo(() => {
     return (
-      username.trim().length > 0 &&
       label.trim().length > 0 &&
       moduleId.trim().length > 0 &&
       Number.isFinite(Number(classSize))
     );
-  }, [username, label, moduleId, classSize]);
-
-  const filteredModules = useMemo(() => {
-    const q = moduleSearch.trim().toLowerCase();
-    if (!q) return modules;
-
-    return modules.filter((m) => {
-      const title = String(m?.title ?? '').toLowerCase();
-      const id = String(m?._id ?? '').toLowerCase();
-      return title.includes(q) || id.includes(q);
-    });
-  }, [modules, moduleSearch]);
+  }, [label, moduleId, classSize]);
 
   useEffect(() => {
     if (!moduleId) return;
-    if (filteredModules.length === 0) return;
-    if (filteredModules.some((m) => m._id === moduleId)) return;
-    setModuleId(filteredModules[0]._id);
-  }, [filteredModules, moduleId]);
+    if (modules.length === 0) return;
+    if (modules.some((m) => m._id === moduleId)) return;
+    setModuleId(modules[0]._id);
+  }, [modules, moduleId]);
 
   useEffect(() => {
     let isActive = true;
@@ -179,10 +165,6 @@ export default function CreateClassroomPage({ initialUsername = '' }) {
     };
   }, []);
 
-  useEffect(() => {
-    setUsername(initialUsername);
-  }, [initialUsername]);
-
   async function handleSubmit(e) {
     e.preventDefault();
     if (!canSubmit || isSubmitting) return;
@@ -194,7 +176,7 @@ export default function CreateClassroomPage({ initialUsername = '' }) {
 
     try {
       const result = await createClassroom({
-        username: username.trim(),
+        username,
         label: label.trim(),
         moduleId: moduleId.trim(),
         classSize: Number(classSize),
@@ -223,16 +205,6 @@ export default function CreateClassroomPage({ initialUsername = '' }) {
 
       <form className="teacher-form" onSubmit={handleSubmit}>
         <label className="teacher-label">
-          Teacher username
-          <input
-            className="teacher-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="e.g. ms_smith"
-          />
-        </label>
-
-        <label className="teacher-label">
           Classroom label
           <input
             className="teacher-input"
@@ -243,29 +215,14 @@ export default function CreateClassroomPage({ initialUsername = '' }) {
         </label>
 
         <label className="teacher-label">
-          Search modules
-          <input
-            className="teacher-input"
-            value={moduleSearch}
-            onChange={(e) => setModuleSearch(e.target.value)}
-            placeholder="Type to filter by title or id"
-            disabled={isLoadingModules || modules.length === 0}
-          />
-        </label>
-
-        <p className="teacher-hint">
-          Showing {filteredModules.length} of {modules.length} modules.
-        </p>
-
-        <label className="teacher-label">
           Module
           <select
             className="teacher-select"
             value={moduleId}
             onChange={(e) => setModuleId(e.target.value)}
-            disabled={isLoadingModules || filteredModules.length === 0}
+            disabled={isLoadingModules || modules.length === 0}
           >
-            {filteredModules.map((m) => (
+            {modules.map((m) => (
               <option key={m._id} value={m._id}>
                 {m.title} ({m._id})
               </option>

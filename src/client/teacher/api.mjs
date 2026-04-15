@@ -4,10 +4,17 @@
 // - Classroom routes are mounted at /api/classroom
 // - Module routes are mounted at /api/module
 //
-// fetch implementation later (auth headers, retry, etc.).
+
+const DEV_API_ORIGIN = import.meta.env.DEV ? 'http://localhost:3000' : '';
+
+function withDevApiOrigin(path) {
+  if (!path) return path;
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${DEV_API_ORIGIN}${path}`;
+}
 
 async function requestJson(path, { method = 'GET', body } = {}) {
-  const res = await fetch(path, {
+  const res = await fetch(withDevApiOrigin(path), {
     method,
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
