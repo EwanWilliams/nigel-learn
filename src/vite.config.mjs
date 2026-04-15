@@ -10,7 +10,7 @@ export default defineConfig({
         strictPort: true,
         proxy: {
             '/api': {
-                target: `http://localhost:${process.env._PORT}`,
+                taget: `http://localhost:${process.env._PORT}`,
                 changeOrigin: true,
             },
         },
