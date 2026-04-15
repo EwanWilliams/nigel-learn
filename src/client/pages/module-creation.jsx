@@ -1,3 +1,4 @@
+import { set } from "mongoose";
 import React, { useState } from "react";
 import { useSelector } from 'react-redux';
 
@@ -78,9 +79,10 @@ export default function ModuleCreation() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    try {
     const moduleData = {
         title: moduleName,
         brief: brief,
@@ -115,7 +117,39 @@ export default function ModuleCreation() {
         }))
     };
 
-    alert(JSON.stringify(moduleData));
+    //alert(JSON.stringify(moduleData));
+
+    const response = await fetch(`/api/module/new`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(moduleData)
+    });
+    if (response.ok) {
+        await response.json();
+        setModuleName("");
+        setBrief("");
+        setMail([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
+        setIncome([{ label: "Income 1", category: "PAYE", amount: 0 }]);
+        setExpense([{ label: "Expense 1", category: "Rent", amount: 0 }]);
+        setWeek([{ label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
+        setQuiz([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
+        setMailChecked({});
+        setIncomeChecked({});
+        setExpenseChecked({});
+        alert("Module created successfully!");
+    }
+      else {
+        const errorData = await response.json();
+        alert("Error creating module: " + errorData.error);
+    }
+  } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload recipe. Please try again.");
+  }
+
   };
 
   return (
