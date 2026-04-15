@@ -35,6 +35,7 @@ export function mapModuleToStudyData(moduleDoc) {
     { id: "subscriptions", label: "Subscriptions" },
     { id: "savings", label: "Savings" },
     { id: "fun", label: "Fun" },
+    { id: "other", label: "Other" },
   ];
 
   const budgetCategories =
