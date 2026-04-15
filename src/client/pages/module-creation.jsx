@@ -1,6 +1,4 @@
-import { set } from "mongoose";
 import React, { useState } from "react";
-import { useSelector } from 'react-redux';
 
 export default function ModuleCreation() {
   const [mail, setMail] = useState([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
@@ -147,7 +145,7 @@ export default function ModuleCreation() {
     }
   } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload recipe. Please try again.");
+      alert("Failed to upload module. Please try again.");
   }
 
   };
@@ -186,7 +184,6 @@ export default function ModuleCreation() {
                   newMail[i].label = e.target.value;
                   setMail(newMail);
                 }}
-                defaultValue={"Mail 1"}
                 required
                 style={{ marginRight: "10px", padding: "5px" }}
               />
