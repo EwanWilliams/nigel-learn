@@ -1,13 +1,122 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import HomeScreen from "../inners/home_screen";
 import BudgetScreen from "../inners/budget_screen";
 import DetailScreen from "../inners/detail_screen";
 import PostPanel from "../components/post_panel";
 import Payslip from "../components/payslip";
+import { mapModuleToStudyData } from "../components/module_mapper";
+
+const MOCK_MODULE = {
+  title: "Student Bank",
+  brief:
+    "You have just been paid. Your goal is to manage your money across 4 weeks.",
+  weekPool: [
+    {
+      dateStarting: new Date(),
+      mailPool: [
+        {
+          label: "Bike repair",
+          type: "expense",
+          sender: "Nigel Learn",
+          date: new Date(),
+          subject: "Bike repair needed",
+          body: "Your bike repair will cost £60.",
+          amount: 60,
+        },
+        {
+          label: "Rent change",
+          type: "expense",
+          sender: "Nigel Learn",
+          date: new Date(),
+          subject: "Rent contribution increased",
+          body: "Your rent has increased by £120.",
+          amount: 120,
+        },
+        {
+          label: "Phone repair",
+          type: "expense",
+          sender: "Nigel Learn",
+          date: new Date(),
+          subject: "Phone screen cracked",
+          body: "Phone repair will cost £90.",
+          amount: 90,
+        },
+      ],
+      incomePool: [
+        {
+          label: "Monthly pay",
+          category: "paye",
+          amount: 1800,
+        },
+      ],
+      expensePool: [
+        { label: "Rent", category: "rent", amount: 0 },
+        { label: "Travel", category: "travel", amount: 0 },
+        { label: "Food", category: "food", amount: 0 },
+        { label: "Phone", category: "phone", amount: 0 },
+        { label: "Subscriptions", category: "subscriptions", amount: 0 },
+        { label: "Savings", category: "savings", amount: 0 },
+        { label: "Fun", category: "fun", amount: 0 },
+      ],
+    },
+    {
+      dateStarting: new Date(),
+      mailPool: [
+        {
+          label: "Weekly cost",
+          type: "expense",
+          sender: "Nigel Learn",
+          date: new Date(),
+          subject: "New weekly expense",
+          body: "You have a new cost of £75.",
+          amount: 75,
+        },
+      ],
+      incomePool: [],
+      expensePool: [],
+    },
+    {
+      dateStarting: new Date(),
+      mailPool: [
+        {
+          label: "Travel issue",
+          type: "expense",
+          sender: "Nigel Learn",
+          date: new Date(),
+          subject: "Travel disruption",
+          body: "A replacement train ticket will cost £45.",
+          amount: 45,
+        },
+      ],
+      incomePool: [],
+      expensePool: [],
+    },
+    {
+      dateStarting: new Date(),
+      mailPool: [
+        {
+          label: "Social plan",
+          type: "expense",
+          sender: "Nigel Learn",
+          date: new Date(),
+          subject: "Friends want to go out",
+          body: "Joining the plan will cost £35.",
+          amount: 35,
+        },
+      ],
+      incomePool: [],
+      expensePool: [],
+    },
+  ],
+  quiz: [],
+};
 
 export default function StudyPage() {
+  const [moduleData, setModuleData] = useState(null);
+  const [loadingModule, setLoadingModule] = useState(true);
+  const [moduleError, setModuleError] = useState("");
+
   const [screen, setScreen] = useState("home");
   const [phonePage, setPhonePage] = useState("home");
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -17,18 +126,17 @@ export default function StudyPage() {
   const [week, setWeek] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [spent, setSpent] = useState(0);
-  const [initialBudget, setInitialBudget] = useState(null);
   const [budgetLocked, setBudgetLocked] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [started, setStarted] = useState(false);
   const [history, setHistory] = useState([]);
   const [showFinal, setShowFinal] = useState(false);
 
-  const [grossIncome] = useState(
-    () => Math.floor(Math.random() * (2000 - 1500 + 1)) + 1500
-  );
-
+  const [grossIncome, setGrossIncome] = useState(0);
   const [netIncome, setNetIncome] = useState(0);
+  const [accounts, setAccounts] = useState([]);
+  const [mailItems, setMailItems] = useState([]);
+  const [budgetCategoryConfig, setBudgetCategoryConfig] = useState([]);
 
   const [budget, setBudget] = useState({
     rent: 0,
@@ -38,89 +146,77 @@ export default function StudyPage() {
     subscriptions: 0,
     savings: 0,
     fun: 0,
+    other: 0,
   });
 
-  const [accounts, setAccounts] = useState([
-    {
-      id: "current",
-      name: "Current Account",
-      desc: "Main spending account",
-      amount: 0,
-      type: "Account",
-      icon: "🏦",
-      accent: "blue",
-    },
-    {
-      id: "savings",
-      name: "Savings Account",
-      desc: "Buffer & goals",
-      amount: 0,
-      type: "Account",
-      icon: "💰",
-      accent: "green",
-    },
-    {
-      id: "debit",
-      name: "Debit Card",
-      desc: "Linked to Current Account",
-      amount: 0,
-      type: "Card",
-      icon: "💳",
-      last4: "4821",
-      accent: "purple",
-    },
-    {
-      id: "credit",
-      name: "Credit Card",
-      desc: "Borrow now, pay later",
-      amount: 0,
-      type: "Card",
-      icon: "🧾",
-      last4: "1934",
-      accent: "amber",
-    },
-  ]);
+  useEffect(() => {
+    async function loadModule() {
+      try {
+        setLoadingModule(true);
+        setModuleError("");
 
-  const [mailItems, setMailItems] = useState([
-    {
-      id: "mail-1",
-      subject: "Bike repair needed",
-      message: "Your bike repair will cost £60.",
-      amount: 60,
-      date: "Today",
-    },
-    {
-      id: "mail-2",
-      subject: "Rent contribution increased",
-      message: "Your rent has increased by £120.",
-      amount: 120,
-      date: "Yesterday",
-    },
-    {
-      id: "mail-3",
-      subject: "Phone screen cracked",
-      message: "Phone repair will cost £90.",
-      amount: 90,
-      date: "Mon",
-    },
-  ]);
+        const USE_MOCK = true;
+
+        if (USE_MOCK) {
+          const mapped = mapModuleToStudyData(MOCK_MODULE);
+          setModuleData(mapped);
+          return;
+        }
+
+        const MODULE_ID = "REPLACE_ME";
+        const res = await fetch(`/api/module/data/${MODULE_ID}`);
+
+        if (!res.ok) {
+          throw new Error(`Failed to load module (${res.status})`);
+        }
+
+        const rawModule = await res.json();
+        const mapped = mapModuleToStudyData(rawModule);
+        setModuleData(mapped);
+      } catch (err) {
+        console.error(err);
+        setModuleError(err.message || "Failed to load module");
+      } finally {
+        setLoadingModule(false);
+      }
+    }
+
+    loadModule();
+  }, []);
+
+  useEffect(() => {
+    if (!moduleData) return;
+
+    setGrossIncome(moduleData.grossIncome || 1800);
+    setAccounts(moduleData.startingAccounts || []);
+    setBudgetCategoryConfig(moduleData.budgetCategories || []);
+    setMailItems(moduleData.weeks?.[0]?.mailItems || []);
+  }, [moduleData]);
+
+  useEffect(() => {
+    if (!moduleData) return;
+
+    const weekData = moduleData.weeks?.[week - 1];
+    setMailItems(weekData?.mailItems || []);
+    setOpenMailId(null);
+  }, [moduleData, week]);
+
+  useEffect(() => {
+    if (netIncome > 0) {
+      const totalAllocated = Object.values(budget).reduce(
+        (sum, value) => sum + value,
+        0
+      );
+      setBudgetLocked(totalAllocated >= netIncome);
+    }
+  }, [budget, netIncome]);
 
   const changeBudget = (category, amount) => {
     setBudget((prev) => ({
       ...prev,
-      [category]: Math.max(0, prev[category] + amount),
+      [category]: Math.max(0, (prev[category] || 0) + amount),
     }));
   };
-
-  const budgetCategoryConfig = [
-    { id: "rent", label: "Rent / Board" },
-    { id: "travel", label: "Travel" },
-    { id: "food", label: "Food" },
-    { id: "phone", label: "Phone" },
-    { id: "subscriptions", label: "Subscriptions" },
-    { id: "savings", label: "Savings" },
-    { id: "fun", label: "Fun" },
-  ];
 
   const totalAllocated = Object.values(budget).reduce(
     (sum, value) => sum + value,
@@ -130,18 +226,7 @@ export default function StudyPage() {
   const leftToAllocate = Math.max(0, netIncome - totalAllocated - spent);
   const isBudgetComplete = budgetLocked;
   const moneyLeft = netIncome - spent;
-
-  useEffect(() => {
-    if (isBudgetComplete && !initialBudget) {
-      setInitialBudget(budget);
-    }
-  }, [isBudgetComplete, budget, initialBudget]);
-
-  useEffect(() => {
-    if (netIncome > 0 && totalAllocated >= netIncome && !budgetLocked) {
-      setBudgetLocked(true);
-    }
-  }, [totalAllocated, netIncome, budgetLocked]);
+  const totalWeeks = moduleData?.weeks?.length || 4;
 
   const openDetail = (account) => {
     setSelectedAccount(account);
@@ -167,7 +252,7 @@ export default function StudyPage() {
     let wasUpdated = false;
 
     setBudget((prev) => {
-      const current = prev[selectedCategory];
+      const current = prev[selectedCategory] || 0;
 
       if (current < amount) {
         alert("Not enough in this category!");
@@ -215,37 +300,53 @@ export default function StudyPage() {
   };
 
   const nextWeek = () => {
-    setWeek((prev) => prev + 1);
-    setSpent(0);
-    setOpenMailId(null);
+    const nextWeekNumber = week + 1;
 
-    setMailItems([
-      {
-        id: "mail-" + Date.now(),
-        subject: "New weekly expense",
-        message: "You have a new cost of £75.",
-        amount: 75,
-        date: "Today",
-      },
-    ]);
+    if (nextWeekNumber > totalWeeks) {
+      setShowFinal(true);
+      return;
+    }
+
+    setWeek(nextWeekNumber);
+    setSpent(0);
+    setShowSummary(false);
+    setSelectedCategory(null);
   };
+
+  if (loadingModule) {
+    return (
+      <div className="routePage">
+        <div className="routeCard">
+          <h1 className="routeSectionTitle">Loading module...</h1>
+          <p className="routeSectionText">
+            Preparing the study simulation.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (moduleError) {
+    return (
+      <div className="routePage">
+        <div className="routeCard">
+          <h1 className="routeSectionTitle">Could not load module</h1>
+          <p className="routeSectionText">{moduleError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
-      <div className="studyHeader">
-  <div className="studyHeaderInner">
-    <Link to="/" className="studyNavLink">Exit Simulation</Link>
-  </div>
-</div>
-
       {!started && (
         <div className="introOverlay">
           <div className="introCard">
-            <h1>Welcome to Student Bank</h1>
+            <h1>{moduleData?.title || "Welcome to Student Bank"}</h1>
 
             <p>
-              You have just been paid. Your goal is to manage your money across
-              4 weeks.
+              {moduleData?.brief ||
+                "You have just been paid. Your goal is to manage your money across 4 weeks."}
             </p>
 
             <ul>
@@ -276,7 +377,7 @@ export default function StudyPage() {
             <div className="screen">
               <div className="topbar">
                 <div className="topbar-title">
-                  <h2>Student Bank</h2>
+                  <h2>{moduleData?.title || "Student Bank"}</h2>
                   <span className="topbar-sub">Prototype</span>
                 </div>
 
@@ -345,16 +446,15 @@ export default function StudyPage() {
                       },
                     ]);
 
-                    setShowSummary(false);
-
-                    if (week === 4) {
+                    if (week === totalWeeks) {
+                      setShowSummary(false);
                       setShowFinal(true);
                     } else {
                       nextWeek();
                     }
                   }}
                 >
-                  {week === 4
+                  {week === totalWeeks
                     ? "View Final Results"
                     : `Continue to Week ${week + 1}`}
                 </button>
