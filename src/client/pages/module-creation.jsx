@@ -2,10 +2,16 @@ import React, { useState } from "react";
 import { useSelector } from 'react-redux';
 
 export default function ModuleCreation() {
-  const [mail, setMail] = useState([{ label: "", type: "", sender: "", date: "", subject: "", body: "", amount: 0 }]);
-  const [income, setIncome] = useState([{ label: "", category: "", amount: 0 }]);
-  const [expense, setExpense] = useState([{ label: "", category: "", amount: 0 }]);
-  const [week, setWeek] = useState([{ label: "", mail: [], income: [], expenses: [] }]);
+  const [mail, setMail] = useState([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
+  const [income, setIncome] = useState([{ label: "Income 1", category: "PAYE", amount: 0 }]);
+  const [expense, setExpense] = useState([{ label: "Expense 1", category: "Rent", amount: 0 }]);
+  const [week, setWeek] = useState([{ label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
+  const [moduleName, setModuleName] = useState("");
+  const [brief, setBrief] = useState("");
+  const [mailChecked, setMailChecked] = useState({});
+  const [incomeChecked, setIncomeChecked] = useState({});
+  const [expenseChecked, setExpenseChecked] = useState({});
+  const [quiz, setQuiz] = useState([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
 
   const handleAddMail = () => {
     setMail([...mail, { label: "", type: "", sender: "", date: "", subject: "", body: "", amount: 0 }]);
@@ -17,44 +23,99 @@ export default function ModuleCreation() {
     setExpense([...expense, { label: "", category: "", amount: 0 }]);
   };
   const handleAddWeek = () => {
-    setWeek([...week, { label: "Week " + (week.length + 1), mail: [], income: [], expenses: [] }]);
+    let newDate = "";
+    if (week.length > 0 && week[week.length - 1].dateStarting) {
+      const lastDate = new Date(week[week.length - 1].dateStarting);
+      lastDate.setDate(lastDate.getDate() + 7);
+      newDate = lastDate.toISOString().split('T')[0];
+    }
+    setWeek([...week, { label: "Week " + (week.length + 1), dateStarting: newDate, mailPool: [], incomePool: [], expensePool: [] }]);
   }
   
   const handleRemoveMail = (index) => {
-    if (mail.length > 1) {
+    if (mail.length >= 1) {
       const newMail = mail.filter((_, i) => i !== index);
       setMail(newMail);
     }
   };
   const handleRemoveIncome = (index) => {
-    if (income.length > 1) {
+    if (income.length >= 1) {
       const newIncome = income.filter((_, i) => i !== index);
       setIncome(newIncome);
     }
   };
   const handleRemoveExpense = (index) => {
-    if (expense.length > 1) {
+    if (expense.length >= 1) {
       const newExpense = expense.filter((_, i) => i !== index);
       setExpense(newExpense);
     }
   };
   const handleRemoveWeek = (index) => {
-    if (week.length > 1) {
+    if (week.length >= 1) {
       const newWeek = week.filter((_, i) => i !== index);
       setWeek(newWeek);
     }
   }
+  const handleAddQuiz = () => {
+    setQuiz([...quiz, { question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
+  };
+  const handleRemoveQuiz = (index) => {
+    if (quiz.length >= 1) {
+      const newQuiz = quiz.filter((_, i) => i !== index);
+      setQuiz(newQuiz);
+    }
+  };
+  const handleAddOption = (questionIndex) => {
+    const newQuiz = [...quiz];
+    newQuiz[questionIndex].options.push({ text: "", correct: false });
+    setQuiz(newQuiz);
+  };
+  const handleRemoveOption = (questionIndex, optionIndex) => {
+    const newQuiz = [...quiz];
+    if (newQuiz[questionIndex].options.length > 1) {
+      newQuiz[questionIndex].options = newQuiz[questionIndex].options.filter((_, i) => i !== optionIndex);
+      setQuiz(newQuiz);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const moduleData = {
-        //title: moduleName,
-        weekPool: week
+        title: moduleName,
+        brief: brief,
+        weekPool: week.map((weekInstance, i) => ({
+          dateStarting: new Date(weekInstance.dateStarting),
+          mailPool: mail.filter((mailInstance, j) => mailChecked[mailInstance.label + " - " + weekInstance.label] === true).map((mailInstance, j) => ({
+            label: mailInstance.label,
+            type: mailInstance.type,
+            sender: mailInstance.sender,
+            date: new Date(mailInstance.date),
+            subject: mailInstance.subject,
+            body: mailInstance.body,
+            amount: mailInstance.amount
+          })),
+          incomePool: income.filter((incomeInstance, j) => incomeChecked[incomeInstance.label + " - " + weekInstance.label] !== false).map((incomeInstance, j) => ({
+            label: incomeInstance.label,
+            category: incomeInstance.category,
+            amount: incomeInstance.amount
+          })),
+          expensePool: expense.filter((expenseInstance, j) => expenseChecked[expenseInstance.label + " - " + weekInstance.label] !== false).map((expenseInstance, j) => ({
+            label: expenseInstance.label,
+            category: expenseInstance.category,
+            amount: expenseInstance.amount
+          }))
+        })),
+        quiz: quiz.map((q) => ({
+          question: q.question,
+          options: q.options.map((opt) => ({
+            text: opt.text,
+            correct: opt.correct
+          }))
+        }))
     };
 
-    alert(JSON.stringify(moduleData, null, 2));
-
+    alert(JSON.stringify(moduleData));
   };
 
   return (
@@ -65,7 +126,17 @@ export default function ModuleCreation() {
         <form onSubmit={handleSubmit}>
           <label>
             Module Name:
-            <input type="text" name="moduleName" />
+            <input type="text" name="moduleName" value={moduleName} 
+            onChange={(e) => 
+              setModuleName(e.target.value)} />
+          </label>
+          <br></br>
+          <label>
+            Brief:
+            <textarea name="brief" value={brief} 
+            onChange={(e) => 
+              setBrief(e.target.value)} 
+            style={{ width: "100%", height: "150px", padding: "5px", fontFamily: "Arial, sans-serif" }} />
           </label>
           <br></br>
           <h3>Mail</h3>
@@ -81,6 +152,7 @@ export default function ModuleCreation() {
                   newMail[i].label = e.target.value;
                   setMail(newMail);
                 }}
+                defaultValue={"Mail 1"}
                 required
                 style={{ marginRight: "10px", padding: "5px" }}
               />
@@ -169,7 +241,7 @@ export default function ModuleCreation() {
               />
               
 
-              {mail.length > 1 && (
+              {mail.length >= 1 && (
                 <button 
                   type="button"
                   onClick={() => handleRemoveMail(i)}
@@ -188,7 +260,14 @@ export default function ModuleCreation() {
               )}
             </div>
           ))}
-          <button type="button" onClick={handleAddMail} >Add Mail</button>
+          <button type="button" onClick={handleAddMail} style={{
+              padding: "5px 10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer"
+            }}>Add Mail</button>
           </div>
           <br></br>
           <h3>Incomes</h3>
@@ -211,10 +290,10 @@ export default function ModuleCreation() {
               <label>Category: </label>
               <select
                 type="string"
-                value={incomeInstance.type}
+                value={incomeInstance.category}
                 onChange={(e) => {
                   const newIncome = [...income];
-                  newIncome[i].type = e.target.value;
+                  newIncome[i].category = e.target.value;
                   setIncome(newIncome);
                 }}
                 required
@@ -238,7 +317,7 @@ export default function ModuleCreation() {
               />
               
 
-              {income.length > 1 && (
+              {income.length >= 1 && (
                 <button 
                   type="button"
                   onClick={() => handleRemoveIncome(i)}
@@ -257,7 +336,14 @@ export default function ModuleCreation() {
               )}
             </div>
           ))}
-          <button type="button" onClick={handleAddIncome} >Add Income</button>
+          <button type="button" onClick={handleAddIncome} style={{
+              padding: "5px 10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer"
+            }}>Add Income</button>
           </div>
           <br></br>
           <h3>Expenses</h3>
@@ -280,10 +366,10 @@ export default function ModuleCreation() {
               <label>Category: </label>
               <select
                 type="string"
-                value={expenseInstance.type}
+                value={expenseInstance.category}
                 onChange={(e) => {
                   const newExpense = [...expense];
-                  newExpense[i].type = e.target.value;
+                  newExpense[i].category = e.target.value;
                   setExpense(newExpense);
                 }}
                 required
@@ -310,21 +396,45 @@ export default function ModuleCreation() {
                 }}
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               />
+
+              {expense.length >= 1 && (
+                <button 
+                  type="button"
+                  onClick={() => handleRemoveExpense(i)}
+                  style={{ 
+                    marginLeft: "10px", 
+                    backgroundColor: "#ff6b6b",
+                    color: "white",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "3px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Remove
+                </button>
+              )}
             </div>
           ))}
-          <button type="button" onClick={handleAddExpense} >Add Expense</button>
+          <button type="button" onClick={handleAddExpense} style={{
+              padding: "5px 10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer"
+            }}>Add Expense</button>
           </div>
             <br></br>
           <h3>Weeks</h3>
           <div>
             {week.map((weekInstance, i) => (
             <div key={i} style={{ marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
-           
 
-              <label>Mail: </label>
+              <label>Starting Date: </label>
               <input
                 type="date"
-                value={weekInstance.type}
+                value={weekInstance.dateStarting}
                 onChange={(e) => {
                   const newWeek = [...week];
                   newWeek[i].dateStarting = e.target.value;
@@ -335,7 +445,7 @@ export default function ModuleCreation() {
               >
               </input>
 
-              {week.length > 1 && (
+              {week.length >= 1 && (
                 <button 
                   type="button"
                   onClick={() => handleRemoveWeek(i)}
@@ -354,7 +464,127 @@ export default function ModuleCreation() {
               )}
             </div>
           ))}
-          <button type="button" onClick={handleAddWeek} >Add Week</button>
+          <button type="button" onClick={handleAddWeek} style={{
+              padding: "5px 10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer"
+            }}>Add Week</button>
+          </div>
+          <br></br>
+          <h3>Quiz Questions</h3>
+          <div>
+            {quiz.map((quizInstance, i) => (
+            <div key={i} style={{ marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
+              <label>Question: </label>
+              <input
+                type="text"
+                value={quizInstance.question}
+                onChange={(e) => {
+                  const newQuiz = [...quiz];
+                  newQuiz[i].question = e.target.value;
+                  setQuiz(newQuiz);
+                }}
+                required
+                style={{ marginRight: "10px", padding: "5px", width: "300px" }}
+                maxLength="100"
+              />
+              <br></br>
+              <label>Options:</label>
+              <div style={{ marginLeft: "20px", marginTop: "5px" }}>
+                {quizInstance.options.map((optionInstance, j) => (
+                  <div key={j} style={{ marginBottom: "5px" }}>
+                    <input
+                      type="text"
+                      value={optionInstance.text}
+                      onChange={(e) => {
+                        const newQuiz = [...quiz];
+                        newQuiz[i].options[j].text = e.target.value;
+                        setQuiz(newQuiz);
+                      }}
+                      placeholder={"Option " + (j + 1)}
+                      required
+                      style={{ marginRight: "10px", padding: "5px", width: "200px" }}
+                      maxLength="50"
+                    />
+                    <label style={{ marginRight: "10px" }}>
+                      <input
+                        type="checkbox"
+                        checked={optionInstance.correct}
+                        onChange={(e) => {
+                          const newQuiz = [...quiz];
+                          newQuiz[i].options[j].correct = e.target.checked;
+                          setQuiz(newQuiz);
+                        }}
+                      />
+                      Correct
+                    </label>
+                    {quizInstance.options.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveOption(i, j)}
+                        style={{
+                          backgroundColor: "#ff6b6b",
+                          color: "white",
+                          border: "none",
+                          padding: "3px 8px",
+                          borderRadius: "3px",
+                          cursor: "pointer",
+                          marginLeft: "5px"
+                        }}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAddOption(i)}
+                style={{
+                  marginLeft: "20px",
+                  marginTop: "5px",
+                  padding: "5px 10px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "3px",
+                  cursor: "pointer"
+                }}
+              >
+                Add Option
+              </button>
+              {quiz.length >= 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveQuiz(i)}
+                  style={{
+                    marginLeft: "10px",
+                    marginTop: "5px",
+                    backgroundColor: "#ff6b6b",
+                    color: "white",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "3px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Remove Question
+                </button>
+              )}
+            </div>
+            ))}
+            <button type="button" onClick={handleAddQuiz} style={{
+              padding: "5px 10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer"
+            }}>Add Quiz Question</button>
           </div>
           <br></br>
           <div>
@@ -372,7 +602,10 @@ export default function ModuleCreation() {
                   <tr key={i}>
                     <td>{mailInstance.label}</td>
                     {week.map((weekInstance, j) => (
-                      <td><input type="checkbox"></input></td>
+                      <td key={j}><input type="checkbox" name={mailInstance.label + " - " + weekInstance.label} 
+                      checked={mailChecked[mailInstance.label + " - " + weekInstance.label] === true} 
+                      onChange={(e) => setMailChecked({...mailChecked, [mailInstance.label + " - " + weekInstance.label]: e.target.checked})}>
+                      </input></td>
                     ))}
                   </tr>
                 ))}
@@ -380,7 +613,10 @@ export default function ModuleCreation() {
                   <tr key={i}>
                     <td>{incomeInstance.label}</td>
                     {week.map((weekInstance, j) => (
-                      <td><input type="checkbox"></input></td>
+                      <td key={j}><input type="checkbox" name={incomeInstance.label + " - " + weekInstance.label} 
+                      checked={incomeChecked[incomeInstance.label + " - " + weekInstance.label] !== false} 
+                      onChange={(e) => setIncomeChecked({...incomeChecked, [incomeInstance.label + " - " + weekInstance.label]: e.target.checked})}>
+                      </input></td>
                     ))}
                   </tr>
                 ))}
@@ -388,7 +624,9 @@ export default function ModuleCreation() {
                   <tr key={i}>
                     <td>{expenseInstance.label}</td>
                     {week.map((weekInstance, j) => (
-                      <td><input type="checkbox"></input></td>
+                      <td key={j}><input type="checkbox" name={expenseInstance.label + " - " + weekInstance.label} 
+                      checked={expenseChecked[expenseInstance.label + " - " + weekInstance.label] !== false} 
+                      onChange={(e) => setExpenseChecked({...expenseChecked, [expenseInstance.label + " - " + weekInstance.label]: e.target.checked})}></input></td>
                     ))}
                   </tr>
                 ))}
