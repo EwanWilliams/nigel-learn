@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { createClassroom, getClassroomById, listModules } from '../api.js';
-import { loadLocalNames, setLocalName } from '../localNames.js';
+import { createClassroom, getClassroomById, listModules } from '../api.mjs';
+import { loadLocalNames, setLocalName } from '../localNames.mjs';
 
 // Creates a classroom and displays the generated student hex codes.
 // Backend endpoints used:
@@ -8,7 +8,7 @@ import { loadLocalNames, setLocalName } from '../localNames.js';
 // - GET  /api/classroom/:classId
 // - GET  /api/module/list (for module dropdown)
 // Local-only display names:
-// - stored in localStorage via localNames.js
+// - stored in localStorage via localNames.mjs
 // - never sent to backend
 // Module list:
 // - this page loads modules via listModules() which maps to GET /api/module/list.

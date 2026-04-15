@@ -4,7 +4,6 @@
 // - Classroom routes are mounted at /api/classroom
 // - Module routes are mounted at /api/module
 //
-// This file intentionally keeps a tiny surface area so it’s easy to swap
 // fetch implementation later (auth headers, retry, etc.).
 
 async function requestJson(path, { method = 'GET', body } = {}) {

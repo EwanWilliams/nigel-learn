@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { getModuleById, listModules } from '../api.js';
+import { getModuleById, listModules } from '../api.mjs';
 
 // Module list and selection.
 // Backend endpoints used:

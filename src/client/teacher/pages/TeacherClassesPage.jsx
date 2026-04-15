@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getUserClasses } from '../api.js';
+import { getUserClasses } from '../api.mjs';
 
 // Lists classrooms for a given teacher username.
 // Backend endpoint used:
