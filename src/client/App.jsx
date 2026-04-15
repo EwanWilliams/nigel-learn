@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./app.css";
 
-import LandingPage from "./screens/landing_page";
-import StudyPage from "./screens/study_page";
-import TeachPage from "./screens/teach_page";
-import BuildPage from "./screens/build_page";
+import LandingPage from "./screens/landing";
+import StudyPage from "./screens/study";
+import TeachPage from "./screens/teach";
+import BuildPage from "./screens/build";
 
 export default function App() {
   return (
