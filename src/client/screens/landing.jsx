@@ -9,12 +9,12 @@ export default function LandingPage() {
         <h1 className="routeTitle">Budgeting simulation for the classroom</h1>
 
         <p className="routeIntro">
-          Students can join the simulation, teachers can manage classes, and
-          module creation will live in the builder.
+          Students join with a classroom code and student code. Teachers manage
+          classes, and modules are assigned through the teaching flow.
         </p>
 
         <div className="routeActions">
-          <Link to="/study" className="routeBtn routeBtnPrimary">
+          <Link to="/join" className="routeBtn routeBtnPrimary">
             Join Classroom
           </Link>
 

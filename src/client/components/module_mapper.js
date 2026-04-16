@@ -11,6 +11,10 @@ function formatMailDate(dateString) {
 }
 
 export function mapModuleToStudyData(moduleDoc) {
+  if (!moduleDoc) {
+    return null;
+  }
+
   const budgetCategoryMap = new Map();
 
   (moduleDoc.weekPool || []).forEach((week) => {
@@ -21,7 +25,12 @@ export function mapModuleToStudyData(moduleDoc) {
           label:
             expense.category === "rent"
               ? "Rent / Board"
-              : expense.category.charAt(0).toUpperCase() + expense.category.slice(1),
+              : expense.category
+                  .split("_")
+                  .map(
+                    (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                  )
+                  .join(" "),
         });
       }
     });
@@ -101,12 +110,17 @@ export function mapModuleToStudyData(moduleDoc) {
         accent: "amber",
       },
     ],
-    grossIncome: firstWeekIncome || totalIncome || 1800,
+    grossIncome:
+      firstWeekIncome > 0
+        ? firstWeekIncome
+        : totalIncome > 0
+        ? totalIncome
+        : 1800,
     weeks: (moduleDoc.weekPool || []).map((week, index) => ({
       week: index + 1,
       dateStarting: week.dateStarting,
       mailItems: (week.mailPool || []).map((mail, mailIndex) => ({
-        id: `${index + 1}-${mailIndex + 1}`,
+        id: mail._id || `${index + 1}-${mailIndex + 1}`,
         subject: mail.subject,
         message: mail.body,
         amount: mail.amount || 0,

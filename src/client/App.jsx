@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./app.css";
 
-import LandingPage from "./screens/landing_page";
-import JoinPage from "./screens/join_page";
-import StudyPage from "./screens/study_page";
-import TeachPage from "./screens/teach_page";
-import BuildPage from "./screens/build_page";
+import LandingPage from "./screens/landing";
+import JoinPage from "./screens/join";
+import StudyPage from "./screens/study";
+import TeachPage from "./screens/teach";
+import BuildPage from "./screens/build";
 
 export default function App() {
   return (
