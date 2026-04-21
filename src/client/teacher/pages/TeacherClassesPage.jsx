@@ -9,16 +9,12 @@ import { getUserClasses } from '../api.mjs';
 // The classroom links assume the main app/router will later mount a teacher classroom-details route.
 export default function TeacherClassesPage({ initialUsername = '' }) {
   const [searchParams] = useSearchParams();
-  const [username, setUsername] = useState(initialUsername);
+  const [username] = useState(
+    initialUsername || searchParams.get('username') || 'Ms_Smith'
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [classes, setClasses] = useState([]);
-
-  useEffect(() => {
-    if (initialUsername) return;
-    const fromQuery = searchParams.get('username') || '';
-    if (fromQuery) setUsername(fromQuery);
-  }, [initialUsername, searchParams]);
 
   const canLoad = useMemo(() => username.trim().length > 0, [username]);
 
@@ -43,6 +39,11 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
     }
   }
 
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="teacher-page teacher-classes">
       <h1 className="teacher-title">My Classes</h1>
@@ -54,18 +55,8 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
       </section>
 
       <section className="teacher-section">
-        <label className="teacher-label">
-          Teacher username
-          <input
-            className="teacher-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="e.g. ms_smith"
-          />
-        </label>
-
         <button className="teacher-button" onClick={load} disabled={!canLoad || isLoading}>
-          {isLoading ? 'Loading…' : 'Load classes'}
+          {isLoading ? 'Loading…' : 'Refresh classes'}
         </button>
 
         {error && <p className="teacher-error">{error}</p>}
@@ -84,6 +75,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
             <thead>
               <tr>
                 <th>Label</th>
+                <th>Completed</th>
                 <th>Open</th>
               </tr>
             </thead>
@@ -91,6 +83,11 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
               {classes.map((c) => (
                 <tr key={c._id}>
                   <td>{c.label}</td>
+                  <td>
+                    {Number.isFinite(Number(c.completed)) && Number.isFinite(Number(c.total))
+                      ? `${c.completed}/${c.total}`
+                      : '—'}
+                  </td>
                   <td>
                     <Link
                       className="teacher-link teacher-mono"
