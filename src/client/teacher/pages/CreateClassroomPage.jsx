@@ -78,7 +78,7 @@ export default function CreateClassroomPage() {
         classSize: Number(classSize),
       });
 
-      navigate(`/teach/classroom?id=${encodeURIComponent(result.classroomId)}`);
+      navigate(`/teach/classroom/${encodeURIComponent(result.classroomId)}`);
     } catch (err) {
       setError(err?.message || 'Failed to create classroom');
     } finally {

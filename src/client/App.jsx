@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./app.css";
 
 import LandingPage from "./screens/landing";
@@ -20,7 +20,8 @@ export default function App() {
         <Route path="/teach" element={<TeacherDashboard />} />
         <Route path="/teach/create" element={<CreateClassroomPage />} />
         <Route path="/teach/classes" element={<TeacherClassesPage />} />
-        <Route path="/teach/classroom" element={<ClassroomDetailsPage />} />
+        <Route path="/teach/classroom" element={<Navigate to="/teach/classes" replace />} />
+        <Route path="/teach/classroom/:id" element={<ClassroomDetailsPage />} />
         <Route path="/teach/classroom/projection" element={<ClassroomProjectionPage />} />
         <Route path="/build" element={<BuildPage />} />
         <Route path="*" element={<LandingPage />} />

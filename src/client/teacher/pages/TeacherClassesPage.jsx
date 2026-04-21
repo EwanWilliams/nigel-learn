@@ -91,7 +91,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
                   <td>
                     <Link
                       className="teacher-link teacher-mono"
-                      to={`/teach/classroom?id=${encodeURIComponent(c._id)}`}
+                      to={`/teach/classroom/${encodeURIComponent(c._id)}`}
                       style={linkStyle}
                     >
                       Open
