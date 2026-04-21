@@ -48,6 +48,12 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
       <h1 className="teacher-title">My Classes</h1>
 
       <section className="teacher-section">
+        <Link className="teacher-link" to="/teach/create" style={linkStyle}>
+          + Create a classroom
+        </Link>
+      </section>
+
+      <section className="teacher-section">
         <label className="teacher-label">
           Teacher username
           <input
@@ -68,7 +74,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
       <section className="teacher-section">
         <h2 className="teacher-subtitle">Results</h2>
         <p className="teacher-hint">
-          Each row includes the classroom id you can paste into the Classroom Details page.
+          Open a class to view students and live marks.
         </p>
 
         {classes.length === 0 ? (
@@ -78,7 +84,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
             <thead>
               <tr>
                 <th>Label</th>
-                <th>Classroom id</th>
+                <th>Open</th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +97,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
                       to={`/teach/classroom?id=${encodeURIComponent(c._id)}`}
                       style={linkStyle}
                     >
-                      {c._id}
+                      Open
                     </Link>
                   </td>
                 </tr>

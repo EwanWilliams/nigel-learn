@@ -25,6 +25,13 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
 
   const canLoad = useMemo(() => classId.trim().length > 0, [classId]);
 
+  function sanitizeFilename(input) {
+    const raw = String(input ?? '').trim();
+    const noReserved = raw.replace(/[\\/:*?"<>|]/g, '-');
+    const collapsed = noReserved.replace(/\s+/g, ' ').trim();
+    return collapsed || 'classroom';
+  }
+
   async function load() {
     if (!canLoad || isLoading) return;
     setIsLoading(true);
@@ -71,6 +78,12 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
   }, [initialClassId, searchParams]);
 
   useEffect(() => {
+    if (!canLoad) return;
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canLoad, classId]);
+
+  useEffect(() => {
     if (!classroom?._id) return;
     refreshMarks(classroom._id);
 
@@ -105,7 +118,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
       names,
       exportedAt: new Date().toISOString(),
     };
-    downloadTextFile(`names_${classroom.classCode}.json`, JSON.stringify(payload, null, 2), 'application/json');
+    downloadTextFile(`${sanitizeFilename(classroom.label)}-names.json`, JSON.stringify(payload, null, 2), 'application/json');
   }
 
   async function handleNamesFileUpload(e) {
@@ -186,23 +199,8 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
     <div className="teacher-page teacher-classroomDetails">
       <h1 className="teacher-title">Classroom Details</h1>
 
-      <section className="teacher-section teacher-load">
-        <label className="teacher-label">
-          Classroom id
-          <input
-            className="teacher-input"
-            value={classId}
-            onChange={(e) => setClassId(e.target.value)}
-            placeholder="Mongo _id (e.g. 661...)"
-          />
-        </label>
-
-        <button className="teacher-button" onClick={load} disabled={!canLoad || isLoading}>
-          {isLoading ? 'Loading…' : 'Load classroom'}
-        </button>
-
-        {error && <p className="teacher-error">{error}</p>}
-      </section>
+      {isLoading && <p className="teacher-hint">Loading classroom…</p>}
+      {error && <p className="teacher-error">{error}</p>}
 
       {classroom && (
         <section className="teacher-section teacher-details">
@@ -219,6 +217,22 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
             <div>
               <strong>Module id:</strong> <span className="teacher-mono">{classroom.module}</span>
             </div>
+          </div>
+
+          <div className="teacher-actionsList">
+            <button
+              className="teacher-button"
+              type="button"
+              onClick={() =>
+                window.open(
+                  `/teach/classroom/projection?id=${encodeURIComponent(classroom._id)}`,
+                  '_blank',
+                  'noopener,noreferrer'
+                )
+              }
+            >
+              Open projection (new tab)
+            </button>
           </div>
 
           <h3 className="teacher-subtitle">Students</h3>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { createClassroom, getClassroomById, listModules } from '../api.mjs';
-import { loadLocalNames, setLocalName } from '../localNames.mjs';
+import { useNavigate } from 'react-router-dom';
+import { createClassroom, listModules } from '../api.mjs';
 
 // Creates a classroom and displays the generated student hex codes.
 // Backend endpoints used:
@@ -13,117 +13,15 @@ import { loadLocalNames, setLocalName } from '../localNames.mjs';
 // - this page loads modules via listModules() which maps to GET /api/module/list.
 export default function CreateClassroomPage() {
   const username = 'Ms_Smith';
+  const navigate = useNavigate();
   const [label, setLabel] = useState('');
   const [moduleId, setModuleId] = useState('');
   const [classSize, setClassSize] = useState(10);
   const [modules, setModules] = useState([]);
   const [isLoadingModules, setIsLoadingModules] = useState(false);
 
-  const [nameFileError, setNameFileError] = useState('');
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  const [createdClassroomId, setCreatedClassroomId] = useState('');
-  const [classroom, setClassroom] = useState(null);
-  const [names, setNames] = useState({});
-
-  const projectionText = useMemo(() => {
-    if (!classroom) return '';
-    const lines = [];
-    lines.push(`Class code: ${classroom.classCode}`);
-    lines.push('');
-    lines.push('Student codes:');
-    for (const s of classroom.students || []) {
-      const code = s?.studentCode ?? '';
-      if (!code) continue;
-      const displayName = names[code] || '';
-      lines.push(displayName ? `${code}  -  ${displayName}` : code);
-    }
-    return lines.join('\n');
-  }, [classroom, names]);
-
-  function downloadTextFile(filename, text, mime = 'text/plain') {
-    const blob = new Blob([text], { type: `${mime};charset=utf-8` });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  function downloadNamesFile() {
-    if (!classroom) return;
-    const payload = {
-      classCode: classroom.classCode,
-      names,
-      exportedAt: new Date().toISOString(),
-    };
-    downloadTextFile(`names_${classroom.classCode}.json`, JSON.stringify(payload, null, 2), 'application/json');
-  }
-
-  async function handleNamesFileUpload(e) {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file || !classroom) return;
-
-    setNameFileError('');
-
-    try {
-      const raw = await file.text();
-
-      let imported = null;
-      try {
-        imported = JSON.parse(raw);
-      } catch {
-        imported = null;
-      }
-
-      let map = null;
-      if (imported && typeof imported === 'object' && imported.names && typeof imported.names === 'object') {
-        map = imported.names;
-      } else if (imported && typeof imported === 'object') {
-        // allow plain map JSON: { "03F": "Alex" }
-        map = imported;
-      } else {
-        // fallback: very simple CSV "studentCode,name" per line
-        const next = {};
-        const lines = raw.split(/\r?\n/);
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed) continue;
-          if (/^studentcode\s*,\s*name\s*$/i.test(trimmed)) continue;
-          const [codeRaw, ...rest] = trimmed.split(',');
-          const code = (codeRaw ?? '').trim().toUpperCase();
-          const name = rest.join(',').trim();
-          if (!code) continue;
-          if (name) next[code] = name;
-        }
-        map = next;
-      }
-
-      if (!map || typeof map !== 'object') {
-        throw new Error('Unrecognised file format. Use the exported JSON, a JSON map, or a CSV of studentCode,name.');
-      }
-
-      const classCode = classroom.classCode;
-      const safeNext = { ...names };
-      for (const [studentCode, displayName] of Object.entries(map)) {
-        const code = String(studentCode ?? '').toUpperCase().trim();
-        if (!code) continue;
-        const value = String(displayName ?? '').trim();
-        if (!value) continue;
-        safeNext[code] = value;
-        setLocalName(classCode, code, value);
-      }
-      setNames(loadLocalNames(classCode));
-    } catch (err) {
-      setNameFileError(err?.message || 'Failed to import names file');
-    }
-  }
 
   const canSubmit = useMemo(() => {
     return (
@@ -171,8 +69,6 @@ export default function CreateClassroomPage() {
 
     setIsSubmitting(true);
     setError('');
-    setClassroom(null);
-    setCreatedClassroomId('');
 
     try {
       const result = await createClassroom({
@@ -182,21 +78,12 @@ export default function CreateClassroomPage() {
         classSize: Number(classSize),
       });
 
-      setCreatedClassroomId(result.classroomId);
-
-      const fetched = await getClassroomById(result.classroomId);
-      setClassroom(fetched);
-      setNames(loadLocalNames(fetched.classCode));
+      navigate(`/teach/classroom?id=${encodeURIComponent(result.classroomId)}`);
     } catch (err) {
       setError(err?.message || 'Failed to create classroom');
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  function handleNameChange(classCode, studentCode, displayName) {
-    setLocalName(classCode, studentCode, displayName);
-    setNames(loadLocalNames(classCode));
   }
 
   return (
@@ -224,7 +111,7 @@ export default function CreateClassroomPage() {
           >
             {modules.map((m) => (
               <option key={m._id} value={m._id}>
-                {m.title} ({m._id})
+                {m.title}
               </option>
             ))}
           </select>
@@ -252,95 +139,6 @@ export default function CreateClassroomPage() {
 
         {error && <p className="teacher-error">{error}</p>}
       </form>
-
-      {createdClassroomId && (
-        <section className="teacher-section teacher-created">
-          <h2 className="teacher-subtitle">Created</h2>
-          <p>
-            Classroom id: <span className="teacher-mono">{createdClassroomId}</span>
-          </p>
-        </section>
-      )}
-
-      {classroom && (
-        <section className="teacher-section teacher-classroomSummary">
-          <h2 className="teacher-subtitle">Classroom Details</h2>
-
-          <div className="teacher-kv">
-            <div>
-              <strong>Label:</strong> {classroom.label}
-            </div>
-            <div>
-              <strong>Class code:</strong>{' '}
-              <span className="teacher-mono">{classroom.classCode}</span>
-            </div>
-            <div>
-              <strong>Module id:</strong> <span className="teacher-mono">{classroom.module}</span>
-            </div>
-          </div>
-
-          <h3 className="teacher-subtitle">Students</h3>
-          <p className="teacher-hint">
-            Student display names are stored locally in this browser only (localStorage key{' '}
-            <span className="teacher-mono">names_{classroom.classCode}</span>).
-          </p>
-
-          <div className="teacher-actionsList">
-            <button className="teacher-button" type="button" onClick={downloadNamesFile}>
-              Download names (local file)
-            </button>
-
-            <label className="teacher-label">
-              Upload names file
-              <input
-                className="teacher-input"
-                type="file"
-                accept=".json,.csv,text/csv,application/json"
-                onChange={handleNamesFileUpload}
-              />
-            </label>
-          </div>
-
-          {nameFileError && <p className="teacher-error">{nameFileError}</p>}
-
-          <table className="teacher-table">
-            <thead>
-              <tr>
-                <th>Student hex code</th>
-                <th>Display name (local only)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(classroom.students || []).map((s) => (
-                <tr key={s.studentCode}>
-                  <td className="teacher-mono">{s.studentCode}</td>
-                  <td>
-                    <input
-                      className="teacher-input"
-                      value={names[s.studentCode] || ''}
-                      onChange={(e) =>
-                        handleNameChange(classroom.classCode, s.studentCode, e.target.value)
-                      }
-                      placeholder="e.g. Alex"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <h3 className="teacher-subtitle">Projection</h3>
-          <p className="teacher-hint">
-            Copy/paste this list onto a projector or into a slide. (Names are local only.)
-          </p>
-          <textarea
-            className="teacher-input"
-            readOnly
-            value={projectionText}
-            rows={Math.min(16, Math.max(6, (classroom.students || []).length + 4))}
-          />
-        </section>
-      )}
     </div>
   );
 }
