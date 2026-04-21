@@ -39,6 +39,12 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
     return collapsed || 'classroom';
   }
 
+  function isRealCompletedDate(value) {
+    if (!value) return false;
+    const ms = new Date(value).getTime();
+    return Number.isFinite(ms) && ms > 0;
+  }
+
   async function load() {
     if (!canLoad || isLoading) return;
     setIsLoading(true);
@@ -84,7 +90,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
 
     const interval = setInterval(() => {
       refreshMarks(classroom._id);
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [classroom?._id]);
@@ -180,7 +186,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
       const code = String(m?.studentCode ?? '').toUpperCase();
       const displayName = String(names[code] ?? '');
       const mark = m?.mark == null ? '' : String(m.mark);
-      const completedAt = m?.completedAt ? new Date(m.completedAt).toISOString() : '';
+      const completedAt = isRealCompletedDate(m?.completedAt) ? new Date(m.completedAt).toISOString() : '';
       const esc = (v) => {
         const s = String(v ?? '');
         return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
@@ -208,9 +214,6 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
             <div>
               <strong>Class code:</strong>{' '}
               <span className="teacher-mono">{classroom.classCode}</span>
-            </div>
-            <div>
-              <strong>Module id:</strong> <span className="teacher-mono">{classroom.module}</span>
             </div>
           </div>
 
@@ -280,11 +283,8 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
           </table>
 
           <h3 className="teacher-subtitle">Live Marks</h3>
-          <p className="teacher-hint">
-            Updates every 5 seconds. Last updated: {lastMarksUpdate || '—'}
-          </p>
-
           <div className="teacher-actionsList">
+            <div className="teacher-hint">Last updated: {lastMarksUpdate || '—'}</div>
             <button
               className="teacher-button"
               type="button"
@@ -314,7 +314,11 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
                   <td className="teacher-mono">{m.studentCode}</td>
                   <td>{names[m.studentCode] || ''}</td>
                   <td>{m.mark ?? ''}</td>
-                  <td>{m.completedAt ? new Date(m.completedAt).toLocaleString() : ''}</td>
+                  <td>
+                    {isRealCompletedDate(m.completedAt)
+                      ? new Date(m.completedAt).toLocaleString()
+                      : 'Not completed'}
+                  </td>
                 </tr>
               ))}
             </tbody>
