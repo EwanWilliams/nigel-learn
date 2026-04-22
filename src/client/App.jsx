@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./app.css";
 
 import LandingPage from "./screens/landing";
-import JoinPage from "./screens/join";
 import StudyPage from "./screens/study";
 import TeachPage from "./screens/teach";
 import BuildPage from "./screens/build";
