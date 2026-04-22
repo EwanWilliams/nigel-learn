@@ -120,8 +120,36 @@ export default function ModuleCreation() {
         }))
       };
 
-      alert(JSON.stringify(moduleData));
-      //setBrief(JSON.stringify(moduleData));
+      // client-side validation before API submission.
+      const hasIncompleteMail = mail.some((mailInstance) =>
+        !mailInstance.label.trim() ||
+        !mailInstance.type.trim() ||
+        !mailInstance.sender.trim() ||
+        !mailInstance.date ||
+        !mailInstance.subject.trim() ||
+        !mailInstance.body.trim() ||
+        !Number.isFinite(mailInstance.amount)
+      );
+      const hasIncompleteIncome = income.some((incomeInstance) =>
+        !incomeInstance.label.trim() ||
+        !incomeInstance.category.trim() ||
+        !Number.isFinite(incomeInstance.amount)
+      );
+      const hasIncompleteExpense = expense.some((expenseInstance) =>
+        !expenseInstance.label.trim() ||
+        !expenseInstance.category.trim() ||
+        !Number.isFinite(expenseInstance.amount)
+      );
+      const hasIncompleteQuiz = quiz.some((questionInstance) =>
+        !questionInstance.question.trim() ||
+        questionInstance.options.length < 2 ||
+        questionInstance.options.some((optionInstance) => !optionInstance.text.trim())
+      );
+
+      if (!moduleData.title || !moduleData.brief || hasIncompleteMail || hasIncompleteIncome || hasIncompleteExpense || hasIncompleteQuiz) {
+        alert("Please complete all required values for module details, mail, income, expense, and quiz questions before submitting.");
+        return;
+      }
 
         // Send module payload to the backend.
       const response = await fetch('/api/module/new', {
@@ -155,7 +183,6 @@ export default function ModuleCreation() {
       }
     } catch (error) {
         // Handle unexpected network/runtime failures.
-        console.error("Upload error:", error);
         alert("Failed to upload module. Please try again.");
     } finally {
       // Always re-enable submit UI.
