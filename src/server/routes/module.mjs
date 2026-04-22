@@ -6,6 +6,7 @@ const router = express.Router();
 
 // add new user generated module to DB
 router.post('/new', async (req, res) => {
+    console.log("Received new module data: ", req.body);
     try {
         const inputData = req.body;
         // TODO perform json validation to request body before bothering the database
@@ -18,7 +19,11 @@ router.post('/new', async (req, res) => {
         }
     } catch (err) {
         console.error("New module error: ", err);
-        res.status(500).json({ error: "Internal Server Error" });
+        if (err.name === 'ValidationError' || err.name === 'CastError') {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal Server Error" });
+        }
     }
 });
 

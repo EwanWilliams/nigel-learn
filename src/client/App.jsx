@@ -5,6 +5,7 @@ import LandingPage from "./screens/landing";
 import StudyPage from "./screens/study";
 import TeachPage from "./screens/teach";
 import BuildPage from "./screens/build";
+import ModuleCreation from "./pages/module-creation.jsx";
 
 export default function App() {
   return (
@@ -13,7 +14,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/study" element={<StudyPage />} />
         <Route path="/teach" element={<TeachPage />} />
-        <Route path="/build" element={<BuildPage />} />
+        <Route path="/build" element={<ModuleCreation />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
     </BrowserRouter>

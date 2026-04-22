@@ -9,7 +9,7 @@ const mailSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['expense', 'income', 'info']
+        enum: ['Expense', 'Income', 'Info']
     },
     sender: {
         type: String,
@@ -44,7 +44,7 @@ const incomeSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['paye', 'invoice', 'casual']
+        enum: ['PAYE', 'Invoice', 'Casual']
     },
     amount: {
         type: Number,
@@ -61,7 +61,7 @@ const expenseSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['rent', 'travel', 'food', 'phone', 'subscriptions', 'savings', 'fun', 'other']
+        enum: ['Rent', 'Travel', 'Food', 'Phone', 'Subscriptions', 'Savings', 'Fun', 'Other']
     },
     amount: {
         type: Number,

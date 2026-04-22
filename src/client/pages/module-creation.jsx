@@ -11,15 +11,16 @@ export default function ModuleCreation() {
   const [incomeChecked, setIncomeChecked] = useState({});
   const [expenseChecked, setExpenseChecked] = useState({});
   const [quiz, setQuiz] = useState([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleAddMail = () => {
-    setMail([...mail, { label: "", type: "", sender: "", date: "", subject: "", body: "", amount: 0 }]);
+    setMail([...mail, { label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
   };
   const handleAddIncome = () => {
-    setIncome([...income, { label: "", category: "", amount: 0 }]);
+    setIncome([...income, { label: "", category: "PAYE", amount: 0 }]);
   };
   const handleAddExpense = () => {
-    setExpense([...expense, { label: "", category: "", amount: 0 }]);
+    setExpense([...expense, { label: "", category: "Rent", amount: 0 }]);
   };
   const handleAddWeek = () => {
     let newDate = "";
@@ -80,10 +81,12 @@ export default function ModuleCreation() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setIsUploading(true);
+
     try {
-    const moduleData = {
-        title: moduleName,
-        brief: brief,
+      const moduleData = {
+        title: moduleName.trim(),
+        brief: brief.trim(),
         weekPool: week.map((weekInstance, i) => ({
           dateStarting: new Date(weekInstance.dateStarting),
           mailPool: mail.filter((mailInstance, j) => mailChecked[mailInstance.label + " - " + weekInstance.label] === true).map((mailInstance, j) => ({
@@ -113,41 +116,43 @@ export default function ModuleCreation() {
             correct: opt.correct
           }))
         }))
-    };
+      };
 
-    //alert(JSON.stringify(moduleData));
+      alert(JSON.stringify(moduleData));
+      //setBrief(JSON.stringify(moduleData));
 
-    const response = await fetch(`/api/module/new`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(moduleData)
-    });
-    if (response.ok) {
-        await response.json();
-        setModuleName("");
-        setBrief("");
-        setMail([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
-        setIncome([{ label: "Income 1", category: "PAYE", amount: 0 }]);
-        setExpense([{ label: "Expense 1", category: "Rent", amount: 0 }]);
-        setWeek([{ label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
-        setQuiz([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
-        setMailChecked({});
-        setIncomeChecked({});
-        setExpenseChecked({});
-        alert("Module created successfully!");
+      const response = await fetch('/api/module/new', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(moduleData)
+      });
+      if (response.ok) {
+          await response.json();
+          setModuleName("");
+          setBrief("");
+          setMail([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
+          setIncome([{ label: "Income 1", category: "PAYE", amount: 0 }]);
+          setExpense([{ label: "Expense 1", category: "Rent", amount: 0 }]);
+          setWeek([{ label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
+          setQuiz([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
+          setMailChecked({});
+          setIncomeChecked({});
+          setExpenseChecked({});
+          alert("Module created successfully!");
+      }
+        else {
+          const errorData = await response.json();
+          alert("Error creating module: " + errorData.error);
+      }
+    } catch (error) {
+        console.error("Upload error:", error);
+        alert("Failed to upload module. Please try again.");
+    } finally {
+      setIsUploading(false);
     }
-      else {
-        const errorData = await response.json();
-        alert("Error creating module: " + errorData.error);
-    }
-  } catch (error) {
-      console.error("Upload error:", error);
-      alert("Failed to upload module. Please try again.");
-  }
-
   };
 
   return (
@@ -200,9 +205,9 @@ export default function ModuleCreation() {
                 required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-                <option value="info">Info</option>
+                <option value="Expense">Expense</option>
+                <option value="Income">Income</option>
+                <option value="Info">Info</option>
               </select>
 
               <label>Sender: </label>
@@ -330,9 +335,9 @@ export default function ModuleCreation() {
                 required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               >
-                <option value="paye">PAYE</option>
-                <option value="invoice">Invoice</option>
-                <option value="casual">Casual</option>
+                <option value="PAYE">PAYE</option>
+                <option value="Invoice">Invoice</option>
+                <option value="Casual">Casual</option>
               </select>
 
               <label>Amount: </label>
@@ -406,13 +411,13 @@ export default function ModuleCreation() {
                 required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               >
-                <option value="rent">Rent</option>
-                <option value="travel">Travel</option>
-                <option value="food">Food</option>
-                <option value="phone">Phone</option>
-                <option value="subscriptions">Subscriptions</option>
-                <option value="savings">Savings</option>
-                <option value="fun">Fun</option>
+                <option value="Rent">Rent</option>
+                <option value="Travel">Travel</option>
+                <option value="Food">Food</option>
+                <option value="Phone">Phone</option>
+                <option value="Subscriptions">Subscriptions</option>
+                <option value="Savings">Savings</option>
+                <option value="Fun">Fun</option>
                 <option value="other">Other</option>
               </select>
 
@@ -666,7 +671,7 @@ export default function ModuleCreation() {
           </div>
           <br></br>
             <br></br>
-            <button type="submit">Create Module</button>
+            <button type="submit" disabled={isUploading}>{isUploading ? "Creating Module..." : "Create Module"}</button>
 
         </form>
     </div>
