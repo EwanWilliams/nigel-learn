@@ -81,9 +81,11 @@ export default function ModuleCreation() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Disable submit button while request is in progress.
     setIsUploading(true);
 
     try {
+      // Build payload from current form state and weekly selections.
       const moduleData = {
         title: moduleName.trim(),
         brief: brief.trim(),
@@ -121,6 +123,7 @@ export default function ModuleCreation() {
       alert(JSON.stringify(moduleData));
       //setBrief(JSON.stringify(moduleData));
 
+        // Send module payload to the backend.
       const response = await fetch('/api/module/new', {
           method: 'POST',
           credentials: 'include',
@@ -129,6 +132,8 @@ export default function ModuleCreation() {
           },
           body: JSON.stringify(moduleData)
       });
+
+          // Reset form state when module creation succeeds.
       if (response.ok) {
           await response.json();
           setModuleName("");
@@ -144,23 +149,28 @@ export default function ModuleCreation() {
           alert("Module created successfully!");
       }
         else {
+          // Show backend validation or processing error.
           const errorData = await response.json();
           alert("Error creating module: " + errorData.error);
       }
     } catch (error) {
+        // Handle unexpected network/runtime failures.
         console.error("Upload error:", error);
         alert("Failed to upload module. Please try again.");
     } finally {
+      // Always re-enable submit UI.
       setIsUploading(false);
     }
   };
 
   return (
     <div>
+        {/* Page heading and intro */}
         <h1>Module Creation</h1>
         <p>This is where you can create new modules for your application.</p>
 
         <form onSubmit={handleSubmit}>
+          {/* Module name and brief inputs */}
           <label>
             Module Name:
             <input type="text" name="moduleName" value={moduleName} 
@@ -176,6 +186,7 @@ export default function ModuleCreation() {
             style={{ width: "100%", height: "150px", padding: "5px", fontFamily: "Arial, sans-serif" }} />
           </label>
           <br></br>
+          {/* Section for adding Mail */}
           <h3>Mail</h3>
           <div>
             {mail.map((mailInstance, i) => (
@@ -306,6 +317,7 @@ export default function ModuleCreation() {
             }}>Add Mail</button>
           </div>
           <br></br>
+          {/* Section for adding Incomes */}
           <h3>Incomes</h3>
           <div>
             {income.map((incomeInstance, i) => (
@@ -382,6 +394,7 @@ export default function ModuleCreation() {
             }}>Add Income</button>
           </div>
           <br></br>
+          {/* Section for adding Expenses */}
           <h3>Expenses</h3>
           <div>
             {expense.map((expenseInstance, i) => (
@@ -462,6 +475,7 @@ export default function ModuleCreation() {
             }}>Add Expense</button>
           </div>
             <br></br>
+          {/* Section for adding Weeks */}
           <h3>Weeks</h3>
           <div>
             {week.map((weekInstance, i) => (
@@ -510,6 +524,7 @@ export default function ModuleCreation() {
             }}>Add Week</button>
           </div>
           <br></br>
+          {/* Section for adding Quiz Questions */}
           <h3>Quiz Questions</h3>
           <div>
             {quiz.map((quizInstance, i) => (
@@ -530,6 +545,7 @@ export default function ModuleCreation() {
               <br></br>
               <label>Options:</label>
               <div style={{ marginLeft: "20px", marginTop: "5px" }}>
+                {/* Section for adding options for each quiz question */}
                 {quizInstance.options.map((optionInstance, j) => (
                   <div key={j} style={{ marginBottom: "5px" }}>
                     <input
@@ -623,6 +639,7 @@ export default function ModuleCreation() {
             }}>Add Quiz Question</button>
           </div>
           <br></br>
+          {/* Table for selecting which Mail, Income, and Expense items are associated with each week */}
           <div>
             <table>
               <thead>
@@ -671,6 +688,7 @@ export default function ModuleCreation() {
           </div>
           <br></br>
             <br></br>
+            {/* Final submit button */}
             <button type="submit" disabled={isUploading}>{isUploading ? "Creating Module..." : "Create Module"}</button>
 
         </form>
