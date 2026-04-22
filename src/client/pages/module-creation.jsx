@@ -12,6 +12,7 @@ export default function ModuleCreation() {
   const [expenseChecked, setExpenseChecked] = useState({});
   const [quiz, setQuiz] = useState([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
   const [isUploading, setIsUploading] = useState(false);
+  const [showQuizValidation, setShowQuizValidation] = useState(false);
 
   const handleAddMail = () => {
     setMail([...mail, { label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
@@ -81,6 +82,21 @@ export default function ModuleCreation() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Use native form validation to highlight missing required fields.
+    if (!e.currentTarget.checkValidity()) {
+      e.currentTarget.reportValidity();
+      return;
+    }
+
+    // Highlight quiz questions that do not have a correct option selected.
+    setShowQuizValidation(true);
+    const hasQuizWithoutCorrectAnswer = quiz.some((questionInstance) =>
+      !questionInstance.options.some((optionInstance) => optionInstance.correct)
+    );
+    if (hasQuizWithoutCorrectAnswer) {
+      return;
+    }
+
     // Disable submit button while request is in progress.
     setIsUploading(true);
 
@@ -120,37 +136,6 @@ export default function ModuleCreation() {
         }))
       };
 
-      // client-side validation before API submission.
-      const hasIncompleteMail = mail.some((mailInstance) =>
-        !mailInstance.label.trim() ||
-        !mailInstance.type.trim() ||
-        !mailInstance.sender.trim() ||
-        !mailInstance.date ||
-        !mailInstance.subject.trim() ||
-        !mailInstance.body.trim() ||
-        !Number.isFinite(mailInstance.amount)
-      );
-      const hasIncompleteIncome = income.some((incomeInstance) =>
-        !incomeInstance.label.trim() ||
-        !incomeInstance.category.trim() ||
-        !Number.isFinite(incomeInstance.amount)
-      );
-      const hasIncompleteExpense = expense.some((expenseInstance) =>
-        !expenseInstance.label.trim() ||
-        !expenseInstance.category.trim() ||
-        !Number.isFinite(expenseInstance.amount)
-      );
-      const hasIncompleteQuiz = quiz.some((questionInstance) =>
-        !questionInstance.question.trim() ||
-        questionInstance.options.length < 2 ||
-        questionInstance.options.some((optionInstance) => !optionInstance.text.trim())
-      );
-
-      if (!moduleData.title || !moduleData.brief || hasIncompleteMail || hasIncompleteIncome || hasIncompleteExpense || hasIncompleteQuiz) {
-        alert("Please complete all required values for module details, mail, income, expense, and quiz questions before submitting.");
-        return;
-      }
-
         // Send module payload to the backend.
       const response = await fetch('/api/module/new', {
           method: 'POST',
@@ -174,6 +159,7 @@ export default function ModuleCreation() {
           setMailChecked({});
           setIncomeChecked({});
           setExpenseChecked({});
+            setShowQuizValidation(false);
           alert("Module created successfully!");
       }
         else {
@@ -202,7 +188,7 @@ export default function ModuleCreation() {
             Module Name:
             <input type="text" name="moduleName" value={moduleName} 
             onChange={(e) => 
-              setModuleName(e.target.value)} />
+              setModuleName(e.target.value)} required />
           </label>
           <br></br>
           <label>
@@ -210,6 +196,7 @@ export default function ModuleCreation() {
             <textarea name="brief" value={brief} 
             onChange={(e) => 
               setBrief(e.target.value)} 
+            required
             style={{ width: "100%", height: "150px", padding: "5px", fontFamily: "Arial, sans-serif" }} />
           </label>
           <br></br>
@@ -311,6 +298,7 @@ export default function ModuleCreation() {
                   newMail[i].amount = parseFloat(e.target.value);
                   setMail(newMail);
                 }}
+                required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               />
               
@@ -388,6 +376,7 @@ export default function ModuleCreation() {
                   newIncome[i].amount = parseFloat(e.target.value);
                   setIncome(newIncome);
                 }}
+                required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               />
               
@@ -470,6 +459,7 @@ export default function ModuleCreation() {
                   newExpense[i].amount = parseFloat(e.target.value);
                   setExpense(newExpense);
                 }}
+                required
                 style={{ marginRight: "10px", padding: "5px", width: "80px" }}
               />
 
@@ -555,7 +545,7 @@ export default function ModuleCreation() {
           <h3>Quiz Questions</h3>
           <div>
             {quiz.map((quizInstance, i) => (
-            <div key={i} style={{ marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
+            <div key={i} style={{ marginBottom: "10px", padding: "10px", border: showQuizValidation && !quizInstance.options.some((optionInstance) => optionInstance.correct) ? "1px solid #d32f2f" : "1px solid #ccc", borderRadius: "4px" }}>
               <label>Question: </label>
               <input
                 type="text"
@@ -653,6 +643,11 @@ export default function ModuleCreation() {
                 >
                   Remove Question
                 </button>
+              )}
+              {showQuizValidation && !quizInstance.options.some((optionInstance) => optionInstance.correct) && (
+                <p style={{ color: "#d32f2f", marginTop: "8px", marginBottom: 0 }}>
+                  Select at least one correct option for this question.
+                </p>
               )}
             </div>
             ))}
