@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 export default function ModuleCreation() {
-  const [mail, setMail] = useState([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
-  const [income, setIncome] = useState([{ label: "Income 1", category: "PAYE", amount: 0 }]);
-  const [expense, setExpense] = useState([{ label: "Expense 1", category: "Rent", amount: 0 }]);
-  const [week, setWeek] = useState([{ label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
+  const [mail, setMail] = useState([{ label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
+  const [income, setIncome] = useState([{ label: "", category: "PAYE", amount: 0 }]);
+  const [expense, setExpense] = useState([{ label: "", category: "Rent", amount: 0 }]);
+  const [week, setWeek] = useState([{ label: "", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
   const [moduleName, setModuleName] = useState("");
   const [brief, setBrief] = useState("");
   const [mailChecked, setMailChecked] = useState({});
@@ -30,7 +30,7 @@ export default function ModuleCreation() {
       lastDate.setDate(lastDate.getDate() + 7);
       newDate = lastDate.toISOString().split('T')[0];
     }
-    setWeek([...week, { label: "Week " + (week.length + 1), dateStarting: newDate, mailPool: [], incomePool: [], expensePool: [] }]);
+    setWeek([...week, { label: "", dateStarting: newDate, mailPool: [], incomePool: [], expensePool: [] }]);
   }
   
   const handleRemoveMail = (index) => {
@@ -151,9 +151,9 @@ export default function ModuleCreation() {
           await response.json();
           setModuleName("");
           setBrief("");
-          setMail([{ label: "Mail 1", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
-          setIncome([{ label: "Income 1", category: "PAYE", amount: 0 }]);
-          setExpense([{ label: "Expense 1", category: "Rent", amount: 0 }]);
+          setMail([{ label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
+          setIncome([{ label: "", category: "PAYE", amount: 0 }]);
+          setExpense([{ label: "", category: "Rent", amount: 0 }]);
           setWeek([{ label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
           setQuiz([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
           setMailChecked({});
@@ -675,7 +675,7 @@ export default function ModuleCreation() {
               <tbody>
                 {mail.map((mailInstance, i) => (
                   <tr key={i}>
-                    <td>{mailInstance.label}</td>
+                    <td>{mailInstance.label || `Mail ${i + 1}`}</td>
                     {week.map((weekInstance, j) => (
                       <td key={j}><input type="checkbox" name={mailInstance.label + " - " + weekInstance.label} 
                       checked={mailChecked[mailInstance.label + " - " + weekInstance.label] === true} 
@@ -686,7 +686,7 @@ export default function ModuleCreation() {
                 ))}
                 {income.map((incomeInstance, i) => (
                   <tr key={i}>
-                    <td>{incomeInstance.label}</td>
+                    <td>{incomeInstance.label || `Income ${i + 1}`}</td>
                     {week.map((weekInstance, j) => (
                       <td key={j}><input type="checkbox" name={incomeInstance.label + " - " + weekInstance.label} 
                       checked={incomeChecked[incomeInstance.label + " - " + weekInstance.label] !== false} 
@@ -697,7 +697,7 @@ export default function ModuleCreation() {
                 ))}
                 {expense.map((expenseInstance, i) => (
                   <tr key={i}>
-                    <td>{expenseInstance.label}</td>
+                    <td>{expenseInstance.label || `Expense ${i + 1}`}</td>
                     {week.map((weekInstance, j) => (
                       <td key={j}><input type="checkbox" name={expenseInstance.label + " - " + weekInstance.label} 
                       checked={expenseChecked[expenseInstance.label + " - " + weekInstance.label] !== false} 
