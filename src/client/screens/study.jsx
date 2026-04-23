@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 import HomeScreen from "../inners/home_screen";
 import BudgetScreen from "../inners/budget_screen";
@@ -7,116 +8,23 @@ import PostPanel from "../components/post_panel";
 import Payslip from "../components/payslip";
 import { mapModuleToStudyData } from "../components/module_mapper";
 
-const MOCK_MODULE = {
-  title: "Student Bank",
-  brief:
-    "You have just been paid. Your goal is to manage your money across 4 weeks.",
-  weekPool: [
-    {
-      dateStarting: new Date(),
-      mailPool: [
-        {
-          label: "Bike repair",
-          type: "expense",
-          sender: "Nigel Learn",
-          date: new Date(),
-          subject: "Bike repair needed",
-          body: "Your bike repair will cost £60.",
-          amount: 60,
-        },
-        {
-          label: "Rent change",
-          type: "expense",
-          sender: "Nigel Learn",
-          date: new Date(),
-          subject: "Rent contribution increased",
-          body: "Your rent has increased by £120.",
-          amount: 120,
-        },
-        {
-          label: "Phone repair",
-          type: "expense",
-          sender: "Nigel Learn",
-          date: new Date(),
-          subject: "Phone screen cracked",
-          body: "Phone repair will cost £90.",
-          amount: 90,
-        },
-      ],
-      incomePool: [
-        {
-          label: "Monthly pay",
-          category: "paye",
-          amount: 1800,
-        },
-      ],
-      expensePool: [
-        { label: "Rent", category: "rent", amount: 0 },
-        { label: "Travel", category: "travel", amount: 0 },
-        { label: "Food", category: "food", amount: 0 },
-        { label: "Phone", category: "phone", amount: 0 },
-        { label: "Subscriptions", category: "subscriptions", amount: 0 },
-        { label: "Savings", category: "savings", amount: 0 },
-        { label: "Fun", category: "fun", amount: 0 },
-      ],
-    },
-    {
-      dateStarting: new Date(),
-      mailPool: [
-        {
-          label: "Weekly cost",
-          type: "expense",
-          sender: "Nigel Learn",
-          date: new Date(),
-          subject: "New weekly expense",
-          body: "You have a new cost of £75.",
-          amount: 75,
-        },
-      ],
-      incomePool: [],
-      expensePool: [],
-    },
-    {
-      dateStarting: new Date(),
-      mailPool: [
-        {
-          label: "Travel issue",
-          type: "expense",
-          sender: "Nigel Learn",
-          date: new Date(),
-          subject: "Travel disruption",
-          body: "A replacement train ticket will cost £45.",
-          amount: 45,
-        },
-      ],
-      incomePool: [],
-      expensePool: [],
-    },
-    {
-      dateStarting: new Date(),
-      mailPool: [
-        {
-          label: "Social plan",
-          type: "expense",
-          sender: "Nigel Learn",
-          date: new Date(),
-          subject: "Friends want to go out",
-          body: "Joining the plan will cost £35.",
-          amount: 35,
-        },
-      ],
-      incomePool: [],
-      expensePool: [],
-    },
-  ],
-  quiz: [],
-};
-
+// StudyPage controls the full student simulation flow.
+// It loads module data from the backend, manages budgeting,
+// handles mail expenses, and controls week progression.
 export default function StudyPage() {
+  const location = useLocation();
+
+  // Classroom/module info is passed in from the join flow
+  const classroomCode = location.state?.classroomCode;
+  const studentCode = location.state?.studentCode;
+  const moduleId = location.state?.moduleId;
+
+  // Backend module loading state
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(true);
   const [moduleError, setModuleError] = useState("");
 
+  // Core simulation UI state
   const [screen, setScreen] = useState("home");
   const [phonePage, setPhonePage] = useState("home");
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -132,12 +40,14 @@ export default function StudyPage() {
   const [history, setHistory] = useState([]);
   const [showFinal, setShowFinal] = useState(false);
 
+  // Simulation data derived from backend module
   const [grossIncome, setGrossIncome] = useState(0);
   const [netIncome, setNetIncome] = useState(0);
   const [accounts, setAccounts] = useState([]);
   const [mailItems, setMailItems] = useState([]);
   const [budgetCategoryConfig, setBudgetCategoryConfig] = useState([]);
 
+  // Current student budget allocations
   const [budget, setBudget] = useState({
     rent: 0,
     travel: 0,
@@ -149,30 +59,25 @@ export default function StudyPage() {
     other: 0,
   });
 
+  // Fetch module data from backend using moduleId from classroom join flow
   useEffect(() => {
     async function loadModule() {
+      if (!moduleId) return;
+
       try {
         setLoadingModule(true);
         setModuleError("");
 
-        const USE_MOCK = true;
-
-        if (USE_MOCK) {
-          const mapped = mapModuleToStudyData(MOCK_MODULE);
-          setModuleData(mapped);
-          return;
-        }
-
-        const MODULE_ID = "REPLACE_ME";
-        const res = await fetch(`/api/module/data/${MODULE_ID}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/module/data/${moduleId}`
+        );
 
         if (!res.ok) {
           throw new Error(`Failed to load module (${res.status})`);
         }
 
         const rawModule = await res.json();
-        const mapped = mapModuleToStudyData(rawModule);
-        setModuleData(mapped);
+        setModuleData(mapModuleToStudyData(rawModule));
       } catch (err) {
         console.error(err);
         setModuleError(err.message || "Failed to load module");
@@ -182,8 +87,9 @@ export default function StudyPage() {
     }
 
     loadModule();
-  }, []);
+  }, [moduleId]);
 
+  // Initialise simulation state from mapped module data
   useEffect(() => {
     if (!moduleData) return;
 
@@ -193,6 +99,7 @@ export default function StudyPage() {
     setMailItems(moduleData.weeks?.[0]?.mailItems || []);
   }, [moduleData]);
 
+  // Update mail items whenever the active week changes
   useEffect(() => {
     if (!moduleData) return;
 
@@ -201,16 +108,22 @@ export default function StudyPage() {
     setOpenMailId(null);
   }, [moduleData, week]);
 
+  // Locks the budget once the full income has been allocated.
+  // Prevents the student from reallocating after spending begins.
   useEffect(() => {
-    if (netIncome > 0) {
+    if (netIncome > 0 && !budgetLocked) {
       const totalAllocated = Object.values(budget).reduce(
         (sum, value) => sum + value,
         0
       );
-      setBudgetLocked(totalAllocated >= netIncome);
-    }
-  }, [budget, netIncome]);
 
+      if (totalAllocated >= netIncome) {
+        setBudgetLocked(true);
+      }
+    }
+  }, [budget, netIncome, budgetLocked]);
+
+  // Updates an individual budget category by a given amount
   const changeBudget = (category, amount) => {
     setBudget((prev) => ({
       ...prev,
@@ -218,76 +131,88 @@ export default function StudyPage() {
     }));
   };
 
+  // Total amount currently allocated across all budget categories
   const totalAllocated = Object.values(budget).reduce(
     (sum, value) => sum + value,
     0
   );
 
+  // Remaining money not yet allocated.
+  // Subtracting spent ensures paid expenses are not incorrectly
+  // treated as money available to reallocate.
   const leftToAllocate = Math.max(0, netIncome - totalAllocated - spent);
+
   const isBudgetComplete = budgetLocked;
   const moneyLeft = netIncome - spent;
   const totalWeeks = moduleData?.weeks?.length || 4;
 
+  // Opens account detail screen
   const openDetail = (account) => {
     setSelectedAccount(account);
     setScreen("detail");
   };
 
+  // Returns from account detail view to the home screen
   const goHome = () => {
     setSelectedAccount(null);
     setScreen("home");
   };
 
+  // Opens/closes a mail item, but only once the budget is fully allocated
   const toggleMail = (mailId) => {
     if (!isBudgetComplete) return;
     setOpenMailId((current) => (current === mailId ? null : mailId));
   };
 
+  // Handles paying a mail item (expense)
+  // - deducts from the selected category
+  // - increases total spent
+  // - removes the mail item
+  // - triggers summary when no mail remains for the week
   const handleEvent = (mailId, amount) => {
     if (!selectedCategory) {
       alert("Select a category first");
       return;
     }
 
-    let wasUpdated = false;
+    const currentAmount = budget[selectedCategory] || 0;
 
-    setBudget((prev) => {
-      const current = prev[selectedCategory] || 0;
+    if (currentAmount < amount) {
+      alert("Not enough in this category!");
+      return;
+    }
 
-      if (current < amount) {
-        alert("Not enough in this category!");
-        return prev;
-      }
-
-      wasUpdated = true;
-
-      return {
-        ...prev,
-        [selectedCategory]: current - amount,
-      };
-    });
-
-    if (!wasUpdated) return;
-
-    const remainingMailCount = mailItems.length - 1;
+    setBudget((prev) => ({
+      ...prev,
+      [selectedCategory]: (prev[selectedCategory] || 0) - amount,
+    }));
 
     setSpent((prev) => prev + amount);
-    setMailItems((prev) => prev.filter((mail) => mail.id !== mailId));
+
+    setMailItems((prev) => {
+      const updatedMailItems = prev.filter((mail) => mail.id !== mailId);
+
+      if (updatedMailItems.length === 0) {
+        setTimeout(() => {
+          setShowSummary(true);
+        }, 300);
+      }
+
+      return updatedMailItems;
+    });
+
     setSelectedCategory(null);
     setOpenMailId(null);
-
-    if (remainingMailCount === 0) {
-      setTimeout(() => {
-        setShowSummary(true);
-      }, 300);
-    }
   };
 
+  // Switches between the home and budget views inside the phone UI
   const togglePhonePage = () => {
     setScreen("home");
-    setPhonePage((current) => (current === "home" ? "budget" : "home"));
+    setPhonePage((p) => (p === "home" ? "budget" : "home"));
   };
 
+  // Accepts calculated net pay from the payslip step
+  // and deposits it into the current account
   const acceptPayslip = (netPay) => {
     setAccounts((prev) =>
       prev.map((acc) =>
@@ -299,39 +224,47 @@ export default function StudyPage() {
     setShowPayslip(false);
   };
 
+  // Moves simulation to next week or ends if there are no more weeks
   const nextWeek = () => {
-    const nextWeekNumber = week + 1;
-
-    if (nextWeekNumber > totalWeeks) {
+    if (week + 1 > totalWeeks) {
       setShowFinal(true);
       return;
     }
 
-    setWeek(nextWeekNumber);
+    setWeek((w) => w + 1);
     setSpent(0);
     setShowSummary(false);
     setSelectedCategory(null);
   };
 
+  // Block direct access unless student arrived through classroom join flow
+  if (!classroomCode || !studentCode || !moduleId) {
+    return <Navigate to="/join" replace />;
+  }
+
+  // Loading UI while module data is being fetched
   if (loadingModule) {
     return (
       <div className="routePage">
         <div className="routeCard">
-          <h1 className="routeSectionTitle">Loading module...</h1>
+          <h1 className="routeSectionTitle">Loading classroom simulation...</h1>
           <p className="routeSectionText">
-            Preparing the study simulation.
+            Preparing the module for classroom <strong>{classroomCode}</strong>.
           </p>
         </div>
       </div>
     );
   }
 
-  if (moduleError) {
+  // Error state if backend module fetch fails
+  if (moduleError || !moduleData) {
     return (
       <div className="routePage">
         <div className="routeCard">
           <h1 className="routeSectionTitle">Could not load module</h1>
-          <p className="routeSectionText">{moduleError}</p>
+          <p className="routeSectionText">
+            {moduleError || "No module data was returned."}
+          </p>
         </div>
       </div>
     );
@@ -342,26 +275,15 @@ export default function StudyPage() {
       {!started && (
         <div className="introOverlay">
           <div className="introCard">
-            <h1>{moduleData?.title || "Welcome to Student Bank"}</h1>
-
-            <p>
-              {moduleData?.brief ||
-                "You have just been paid. Your goal is to manage your money across 4 weeks."}
-            </p>
-
-            <ul>
-              <li>Allocate your budget wisely</li>
-              <li>Handle unexpected expenses</li>
-              <li>Avoid running out of money</li>
-            </ul>
-
+            <h1>{moduleData.title}</h1>
+            <p>{moduleData.brief}</p>
             <button
               onClick={() => {
                 setStarted(true);
                 setShowPayslip(true);
               }}
             >
-              Start Simulation
+              Start
             </button>
           </div>
         </div>
@@ -377,8 +299,10 @@ export default function StudyPage() {
             <div className="screen">
               <div className="topbar">
                 <div className="topbar-title">
-                  <h2>{moduleData?.title || "Student Bank"}</h2>
-                  <span className="topbar-sub">Prototype</span>
+                  <h2>{moduleData.title}</h2>
+                  <span className="topbar-sub">
+                    Classroom {classroomCode} · Student {studentCode}
+                  </span>
                 </div>
 
                 <div className="topbar-actions">
@@ -417,22 +341,23 @@ export default function StudyPage() {
             </div>
           </div>
 
+          {!showSummary && !showFinal && (
+            <PostPanel
+              mailItems={mailItems}
+              openMailId={openMailId}
+              onToggle={toggleMail}
+              onAction={handleEvent}
+              isBudgetComplete={isBudgetComplete}
+            />
+          )}
+
+          {/* Displays end of week summary before progressing */}
           {showSummary && (
             <div className="summaryOverlay">
               <div className="summaryCard">
                 <h2>Week {week} Summary</h2>
-
-                <p>Total spent: £{spent.toFixed(2)}</p>
-                <p>Money remaining: £{moneyLeft.toFixed(2)}</p>
-
-                <h4>Remaining budget:</h4>
-                <ul>
-                  {Object.entries(budget).map(([key, value]) => (
-                    <li key={key}>
-                      {key}: £{value.toFixed(2)}
-                    </li>
-                  ))}
-                </ul>
+                <p>Spent: £{spent.toFixed(2)}</p>
+                <p>Remaining: £{moneyLeft.toFixed(2)}</p>
 
                 <button
                   onClick={() => {
@@ -446,17 +371,10 @@ export default function StudyPage() {
                       },
                     ]);
 
-                    if (week === totalWeeks) {
-                      setShowSummary(false);
-                      setShowFinal(true);
-                    } else {
-                      nextWeek();
-                    }
+                    nextWeek();
                   }}
                 >
-                  {week === totalWeeks
-                    ? "View Final Results"
-                    : `Continue to Week ${week + 1}`}
+                  {week === totalWeeks ? "View Final Results" : "Continue"}
                 </button>
               </div>
             </div>
@@ -465,43 +383,10 @@ export default function StudyPage() {
           {showFinal && (
             <div className="summaryOverlay">
               <div className="summaryCard">
-                <h2>Simulation Complete 🎉</h2>
-
-                <h3>Weekly Breakdown</h3>
-
-                {history.map((weekData) => (
-                  <div key={weekData.week} style={{ marginBottom: "12px" }}>
-                    <strong>Week {weekData.week}</strong>
-                    <div>Spent: £{weekData.spent.toFixed(2)}</div>
-                    <div>Remaining: £{weekData.remaining.toFixed(2)}</div>
-                  </div>
-                ))}
-
-                <hr />
-
-                <h3>Final Result</h3>
-
-                {moneyLeft > 0 ? (
-                  <p>You managed your money well ✅</p>
-                ) : (
-                  <p>You ran out of money ⚠️</p>
-                )}
-
-                <p>Final balance: £{moneyLeft.toFixed(2)}</p>
+                <h2>Finished</h2>
+                <p>Final: £{moneyLeft.toFixed(2)}</p>
               </div>
             </div>
-          )}
-
-          {!showSummary && !showFinal && (
-            <PostPanel
-              mailItems={mailItems}
-              openMailId={openMailId}
-              onToggle={toggleMail}
-              onAction={handleEvent}
-              onNextWeek={nextWeek}
-              week={week}
-              isBudgetComplete={isBudgetComplete}
-            />
           )}
         </div>
       )}
