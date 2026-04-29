@@ -109,7 +109,7 @@ export default function ModuleCreation() {
           dateStarting: new Date(weekInstance.dateStarting),
           mailPool: mail.filter((mailInstance, j) => mailChecked[mailInstance.label + " - " + weekInstance.label] === true).map((mailInstance, j) => ({
             label: mailInstance.label,
-            type: mailInstance.type,
+            type: mailInstance.type ? mailInstance.type.toLowerCase() : mailInstance.type,
             sender: mailInstance.sender,
             date: new Date(mailInstance.date),
             subject: mailInstance.subject,
