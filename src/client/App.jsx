@@ -4,7 +4,7 @@ import "./app.css";
 import LandingPage from "./screens/landing";
 import StudyPage from "./screens/study";
 import TeachPage from "./screens/teach";
-import ModuleCreation from "./pages/module-creation.jsx";
+import ModuleCreation from "./pages/module-creation";
 
 export default function App() {
   return (
