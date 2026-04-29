@@ -9,7 +9,7 @@ const mailSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['Expense', 'Income', 'Info']
+        enum: ['expense', 'income', 'info']
     },
     sender: {
         type: String,
