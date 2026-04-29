@@ -118,12 +118,12 @@ export default function ModuleCreation() {
           })),
           incomePool: income.filter((incomeInstance, j) => incomeChecked[incomeInstance.label + " - " + weekInstance.label] !== false).map((incomeInstance, j) => ({
             label: incomeInstance.label,
-            category: incomeInstance.category,
+            category: incomeInstance.category ? incomeInstance.category.toLowerCase() : incomeInstance.category,
             amount: incomeInstance.amount
           })),
           expensePool: expense.filter((expenseInstance, j) => expenseChecked[expenseInstance.label + " - " + weekInstance.label] !== false).map((expenseInstance, j) => ({
             label: expenseInstance.label,
-            category: expenseInstance.category,
+            category: expenseInstance.category ? expenseInstance.category.toLowerCase() : expenseInstance.category,
             amount: expenseInstance.amount
           }))
         })),

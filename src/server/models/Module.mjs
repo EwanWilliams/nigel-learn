@@ -44,7 +44,7 @@ const incomeSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['PAYE', 'Invoice', 'Casual']
+        enum: ['paye', 'invoice', 'casual']
     },
     amount: {
         type: Number,
@@ -61,7 +61,7 @@ const expenseSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['Rent', 'Travel', 'Food', 'Phone', 'Subscriptions', 'Savings', 'Fun', 'Other']
+        enum: ['rent', 'travel', 'food', 'phone', 'subscriptions', 'savings', 'fun', 'other']
     },
     amount: {
         type: Number,
