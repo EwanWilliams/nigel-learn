@@ -164,7 +164,6 @@ export default function ModuleCreation() {
       }
         else {
           // Show backend validation or processing error.
-          const errorData = await response.json();
           alert("Error creating module");
       }
     } catch (error) {
