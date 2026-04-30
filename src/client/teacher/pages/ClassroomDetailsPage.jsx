@@ -205,8 +205,6 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
 
       {classroom && (
         <section className="teacher-section teacher-details">
-          <h2 className="teacher-subtitle">Summary</h2>
-
           <div className="teacher-kv">
             <div>
               <strong>Label:</strong> {classroom.label}
@@ -229,18 +227,18 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
                 )
               }
             >
-              Open projection (new tab)
+              Display codes to students
             </button>
           </div>
 
           <h3 className="teacher-subtitle">Students</h3>
           <p className="teacher-hint">
-            Display names are stored locally only and are never sent to the backend.
+            Names you enter here are saved in this browser only.
           </p>
 
           <div className="teacher-actionsList">
             <button className="teacher-button" type="button" onClick={downloadNamesFile}>
-              Download names (local file)
+              Download names file
             </button>
 
             <label className="teacher-label">
@@ -260,7 +258,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
             <thead>
               <tr>
                 <th>Student hex code</th>
-                <th>Display name (local only)</th>
+                <th>Display name</th>
               </tr>
             </thead>
             <tbody>
@@ -303,7 +301,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
             <thead>
               <tr>
                 <th>Student code</th>
-                <th>Name (local)</th>
+                <th>Name</th>
                 <th>Mark</th>
                 <th>Completed</th>
               </tr>
