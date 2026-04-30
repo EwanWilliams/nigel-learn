@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getUserClasses } from '../api.mjs';
 
 // Lists classrooms for a given teacher username.
@@ -8,6 +8,7 @@ import { getUserClasses } from '../api.mjs';
 //
 // The classroom links assume the main app/router will later mount a teacher classroom-details route.
 export default function TeacherClassesPage({ initialUsername = '' }) {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [username] = useState(
     initialUsername || searchParams.get('username') || 'Ms_Smith'
@@ -17,11 +18,6 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
   const [classes, setClasses] = useState([]);
 
   const canLoad = useMemo(() => username.trim().length > 0, [username]);
-
-  const linkStyle = useMemo(
-    () => ({ color: '#ffffff', textDecoration: 'underline', fontWeight: 700 }),
-    []
-  );
 
   async function load() {
     if (!canLoad || isLoading) return;
@@ -49,21 +45,21 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
       <h1 className="teacher-title">My Classes</h1>
 
       <section className="teacher-section">
-        <Link className="teacher-link" to="/teach/create" style={linkStyle}>
+        <button
+          className="teacher-button"
+          type="button"
+          onClick={() => navigate('/teach/create')}
+        >
           + Create a classroom
-        </Link>
+        </button>
       </section>
 
       <section className="teacher-section">
-        <button className="teacher-button" onClick={load} disabled={!canLoad || isLoading}>
-          {isLoading ? 'Loading…' : 'Refresh classes'}
-        </button>
-
+        {isLoading && <p className="teacher-hint">Loading…</p>}
         {error && <p className="teacher-error">{error}</p>}
       </section>
 
       <section className="teacher-section">
-        <h2 className="teacher-subtitle">Results</h2>
         <p className="teacher-hint">
           Open a class to view students and live marks.
         </p>
@@ -89,13 +85,15 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
                       : '—'}
                   </td>
                   <td>
-                    <Link
-                      className="teacher-link teacher-mono"
-                      to={`/teach/classroom/${encodeURIComponent(c._id)}`}
-                      style={linkStyle}
+                    <button
+                      className="teacher-button"
+                      type="button"
+                      onClick={() =>
+                        navigate(`/teach/classroom/${encodeURIComponent(c._id)}`)
+                      }
                     >
                       Open
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               ))}
