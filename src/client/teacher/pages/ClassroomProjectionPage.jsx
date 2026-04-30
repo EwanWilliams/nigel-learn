@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getClassroomById } from '../api.mjs';
+import { loadLocalNames } from '../localNames.mjs';
 
 export default function ClassroomProjectionPage() {
   const [searchParams] = useSearchParams();
@@ -9,6 +10,7 @@ export default function ClassroomProjectionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [classroom, setClassroom] = useState(null);
+  const [names, setNames] = useState({});
 
   useEffect(() => {
     let isActive = true;
@@ -21,10 +23,12 @@ export default function ClassroomProjectionPage() {
       .then((fetched) => {
         if (!isActive) return;
         setClassroom(fetched);
+        setNames(loadLocalNames(fetched.classCode));
       })
       .catch((err) => {
         if (!isActive) return;
         setClassroom(null);
+        setNames({});
         setError(err?.message || 'Failed to load classroom');
       })
       .finally(() => {
@@ -55,7 +59,10 @@ export default function ClassroomProjectionPage() {
                 .filter(Boolean)
                 .map((code) => (
                   <li key={code} className="teacher-mono">
-                    {code}
+                    <span>{code}</span>
+                    {String(names[code] ?? '').trim() ? (
+                      <span style={{ fontFamily: 'inherit' }}>: {String(names[code]).trim()}</span>
+                    ) : null}
                   </li>
                 ))}
             </ul>
