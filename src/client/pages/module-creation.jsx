@@ -107,7 +107,7 @@ export default function ModuleCreation() {
         brief: brief.trim(),
         weekPool: week.map((weekInstance, i) => ({
           dateStarting: new Date(weekInstance.dateStarting),
-          mailPool: mail.filter((mailInstance, j) => mailChecked[mailInstance.label + " - " + weekInstance.label] === true).map((mailInstance, j) => ({
+          mailPool: mail.filter((mailInstance, j) => mailChecked[j + " - " + i] === true).map((mailInstance, j) => ({
             label: mailInstance.label,
             type: mailInstance.type ? mailInstance.type.toLowerCase() : mailInstance.type,
             sender: mailInstance.sender,
@@ -116,12 +116,12 @@ export default function ModuleCreation() {
             body: mailInstance.body,
             amount: mailInstance.amount
           })),
-          incomePool: income.filter((incomeInstance, j) => incomeChecked[incomeInstance.label + " - " + weekInstance.label] !== false).map((incomeInstance, j) => ({
+          incomePool: income.filter((incomeInstance, j) => incomeChecked[j + " - " + i] !== false).map((incomeInstance, j) => ({
             label: incomeInstance.label,
             category: incomeInstance.category ? incomeInstance.category.toLowerCase() : incomeInstance.category,
             amount: incomeInstance.amount
           })),
-          expensePool: expense.filter((expenseInstance, j) => expenseChecked[expenseInstance.label + " - " + weekInstance.label] !== false).map((expenseInstance, j) => ({
+          expensePool: expense.filter((expenseInstance, j) => expenseChecked[j + " - " + i] !== false).map((expenseInstance, j) => ({
             label: expenseInstance.label,
             category: expenseInstance.category ? expenseInstance.category.toLowerCase() : expenseInstance.category,
             amount: expenseInstance.amount
@@ -138,12 +138,11 @@ export default function ModuleCreation() {
 
         // Send module payload to the backend.
       const response = await fetch('/api/module/new', {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(moduleData)
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(moduleData)
       });
 
           // Reset form state when module creation succeeds.
@@ -167,8 +166,7 @@ export default function ModuleCreation() {
           alert("Error creating module");
       }
     } catch (error) {
-        // Handle unexpected network/runtime failures.
-        alert("Failed to upload module. Please try again.");
+      alert("Failed to upload module. Please try again.");
     } finally {
       // Always re-enable submit UI.
       setIsUploading(false);
@@ -676,9 +674,9 @@ export default function ModuleCreation() {
                   <tr key={i}>
                     <td>{mailInstance.label || `Mail ${i + 1}`}</td>
                     {week.map((weekInstance, j) => (
-                      <td key={j}><input type="checkbox" name={mailInstance.label + " - " + weekInstance.label} 
-                      checked={mailChecked[mailInstance.label + " - " + weekInstance.label] === true} 
-                      onChange={(e) => setMailChecked({...mailChecked, [mailInstance.label + " - " + weekInstance.label]: e.target.checked})}>
+                      <td key={j}><input type="checkbox" name={i + " - " + j} 
+                      checked={mailChecked[i + " - " + j] === true} 
+                      onChange={(e) => setMailChecked({...mailChecked, [i + " - " + j]: e.target.checked})}>
                       </input></td>
                     ))}
                   </tr>
@@ -687,9 +685,9 @@ export default function ModuleCreation() {
                   <tr key={i}>
                     <td>{incomeInstance.label || `Income ${i + 1}`}</td>
                     {week.map((weekInstance, j) => (
-                      <td key={j}><input type="checkbox" name={incomeInstance.label + " - " + weekInstance.label} 
-                      checked={incomeChecked[incomeInstance.label + " - " + weekInstance.label] !== false} 
-                      onChange={(e) => setIncomeChecked({...incomeChecked, [incomeInstance.label + " - " + weekInstance.label]: e.target.checked})}>
+                      <td key={j}><input type="checkbox" name={i + " - " + j} 
+                      checked={incomeChecked[i + " - " + j] !== false} 
+                      onChange={(e) => setIncomeChecked({...incomeChecked, [i + " - " + j]: e.target.checked})}>
                       </input></td>
                     ))}
                   </tr>
@@ -698,9 +696,9 @@ export default function ModuleCreation() {
                   <tr key={i}>
                     <td>{expenseInstance.label || `Expense ${i + 1}`}</td>
                     {week.map((weekInstance, j) => (
-                      <td key={j}><input type="checkbox" name={expenseInstance.label + " - " + weekInstance.label} 
-                      checked={expenseChecked[expenseInstance.label + " - " + weekInstance.label] !== false} 
-                      onChange={(e) => setExpenseChecked({...expenseChecked, [expenseInstance.label + " - " + weekInstance.label]: e.target.checked})}></input></td>
+                      <td key={j}><input type="checkbox" name={i + " - " + j} 
+                      checked={expenseChecked[i + " - " + j] !== false} 
+                      onChange={(e) => setExpenseChecked({...expenseChecked, [i + " - " + j]: e.target.checked})}></input></td>
                     ))}
                   </tr>
                 ))}
