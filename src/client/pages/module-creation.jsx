@@ -137,7 +137,7 @@ export default function ModuleCreation() {
       };
 
         // Send module payload to the backend.
-      const response = await fetch('/api/module/new', {
+      const response = await fetch('http://localhost:3000/api/module/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
