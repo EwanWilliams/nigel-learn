@@ -18,7 +18,7 @@ export default function LandingPage() {
             Join Classroom
           </Link>
 
-          <Link to="/teach" className="routeBtn">
+          <Link to="/teach/classes" className="routeBtn">
             Teacher Login
           </Link>
 
