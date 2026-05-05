@@ -1,0 +1,106 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getUserClasses } from '../api.mjs';
+
+// Lists classrooms for a given teacher username.
+// Backend endpoint used:
+// - GET /api/classroom/userClasses/:username
+//
+// The classroom links assume the main app/router will later mount a teacher classroom-details route.
+export default function TeacherClassesPage({ initialUsername = '' }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [username] = useState(
+    initialUsername || searchParams.get('username') || 'Ms_Smith'
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [classes, setClasses] = useState([]);
+
+  const canLoad = useMemo(() => username.trim().length > 0, [username]);
+
+  async function load() {
+    if (!canLoad || isLoading) return;
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const list = await getUserClasses(username.trim());
+      setClasses(Array.isArray(list) ? list : []);
+    } catch (err) {
+      setClasses([]);
+      setError(err?.message || 'Failed to load classes');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="teacher-page teacher-classes">
+      <h1 className="teacher-title">My Classes</h1>
+
+      <section className="teacher-section">
+        <button
+          className="teacher-button"
+          type="button"
+          onClick={() => navigate('/teach/create')}
+        >
+          + Create a classroom
+        </button>
+      </section>
+
+      <section className="teacher-section">
+        {isLoading && <p className="teacher-hint">Loading…</p>}
+        {error && <p className="teacher-error">{error}</p>}
+      </section>
+
+      <section className="teacher-section">
+        <p className="teacher-hint">
+          Open a class to view students and live marks.
+        </p>
+
+        {classes.length === 0 ? (
+          <p className="teacher-hint">No classes loaded yet.</p>
+        ) : (
+          <table className="teacher-table">
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Completed</th>
+                <th>Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              {classes.map((c) => (
+                <tr key={c._id}>
+                  <td>{c.label}</td>
+                  <td>
+                    {Number.isFinite(Number(c.completed)) && Number.isFinite(Number(c.total))
+                      ? `${c.completed}/${c.total}`
+                      : '—'}
+                  </td>
+                  <td>
+                    <button
+                      className="teacher-button"
+                      type="button"
+                      onClick={() =>
+                        navigate(`/teach/classroom/${encodeURIComponent(c._id)}`)
+                      }
+                    >
+                      Open
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+    </div>
+  );
+}
