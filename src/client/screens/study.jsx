@@ -15,9 +15,14 @@ export default function StudyPage() {
   const location = useLocation();
 
   // Classroom/module info is passed in from the join flow
-  const classroomCode = location.state?.classroomCode;
-  const studentCode = location.state?.studentCode;
-  const moduleId = location.state?.moduleId;
+  const classroomCode =
+  location.state?.classroomCode || sessionStorage.getItem("classroomCode");
+
+const studentCode =
+  location.state?.studentCode || sessionStorage.getItem("studentCode");
+
+const moduleId =
+  location.state?.moduleId || sessionStorage.getItem("moduleId");
 
   // Backend module loading state
   const [moduleData, setModuleData] = useState(null);
