@@ -15,13 +15,39 @@
   },
   "scripts": {
     "dev:client": "vite",
+    "dev:client:coverage": "cross-env CYPRESS_COVERAGE=true vite --port 5174 --strictPort",
     "dev:server": "node server/server.mjs",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "coverage:run": "start-server-and-test \"npm run dev:client:coverage\" http://127.0.0.1:5174 \"cypress run --config baseUrl=http://127.0.0.1:5174\"",
+    "coverage:report": "nyc report --reporter=html --reporter=text"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "client/**/*.{js,jsx}"
+    ],
+    "exclude": [
+      "cypress/**/*",
+      "node_modules/**/*"
+    ],
+    "reporter": [
+      "html",
+      "text",
+      "lcov"
+    ],
+    "report-dir": "coverage"
   },
   "devDependencies": {
+    "@cypress/code-coverage": "^4.0.3",
     "@vitejs/plugin-react": "^5.1.4",
-    "vite": "^7.3.1"
+    "cross-env": "^7.0.3",
+    "cypress": "^15.14.2",
+    "start-server-and-test": "^2.1.3",
+    "vite": "^7.3.1",
+    "vite-plugin-istanbul": "^8.0.0"
   }
 }
