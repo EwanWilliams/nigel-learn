@@ -6,12 +6,15 @@ export default function LandingPage() {
     <div className="routePage">
       <div className="routeHero">
 
-        <h1 className="routeTitle">Budgeting simulation for the classroom</h1>
+        <h1 className="routeTitle">Budgeting Simulation</h1>
+        <h1 className="routeTitle">For the Classroom</h1>
 
         <p className="routeIntro">
-          Students join with a classroom code and student code. Teachers manage
-          classes, and modules are assigned through the teaching flow.
+          Students join with a classroom code and student code. 
         </p>
+        <p className="routeIntro"> 
+          Teachers can also build their own modules with our module builder.
+          </p>
 
         <div className="routeActions">
           <Link to="/join" className="routeBtn routeBtnPrimary">
