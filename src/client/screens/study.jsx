@@ -24,6 +24,11 @@ const studentCode =
 const moduleId =
   location.state?.moduleId || sessionStorage.getItem("moduleId");
 
+const saveKey =
+  classroomCode && studentCode ? `study_${classroomCode}_${studentCode}` : "";
+
+
+
   // Backend module loading state
   const [moduleData, setModuleData] = useState(null);
   const [loadingModule, setLoadingModule] = useState(true);
@@ -64,6 +69,40 @@ const moduleId =
     other: 0,
   });
 
+  useEffect(() => {
+  if (!saveKey) return;
+
+  const raw = sessionStorage.getItem(saveKey);
+  if (!raw) return;
+
+  try {
+    const parsed = JSON.parse(raw);
+
+    setWeek(parsed.week ?? 1);
+    setBudget(parsed.budget ?? {
+      rent: 0,
+      travel: 0,
+      food: 0,
+      phone: 0,
+      subscriptions: 0,
+      savings: 0,
+      fun: 0,
+      other: 0,
+    });
+    setSpent(parsed.spent ?? 0);
+    setBudgetLocked(parsed.budgetLocked ?? false);
+    setShowSummary(parsed.showSummary ?? false);
+    setStarted(parsed.started ?? false);
+    setHistory(parsed.history ?? []);
+    setShowFinal(parsed.showFinal ?? false);
+    setShowPayslip(parsed.showPayslip ?? true);
+    setNetIncome(parsed.netIncome ?? 0);
+    setAccounts(parsed.accounts ?? []);
+  } catch (err) {
+    console.error("Failed to restore study progress", err);
+  }
+}, [saveKey]);
+
   // Fetch module data from backend using moduleId from classroom join flow
   useEffect(() => {
     async function loadModule() {
@@ -96,13 +135,17 @@ const moduleId =
 
   // Initialise simulation state from mapped module data
   useEffect(() => {
-    if (!moduleData) return;
+  if (!moduleData) return;
 
-    setGrossIncome(moduleData.grossIncome || 1800);
-    setAccounts(moduleData.startingAccounts || []);
-    setBudgetCategoryConfig(moduleData.budgetCategories || []);
-    setMailItems(moduleData.weeks?.[0]?.mailItems || []);
-  }, [moduleData]);
+  setGrossIncome(moduleData.grossIncome || 1800);
+  setBudgetCategoryConfig(moduleData.budgetCategories || []);
+
+  setAccounts((prev) =>
+    prev.length > 0 ? prev : moduleData.startingAccounts || []
+  );
+
+  setMailItems(moduleData.weeks?.[week - 1]?.mailItems || []);
+}, [moduleData, week]);
 
   // Update mail items whenever the active week changes
   useEffect(() => {
@@ -127,6 +170,39 @@ const moduleId =
       }
     }
   }, [budget, netIncome, budgetLocked]);
+
+  useEffect(() => {
+  if (!saveKey || !started) return;
+
+  const saveData = {
+    week,
+    budget,
+    spent,
+    budgetLocked,
+    showSummary,
+    started,
+    history,
+    showFinal,
+    showPayslip,
+    netIncome,
+    accounts,
+  };
+
+  sessionStorage.setItem(saveKey, JSON.stringify(saveData));
+}, [
+  saveKey,
+  week,
+  budget,
+  spent,
+  budgetLocked,
+  showSummary,
+  started,
+  history,
+  showFinal,
+  showPayslip,
+  netIncome,
+  accounts,
+]);
 
   // Updates an individual budget category by a given amount
   const changeBudget = (category, amount) => {
