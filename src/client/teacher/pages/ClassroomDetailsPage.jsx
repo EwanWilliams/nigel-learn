@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { getClassroomById, getClassroomMarks } from '../api.mjs';
 import { loadLocalNames, setLocalName } from '../localNames.mjs';
+import { useNavigate } from 'react-router-dom';
 
 // Fetches classroom data by classroom id and allows local-only display names.
 // Backend endpoint used:
@@ -24,6 +25,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
   const [marks, setMarks] = useState([]);
   const [marksError, setMarksError] = useState('');
   const [lastMarksUpdate, setLastMarksUpdate] = useState('');
+  
 
   const [nameFileError, setNameFileError] = useState('');
 
@@ -198,6 +200,14 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
 
   return (
     <div className="teacher-page teacher-classroomDetails">
+      <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate(-1)}
+>
+  ← Back
+</button>
+<div className="routeBadge">Join</div>
       <h1 className="teacher-title">Classroom Details</h1>
 
       {isLoading && <p className="teacher-hint">Loading classroom…</p>}

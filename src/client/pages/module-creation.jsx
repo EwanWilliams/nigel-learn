@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function ModuleCreation() {
   const [mail, setMail] = useState([{ label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
@@ -13,6 +14,7 @@ export default function ModuleCreation() {
   const [quiz, setQuiz] = useState([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
   const [isUploading, setIsUploading] = useState(false);
   const [showQuizValidation, setShowQuizValidation] = useState(false);
+  const navigate = useNavigate();
 
   const handleAddMail = () => {
     setMail([...mail, { label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
@@ -175,7 +177,16 @@ export default function ModuleCreation() {
 
   return (
     <div className="routePage modulePage">
+      
       <div className="routeCard moduleCard">
+        <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate(-1)}
+>
+  ← Back
+</button>
+
       <div className="routeBadge">Build</div>
 
       <h1 className="routeSectionTitle">Module Creation</h1>

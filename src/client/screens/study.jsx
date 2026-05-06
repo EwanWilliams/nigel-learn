@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 import HomeScreen from "../inners/home_screen";
 import BudgetScreen from "../inners/budget_screen";
@@ -27,7 +28,7 @@ const moduleId =
 const saveKey =
   classroomCode && studentCode ? `study_${classroomCode}_${studentCode}` : "";
 
-
+const navigate = useNavigate();
 
   // Backend module loading state
   const [moduleData, setModuleData] = useState(null);

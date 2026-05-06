@@ -88,6 +88,14 @@ export default function CreateClassroomPage() {
 
   return (
     <div className="teacher-page teacher-createClassroom">
+      <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate(-1)}
+>
+  ← Back
+</button>
+<div className="routeBadge">Join</div>
       <h1 className="teacher-title">Create Classroom</h1>
 
       <form className="teacher-form" onSubmit={handleSubmit}>

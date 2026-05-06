@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
   return (
     <div className="routePage">
       <div className="routeHero">
-        <div className="routeBadge">Student Bank</div>
 
         <h1 className="routeTitle">Budgeting simulation for the classroom</h1>
 

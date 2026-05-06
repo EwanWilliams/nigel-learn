@@ -54,7 +54,15 @@ export default function JoinPage() {
 
   return (
     <div className="routePage">
+      
       <div className="routeCard">
+        <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate(-1)}
+>
+  ← Back
+</button>
         <div className="routeBadge">Join</div>
 
         <h1 className="routeSectionTitle">Join classroom</h1>
