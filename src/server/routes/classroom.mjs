@@ -124,13 +124,30 @@ router.get('/userClasses/:username', async (req, res) => {
     try {
         const classrooms = await Classroom.find(
             {user: req.params.username},
-            "_id label"
-        ).exec();
-        if (!classrooms) {
-            res.status(404).json({error: "No classrooms found under username"});
-        } else {
-            res.status(200).json(classrooms);
-        }
+            "_id label students.completedAt"
+        ).lean().exec();
+
+        const list = Array.isArray(classrooms) ? classrooms : [];
+
+        const summaries = list.map((c) => {
+            const students = Array.isArray(c.students) ? c.students : [];
+            const total = students.length;
+            const completed = students.filter((s) => {
+                if (!s || !s.completedAt) return false;
+                const ms = new Date(s.completedAt).getTime();
+                return Number.isFinite(ms) && ms > 0;
+            }).length;
+
+            return {
+                _id: c._id,
+                label: c.label,
+                completed,
+                total
+            };
+        });
+
+        // Always return an array (possibly empty) for consistent UX.
+        res.status(200).json(summaries);
     } catch (err) {
         console.error("Find classes by user error: ", err);
         res.status(500).json({ error: "Internal Server Error" });
