@@ -1069,3 +1069,174 @@ input {
   font-size: 14px;
   font-weight: 600;
 }
+
+.modulePage {
+  align-items: flex-start;
+  padding: 20px 0;
+}
+
+.moduleCard {
+  max-width: 1100px;
+}
+
+.moduleForm {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.moduleForm label {
+  display: block;
+  font-weight: 800;
+  color: #303062;
+  margin-bottom: 8px;
+}
+
+.moduleForm input,
+.moduleForm textarea,
+.moduleForm select {
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #111827;
+  background: white;
+}
+
+.moduleForm input:focus,
+.moduleForm textarea:focus,
+.moduleForm select:focus {
+  outline: 2px solid rgba(112, 0, 224, 0.18);
+  border-color: #7000e0;
+}
+
+.moduleForm h3 {
+  margin: 12px 0 4px;
+  color: #303062;
+  font-size: 22px;
+}
+
+.moduleForm table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  color: #111827;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.moduleForm th,
+.moduleForm td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  text-align: left;
+}
+
+.moduleForm th {
+  background: #f5edff;
+  color: #303062;
+  font-weight: 900;
+}
+
+.moduleForm button {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: none;
+  background: #7000e0;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.moduleForm button:hover {
+  transform: translateY(-1px);
+}
+
+.moduleForm button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.moduleForm > div,
+.moduleForm > section {
+  background: #fff4e8;
+  border: 1px solid rgba(255, 147, 0, 0.22);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.moduleForm h3 {
+  margin-top: 0;
+  color: #c96d00;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.moduleForm table {
+  background: white;
+}
+
+.moduleForm th {
+  background: #ffe2bf;
+  color: #9c5a14;
+}
+
+.moduleForm button {
+  background: #7000e0;
+}
+
+.moduleForm button:hover {
+  box-shadow: 0 10px 24px rgba(112, 0, 224, 0.18);
+}
+
+.moduleForm input,
+.moduleForm textarea,
+.moduleForm select {
+  background: white;
+}
+
+.moduleCard {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 147, 0, 0.08) 0%,
+      rgba(255, 147, 0, 0.02) 100%
+    ),
+    white;
+}
+
+.moduleForm input,
+.moduleForm textarea,
+.moduleForm select {
+  background: #f5edff;
+  border: 1px solid #dcc7ff;
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: #303062;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.moduleForm input:focus,
+.moduleForm textarea:focus,
+.moduleForm select:focus {
+  background: white;
+  border-color: #7000e0;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(112, 0, 224, 0.12);
+}
+
+.moduleForm textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.moduleForm input::placeholder,
+.moduleForm textarea::placeholder {
+  color: #8b7aa8;
+}

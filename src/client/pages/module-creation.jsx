@@ -174,12 +174,16 @@ export default function ModuleCreation() {
   };
 
   return (
-    <div>
-        {/* Page heading and intro */}
-        <h1>Module Creation</h1>
-        <p>This is where you can create new modules for your application.</p>
+    <div className="routePage modulePage">
+      <div className="routeCard moduleCard">
+      <div className="routeBadge">Build</div>
 
-        <form onSubmit={handleSubmit}>
+      <h1 className="routeSectionTitle">Module Creation</h1>
+      <p className="routeSectionText">
+        Create modules, weekly events, income, expenses, mail and quiz questions.
+      </p>
+
+      <form onSubmit={handleSubmit} className="moduleForm">
           {/* Module name and brief inputs */}
           <label>
             Module Name:
@@ -711,6 +715,7 @@ export default function ModuleCreation() {
             <button type="submit" disabled={isUploading}>{isUploading ? "Creating Module..." : "Create Module"}</button>
 
         </form>
+    </div>
     </div>
   );
 }
