@@ -45,7 +45,7 @@ export default function ClassroomProjectionPage() {
   return (
     <div className="teacher-page teacher-projection">
       <button
-  className="pageBackBtnFloating"
+  className="pageBackBtn"
   type="button"
   onClick={() => window.close()}
 >

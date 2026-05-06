@@ -202,7 +202,7 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
   return (
     <div className="teacher-page teacher-classroomDetails">
      <button
-  className="pageBackBtnFloating"
+  className="pageBackBtn"
   type="button"
   onClick={() => navigate("/teach/classes")}
 >
