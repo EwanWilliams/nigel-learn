@@ -124,6 +124,8 @@ const navigate = useNavigate();
         }
 
         const rawModule = await res.json();
+        console.log("RAW MODULE:", rawModule);
+console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
         setModuleData(mapModuleToStudyData(rawModule));
       } catch (err) {
         console.error(err);
@@ -466,43 +468,45 @@ const navigate = useNavigate();
 
           {showFinal && (
   <div className="summaryOverlay">
-    <div className="summaryCard">
-      <h2>Final Quiz</h2>
-      <p>Final balance: £{moneyLeft.toFixed(2)}</p>
+  <div className="summaryCard quizCard">
+    <h2>Final Quiz</h2>
 
-      {(moduleData.quiz || []).map((q, questionIndex) => (
-        <div key={questionIndex}>
-          <h3>{q.question}</h3>
+    <p>Final balance: £{moneyLeft.toFixed(2)}</p>
 
-          {(q.options || []).map((option, optionIndex) => (
-            <label key={optionIndex}>
-              <input
-                type="radio"
-                name={`quiz-${questionIndex}`}
-                checked={quizAnswers[questionIndex] === optionIndex}
-                onChange={() =>
-                  setQuizAnswers((prev) => ({
-                    ...prev,
-                    [questionIndex]: optionIndex,
-                  }))
-                }
-                disabled={quizSubmitted}
-              />
-              {option.text}
-            </label>
-          ))}
-        </div>
-      ))}
+    {(moduleData.quiz || []).map((q, questionIndex) => (
+      <div key={questionIndex} className="quizQuestion">
+        <h3>{q.question}</h3>
 
-      {!quizSubmitted ? (
-        <button onClick={() => setQuizSubmitted(true)}>
-          Submit Quiz
-        </button>
-      ) : (
-        <p>Quiz submitted!</p>
-      )}
-    </div>
+        {(q.options || []).map((option, optionIndex) => (
+          <label key={optionIndex} className="quizOption">
+            <input
+              type="radio"
+              name={`quiz-${questionIndex}`}
+              checked={quizAnswers[questionIndex] === optionIndex}
+              onChange={() =>
+                setQuizAnswers((prev) => ({
+                  ...prev,
+                  [questionIndex]: optionIndex,
+                }))
+              }
+              disabled={quizSubmitted}
+            />
+
+            <span>{option.text}</span>
+          </label>
+        ))}
+      </div>
+    ))}
+
+    {!quizSubmitted ? (
+      <button onClick={() => setQuizSubmitted(true)}>
+        Submit Quiz
+      </button>
+    ) : (
+      <p>Quiz submitted!</p>
+    )}
   </div>
+</div>
 )}
         </div>
       )}

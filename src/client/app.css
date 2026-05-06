@@ -1567,3 +1567,110 @@ input {
 .pageBackBtnFloating:hover {
   transform: translateY(-2px);
 }
+
+.quizCard {
+  width: min(720px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: white;
+  border-radius: 24px;
+
+  padding: 32px;
+
+  color: #111827;
+  text-align: left;
+
+  box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+}
+
+.quizCard h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+
+  color: #303062;
+  font-size: 32px;
+}
+
+.quizCard > p {
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+.quizQuestion {
+  background: #fff4e8;
+  border: 1px solid rgba(255, 147, 0, 0.22);
+
+  border-radius: 20px;
+
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.quizQuestion h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+
+  color: #303062;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.quizOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 14px;
+  margin-top: 10px;
+
+  border-radius: 14px;
+
+  background: #f5edff;
+  border: 1px solid #dcc7ff;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.quizOption:hover {
+  transform: translateY(-1px);
+  background: white;
+  border-color: #7000e0;
+}
+
+.quizOption input[type="radio"] {
+  accent-color: #7000e0;
+  width: 18px;
+  height: 18px;
+}
+
+.quizOption span {
+  color: #303062;
+  font-weight: 700;
+}
+
+.quizCard button {
+  margin-top: 12px;
+
+  min-height: 48px;
+  padding: 0 20px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #7000e0;
+  color: white;
+
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.quizCard button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(112, 0, 224, 0.18);
+}

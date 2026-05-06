@@ -149,6 +149,28 @@ export function mapModuleToStudyData(moduleDoc) {
 
       incomes: week.incomePool || [],
       expenses: week.expensePool || [],
+      
     })),
+    weeks: (moduleDoc.weekPool || []).map((week, index) => ({
+      week: index + 1,
+      dateStarting: week.dateStarting,
+
+      mailItems: (week.mailPool || []).map((mail, mailIndex) => ({
+        id: mail._id || `${index + 1}-${mailIndex + 1}`,
+        subject: mail.subject,
+        message: mail.body,
+        amount: mail.amount || 0,
+        date: formatMailDate(mail.date),
+        sender: mail.sender,
+        label: mail.label,
+        type: mail.type,
+      })),
+
+      incomes: week.incomePool || [],
+      expenses: week.expensePool || [],
+    })),
+
+    quiz: moduleDoc.quiz || [],
+    
   };
 }
