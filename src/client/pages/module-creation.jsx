@@ -182,7 +182,7 @@ export default function ModuleCreation() {
         <button
   className="pageBackBtn"
   type="button"
-  onClick={() => navigate(-1)}
+  onClick={() => navigate("/landing")}
 >
   ← Back
 </button>

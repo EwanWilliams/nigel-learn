@@ -45,7 +45,7 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
       <button
   className="pageBackBtn"
   type="button"
-  onClick={() => navigate(-1)}
+  onClick={() => navigate("landing")}
 >
   ← Back
 </button>

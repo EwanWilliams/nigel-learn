@@ -50,6 +50,8 @@ const navigate = useNavigate();
   const [started, setStarted] = useState(false);
   const [history, setHistory] = useState([]);
   const [showFinal, setShowFinal] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   // Simulation data derived from backend module
   const [grossIncome, setGrossIncome] = useState(0);
@@ -463,13 +465,45 @@ const navigate = useNavigate();
           )}
 
           {showFinal && (
-            <div className="summaryOverlay">
-              <div className="summaryCard">
-                <h2>Finished</h2>
-                <p>Final: £{moneyLeft.toFixed(2)}</p>
-              </div>
-            </div>
-          )}
+  <div className="summaryOverlay">
+    <div className="summaryCard">
+      <h2>Final Quiz</h2>
+      <p>Final balance: £{moneyLeft.toFixed(2)}</p>
+
+      {(moduleData.quiz || []).map((q, questionIndex) => (
+        <div key={questionIndex}>
+          <h3>{q.question}</h3>
+
+          {(q.options || []).map((option, optionIndex) => (
+            <label key={optionIndex}>
+              <input
+                type="radio"
+                name={`quiz-${questionIndex}`}
+                checked={quizAnswers[questionIndex] === optionIndex}
+                onChange={() =>
+                  setQuizAnswers((prev) => ({
+                    ...prev,
+                    [questionIndex]: optionIndex,
+                  }))
+                }
+                disabled={quizSubmitted}
+              />
+              {option.text}
+            </label>
+          ))}
+        </div>
+      ))}
+
+      {!quizSubmitted ? (
+        <button onClick={() => setQuizSubmitted(true)}>
+          Submit Quiz
+        </button>
+      ) : (
+        <p>Quiz submitted!</p>
+      )}
+    </div>
+  </div>
+)}
         </div>
       )}
     </div>

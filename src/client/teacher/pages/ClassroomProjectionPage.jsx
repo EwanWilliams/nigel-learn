@@ -45,11 +45,11 @@ export default function ClassroomProjectionPage() {
   return (
     <div className="teacher-page teacher-projection">
       <button
-  className="pageBackBtn"
+  className="pageBackBtnFloating"
   type="button"
-  onClick={() => navigate(-1)}
+  onClick={() => window.close()}
 >
-  ← Back
+  ✕ Close
 </button>
       {isLoading && <p className="teacher-hint">Loading…</p>}
       {error && <p className="teacher-error">{error}</p>}

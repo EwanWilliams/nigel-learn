@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 export default function ClassroomDetailsPage({ initialClassId = '' }) {
   const { id: idParam } = useParams();
   const [searchParams] = useSearchParams();
+   const navigate = useNavigate();
 
   const classId = useMemo(() => {
     if (initialClassId) return initialClassId;
@@ -200,14 +201,14 @@ export default function ClassroomDetailsPage({ initialClassId = '' }) {
 
   return (
     <div className="teacher-page teacher-classroomDetails">
-      <button
-  className="pageBackBtn"
+     <button
+  className="pageBackBtnFloating"
   type="button"
-  onClick={() => navigate(-1)}
+  onClick={() => navigate("/teach/classes")}
 >
   ← Back
 </button>
-<div className="routeBadge">Join</div>
+<div className="routeBadge">Details</div>
       <h1 className="teacher-title">Classroom Details</h1>
 
       {isLoading && <p className="teacher-hint">Loading classroom…</p>}
