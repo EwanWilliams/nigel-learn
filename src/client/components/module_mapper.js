@@ -78,8 +78,6 @@ export function mapModuleToStudyData(moduleDoc) {
     // Budget categories used in the budget screen
     budgetCategories,
 
-    // Static account setup shown at the start of the simulation
-    // These are frontend UI defaults rather than backend module content
     startingAccounts: [
       {
         id: "current",
@@ -120,9 +118,7 @@ export function mapModuleToStudyData(moduleDoc) {
         accent: "amber",
       },
     ],
-
-    // Income used in the payslip step
-    // Uses first week income if available, otherwise falls back to total module income
+    
     grossIncome:
       firstWeekIncome > 0
         ? firstWeekIncome
