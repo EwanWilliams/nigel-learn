@@ -45,6 +45,7 @@ const navigate = useNavigate();
   const [week, setWeek] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [spent, setSpent] = useState(0);
+  const [totalSpent, setTotalSpent] = useState(0);
   const [budgetLocked, setBudgetLocked] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [started, setStarted] = useState(false);
@@ -52,6 +53,7 @@ const navigate = useNavigate();
   const [showFinal, setShowFinal] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
+  
 
   // Simulation data derived from backend module
   const [grossIncome, setGrossIncome] = useState(0);
@@ -92,6 +94,7 @@ const navigate = useNavigate();
       fun: 0,
       other: 0,
     });
+    setTotalSpent(parsed.totalSpent ?? 0);
     setSpent(parsed.spent ?? 0);
     setBudgetLocked(parsed.budgetLocked ?? false);
     setShowSummary(parsed.showSummary ?? false);
@@ -183,6 +186,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
     week,
     budget,
     spent,
+    totalSpent,
     budgetLocked,
     showSummary,
     started,
@@ -199,6 +203,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   week,
   budget,
   spent,
+  totalSpent,
   budgetLocked,
   showSummary,
   started,
@@ -226,7 +231,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   // Remaining money not yet allocated.
   // Subtracting spent ensures paid expenses are not incorrectly
   // treated as money available to reallocate.
-  const leftToAllocate = Math.max(0, netIncome - totalAllocated - spent);
+  const leftToAllocate = Math.max(0, netIncome - totalAllocated - totalSpent);
 
   const isBudgetComplete = budgetLocked;
   const moneyLeft = netIncome - spent;
@@ -274,6 +279,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
     }));
 
     setSpent((prev) => prev + amount);
+    setTotalSpent((prev) => prev + amount);
 
     setMailItems((prev) => {
       const updatedMailItems = prev.filter((mail) => mail.id !== mailId);
@@ -355,6 +361,51 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
       </div>
     );
   }
+
+  const submitQuiz = async () => {
+  const questions = moduleData.quiz || [];
+
+  const score = questions.reduce((total, q, questionIndex) => {
+    const selectedIndex = quizAnswers[questionIndex];
+    const selectedOption = q.options?.[selectedIndex];
+
+    return selectedOption?.isCorrect ? total + 1 : total;
+  }, 0);
+
+  const percentage =
+    questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/api/classroom/study/complete`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          classroomCode,
+          studentCode,
+          moduleId,
+          mark: percentage,
+          score,
+          totalQuestions: questions.length,
+          percentage,
+          completed: true,
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to save quiz result");
+    }
+
+    setQuizSubmitted(true);
+  } catch (err) {
+    console.error(err);
+    alert("Quiz submitted, but the result could not be saved.");
+  }
+};
 
   return (
     <div className="app-container">
@@ -499,12 +550,23 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
     ))}
 
     {!quizSubmitted ? (
-      <button onClick={() => setQuizSubmitted(true)}>
-        Submit Quiz
-      </button>
-    ) : (
-      <p>Quiz submitted!</p>
-    )}
+  <button onClick={submitQuiz}>
+  Submit Quiz
+</button>
+) : (
+  <>
+    <p>Quiz submitted!</p>
+
+    <button
+      onClick={() => {
+        sessionStorage.removeItem(saveKey);
+        navigate("/");
+      }}
+    >
+      Return Home
+    </button>
+  </>
+)}
   </div>
 </div>
 )}
