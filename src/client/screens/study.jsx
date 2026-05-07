@@ -6,7 +6,6 @@ import HomeScreen from "../inners/home_screen";
 import BudgetScreen from "../inners/budget_screen";
 import DetailScreen from "../inners/detail_screen";
 import PostPanel from "../components/post_panel";
-import Payslip from "../components/payslip";
 import { mapModuleToStudyData } from "../components/module_mapper";
 
 // StudyPage controls the full student simulation flow.
@@ -41,7 +40,6 @@ const navigate = useNavigate();
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openMailId, setOpenMailId] = useState(null);
   const [query, setQuery] = useState("");
-  const [showPayslip, setShowPayslip] = useState(true);
   const [week, setWeek] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [spent, setSpent] = useState(0);
@@ -105,7 +103,6 @@ const navigate = useNavigate();
     setStarted(parsed.started ?? false);
     setHistory(parsed.history ?? []);
     setShowFinal(parsed.showFinal ?? false);
-    setShowPayslip(parsed.showPayslip ?? true);
     setNetIncome(parsed.netIncome ?? 0);
     setAccounts(parsed.accounts ?? []);
   } catch (err) {
@@ -196,7 +193,6 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
     started,
     history,
     showFinal,
-    showPayslip,
     netIncome,
     accounts,
   };
@@ -213,7 +209,6 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   started,
   history,
   showFinal,
-  showPayslip,
   netIncome,
   accounts,
 ]);
@@ -338,18 +333,6 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
     setPhonePage((p) => (p === "home" ? "budget" : "home"));
   };
 
-  // Accepts calculated net pay from the payslip step
-  // and deposits it into the current account
-  const acceptPayslip = (netPay) => {
-    setAccounts((prev) =>
-      prev.map((acc) =>
-        acc.id === "current" ? { ...acc, amount: acc.amount + netPay } : acc
-      )
-    );
-
-    setNetIncome(netPay);
-    setShowPayslip(false);
-  };
 
   // Moves simulation to next week or ends if there are no more weeks
   const nextWeek = () => {
@@ -464,7 +447,13 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
             <button
               onClick={() => {
                 setStarted(true);
-                setShowPayslip(true);
+setNetIncome(grossIncome);
+
+setAccounts((prev) =>
+  prev.map((acc) =>
+    acc.id === "current" ? { ...acc, amount: grossIncome } : acc
+  )
+);
               }}
             >
               Start
@@ -473,11 +462,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
         </div>
       )}
 
-      {started && showPayslip && (
-        <Payslip income={grossIncome} onAccept={acceptPayslip} />
-      )}
-
-      {started && !showPayslip && (
+      {started && (
         <div className="simulatorLayout">
           <div className="phone">
             <div className="screen">
