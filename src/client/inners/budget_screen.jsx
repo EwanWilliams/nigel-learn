@@ -66,17 +66,21 @@ export default function BudgetScreen({
                 <span className="currencySymbol">£</span>
 
                 <input
-                  className="budgetInput"
-                  type="number"
-                  placeholder="0"
-                  value={budget[category.id] === 0 ? "" : budget[category.id]}
-                  onChange={(e) =>
-                    changeBudget(
-                      category.id,
-                      Number(e.target.value) - budget[category.id]
-                    )
-                  }
-                />
+  className="budgetInput"
+  type="number"
+  value={budget[category.id]}
+  onFocus={(e) => {
+    if (budget[category.id] === 0) {
+      e.target.select();
+    }
+  }}
+  onChange={(e) =>
+    changeBudget(
+      category.id,
+      Number(e.target.value) - budget[category.id]
+    )
+  }
+/>
 
               </div>
 
