@@ -43,8 +43,12 @@ export default function BudgetScreen({
 
           <div
   key={category.id}
-  className={`budgetRow ${selectedCategory === category.id ? "active" : ""}`}
-  onClick={() => setSelectedCategory(category.id)}
+className={`budgetRow ${selectedCategory === category.id ? "active" : ""}`}
+onClick={() =>
+  setSelectedCategory((prev) =>
+    prev === category.id ? null : category.id
+  )
+}
 >
 
             <span>{category.label}</span>
