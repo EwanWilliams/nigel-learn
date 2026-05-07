@@ -220,11 +220,29 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 
   // Updates an individual budget category by a given amount
   const changeBudget = (category, amount) => {
-    setBudget((prev) => ({
+  setBudget((prev) => {
+    const currentValue = prev[category] || 0;
+    const newValue = Math.max(0, currentValue + amount);
+
+    const currentTotal = Object.values(prev).reduce(
+      (sum, value) => sum + value,
+      0
+    );
+
+    const newTotal = currentTotal - currentValue + newValue;
+
+    // Prevent allocating more than net income
+    if (newTotal > netIncome) {
+      alert("You cannot allocate more than your available net pay.");
+      return prev;
+    }
+
+    return {
       ...prev,
-      [category]: Math.max(0, (prev[category] || 0) + amount),
-    }));
-  };
+      [category]: newValue,
+    };
+  });
+};
 
   // Total amount currently allocated across all budget categories
   const totalAllocated = Object.values(budget).reduce(
