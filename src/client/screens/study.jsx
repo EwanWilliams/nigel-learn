@@ -255,7 +255,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   // treated as money available to reallocate.
   const leftToAllocate = Math.max(0, netIncome - totalAllocated - totalSpent);
 
-  const isBudgetComplete = budgetLocked;
+  const isBudgetComplete = true;
   const moneyLeft = netIncome - totalSpent;
   const totalWeeks = moduleData?.weeks?.length || 4;
 
