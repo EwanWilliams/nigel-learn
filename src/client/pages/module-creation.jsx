@@ -5,7 +5,9 @@ export default function ModuleCreation() {
   const [mail, setMail] = useState([{ label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
   const [income, setIncome] = useState([{ label: "", category: "PAYE", amount: 0 }]);
   const [expense, setExpense] = useState([{ label: "", category: "Rent", amount: 0 }]);
-  const [week, setWeek] = useState([{ label: "", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
+ const [week, setWeek] = useState([
+  { label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }
+]);
   const [moduleName, setModuleName] = useState("");
   const [brief, setBrief] = useState("");
   const [mailChecked, setMailChecked] = useState({});
@@ -32,7 +34,16 @@ export default function ModuleCreation() {
       lastDate.setDate(lastDate.getDate() + 7);
       newDate = lastDate.toISOString().split('T')[0];
     }
-    setWeek([...week, { label: "", dateStarting: newDate, mailPool: [], incomePool: [], expensePool: [] }]);
+    setWeek([
+  ...week,
+  {
+    label: `Week ${week.length + 1}`,
+    dateStarting: newDate,
+    mailPool: [],
+    incomePool: [],
+    expensePool: []
+  }
+]);
   }
   
   const handleRemoveMail = (index) => {
