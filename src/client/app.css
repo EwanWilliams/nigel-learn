@@ -1769,3 +1769,55 @@ input {
 
   color: #111827;
 }
+
+.tutorialCard {
+  width: 420px;
+  max-width: 90%;
+
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+
+  color: #111827;
+}
+
+.tutorialCard h2 {
+  color: #111827;
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.tutorialCard p {
+  color: #374151;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.tutorialCard button {
+  background: #6d28d9;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.tutorialOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.65);
+
+  backdrop-filter: blur(4px);
+}

@@ -55,6 +55,7 @@ const navigate = useNavigate();
   const [quizPercentage, setQuizPercentage] = useState(0);
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
   const [categorySpent, setCategorySpent] = useState({});
+  const [tutorialStep, setTutorialStep] = useState(0);
   
 
   // Simulation data derived from backend module
@@ -438,29 +439,98 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 };
 
   return (
-    <div className="app-container">
-      {!started && (
-        <div className="introOverlay">
-          <div className="introCard">
-            <h1>{moduleData.title}</h1>
-            <p>{moduleData.brief}</p>
-            <button
-              onClick={() => {
-                setStarted(true);
-setNetIncome(grossIncome);
+  <div className="app-container">
+    {!started && (
+      <div className="introOverlay">
+        <div className="introCard">
+          <h1>{moduleData.title}</h1>
+          <p>{moduleData.brief}</p>
 
-setAccounts((prev) =>
-  prev.map((acc) =>
-    acc.id === "current" ? { ...acc, amount: grossIncome } : acc
-  )
-);
-              }}
-            >
-              Start
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              setStarted(true);
+              setTutorialStep(1);
+
+              setNetIncome(grossIncome);
+
+              setAccounts((prev) =>
+                prev.map((acc) =>
+                  acc.id === "current"
+                    ? { ...acc, amount: grossIncome }
+                    : acc
+                )
+              );
+            }}
+          >
+            Start
+          </button>
         </div>
-      )}
+      </div>
+    )}
+
+    {started && tutorialStep > 0 && (
+      <div className="tutorialOverlay">
+        <div className="tutorialCard">
+          {tutorialStep === 1 && (
+            <>
+              <h2>Welcome</h2>
+              <p>
+                You will manage your money across several weeks.
+              </p>
+            </>
+          )}
+
+          {tutorialStep === 2 && (
+            <>
+              <h2>Budget</h2>
+              <p>
+                Press the £ button to allocate money into
+                budget categories.
+              </p>
+            </>
+          )}
+
+         {tutorialStep === 3 && (
+  <>
+    <h2>Select Categories</h2>
+    <p>
+      Before paying a mail item, click a budget
+      category to highlight it.
+    </p>
+
+    <p>
+      The highlighted category is where the
+      payment will be taken from.
+    </p>
+  </>
+)}
+
+          {tutorialStep === 4 && (
+            <>
+              <h2>Finish</h2>
+              <p>
+                Each week ends with a summary.
+                At the end, complete the quiz.
+              </p>
+            </>
+          )}
+
+          <button
+            onClick={() => {
+              if (tutorialStep >= 4) {
+                setTutorialStep(0);
+              } else {
+                setTutorialStep((prev) => prev + 1);
+              }
+            }}
+          >
+            {tutorialStep >= 4
+              ? "Start Simulation"
+              : "Next"}
+          </button>
+        </div>
+      </div>
+    )}
 
       {started && (
         <div className="simulatorLayout">
@@ -549,7 +619,7 @@ setAccounts((prev) =>
                 <h2>Week {week} Summary</h2>
                 <p>Spent This Week: £{spent.toFixed(2)}</p>
                 <p>Total Spent: £{totalSpent.toFixed(2)}</p>
-                <p>MoneyRemaining: £{moneyLeft.toFixed(2)}</p>
+                <p>Money Remaining: £{moneyLeft.toFixed(2)}</p>
 
                 <button
                   onClick={() => {
