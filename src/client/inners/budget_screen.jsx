@@ -68,7 +68,8 @@ export default function BudgetScreen({
                 <input
                   className="budgetInput"
                   type="number"
-                  value={budget[category.id]}
+                  placeholder="0"
+                  value={budget[category.id] === 0 ? "" : budget[category.id]}
                   onChange={(e) =>
                     changeBudget(
                       category.id,
