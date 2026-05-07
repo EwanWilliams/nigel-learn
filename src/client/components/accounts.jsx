@@ -26,15 +26,19 @@ export default function AccountRow({ account, onSelect }) {
           <div className="accountName">{account.name}</div>
 
           <div className="accountDesc">
-            {account.type === "Card" && account.last4 ? (
-              <>
-                {account.desc} •{" "}
-                <span className="mono">•••• {account.last4}</span>
-              </>
-            ) : (
-              account.desc
-            )}
-          </div>
+  {account.id !== "current" ? (
+    <>
+      For simulation display only
+      {account.type === "Card" && account.last4 && (
+        <>
+          {" "}• <span className="mono">•••• {account.last4}</span>
+        </>
+      )}
+    </>
+  ) : (
+    account.desc
+  )}
+</div>
         </div>
       </div>
 

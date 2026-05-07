@@ -243,14 +243,11 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 
   // Opens account detail screen
   const openDetail = (account) => {
-  if (account.id !== "current") {
-    alert("This card is just for display in the simulation.");
-    return;
-  }
+    if (account.id !== "current") return;
 
-  setSelectedAccount(account);
-  setScreen("detail");
-};
+    setSelectedAccount(account);
+    setScreen("detail");
+  };
 
   // Returns from account detail view to the home screen
   const goHome = () => {
@@ -505,8 +502,30 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
               )}
 
               {screen === "detail" && selectedAccount && (
-                <DetailScreen account={selectedAccount} onBack={goHome} />
-              )}
+  <div className="detailScreen">
+    <div className="detailHeader">
+      <button className="detailBackBtn" onClick={goHome}>
+        ← Back
+      </button>
+    </div>
+
+    <div className="detailCard">
+      <div className="detailIcon">{selectedAccount.icon}</div>
+
+      <div className="detailName">{selectedAccount.name}</div>
+
+      <div className="detailDesc">{selectedAccount.desc}</div>
+
+      <div className="detailBalanceLabel">
+        Available Balance
+      </div>
+
+      <div className="detailBalance">
+        £{selectedAccount.amount.toFixed(2)}
+      </div>
+    </div>
+  </div>
+)}
             </div>
           </div>
 

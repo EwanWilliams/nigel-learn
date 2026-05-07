@@ -1674,3 +1674,98 @@ input {
   transform: translateY(-1px);
   box-shadow: 0 10px 24px rgba(112, 0, 224, 0.18);
 }
+
+.detailScreen {
+  padding: 20px;
+  height: 100%;
+
+  background: linear-gradient(
+    to bottom,
+    #f8fafc,
+    #eef2ff
+  );
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 24px;
+}
+
+.detailBackBtn {
+  border: none;
+  background: white;
+
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  cursor: pointer;
+}
+
+.detailCard {
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.detailIcon {
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  font-size: 2rem;
+
+  margin-bottom: 18px;
+
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.detailName {
+  font-size: 1.8rem;
+  font-weight: 700;
+
+  color: #111827;
+
+  margin-bottom: 8px;
+}
+
+.detailDesc {
+  color: #6b7280;
+
+  font-size: 1rem;
+
+  margin-bottom: 24px;
+}
+
+.detailBalanceLabel {
+  font-size: 0.95rem;
+  color: #6b7280;
+
+  margin-bottom: 6px;
+}
+
+.detailBalance {
+  font-size: 2.4rem;
+  font-weight: 800;
+
+  color: #111827;
+}
