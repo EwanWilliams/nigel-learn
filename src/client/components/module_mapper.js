@@ -131,27 +131,7 @@ export function mapModuleToStudyData(moduleDoc) {
         : 0,
 
     // Convert backend weeks into the structure used by the study simulation
-    weeks: (moduleDoc.weekPool || []).map((week, index) => ({
-      week: index + 1,
-      dateStarting: week.dateStarting,
-
-      // Convert backend mail items into frontend-friendly objects
-      mailItems: (week.mailPool || []).map((mail, mailIndex) => ({
-        id: mail._id || `${index + 1}-${mailIndex + 1}`,
-        subject: mail.subject,
-        message: mail.body,
-        amount: mail.amount || 0,
-        date: formatMailDate(mail.date),
-        sender: mail.sender,
-        label: mail.label,
-        type: mail.type,
-      })),
-
-      incomes: week.incomePool || [],
-      expenses: week.expensePool || [],
-      
-    })),
-    weeks: (moduleDoc.weekPool || []).map((week, index) => ({
+        weeks: (moduleDoc.weekPool || []).map((week, index) => ({
       week: index + 1,
       dateStarting: week.dateStarting,
 
@@ -170,7 +150,15 @@ export function mapModuleToStudyData(moduleDoc) {
       expenses: week.expensePool || [],
     })),
 
-    quiz: moduleDoc.quiz || [],
-    
+    quiz: (moduleDoc.quiz || []).map((q) => ({
+      question: q.question,
+      options: (q.options || []).map((option) => ({
+        text: option.text,
+        isCorrect:
+          option.isCorrect === true ||
+          option.correct === true ||
+          option.is_correct === true,
+      })),
+    })),
   };
 }

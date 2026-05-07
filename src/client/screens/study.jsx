@@ -53,6 +53,10 @@ const navigate = useNavigate();
   const [showFinal, setShowFinal] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizPercentage, setQuizPercentage] = useState(0);
+  const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
+  const [categorySpent, setCategorySpent] = useState({});
   
 
   // Simulation data derived from backend module
@@ -234,14 +238,19 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   const leftToAllocate = Math.max(0, netIncome - totalAllocated - totalSpent);
 
   const isBudgetComplete = budgetLocked;
-  const moneyLeft = netIncome - spent;
+  const moneyLeft = netIncome - totalSpent;
   const totalWeeks = moduleData?.weeks?.length || 4;
 
   // Opens account detail screen
   const openDetail = (account) => {
-    setSelectedAccount(account);
-    setScreen("detail");
-  };
+  if (account.id !== "current") {
+    alert("This card is just for display in the simulation.");
+    return;
+  }
+
+  setSelectedAccount(account);
+  setScreen("detail");
+};
 
   // Returns from account detail view to the home screen
   const goHome = () => {
@@ -280,6 +289,17 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 
     setSpent((prev) => prev + amount);
     setTotalSpent((prev) => prev + amount);
+    setAccounts((prev) =>
+  prev.map((acc) =>
+    acc.id === "current"
+      ? { ...acc, amount: Math.max(0, acc.amount - amount) }
+      : acc
+  )
+);
+    setCategorySpent((prev) => ({
+  ...prev,
+  [selectedCategory]: (prev[selectedCategory] || 0) + amount,
+}));
 
     setMailItems((prev) => {
       const updatedMailItems = prev.filter((mail) => mail.id !== mailId);
@@ -319,7 +339,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   // Moves simulation to next week or ends if there are no more weeks
   const nextWeek = () => {
     if (week + 1 > totalWeeks) {
-      setShowFinal(true);
+      setShowBudgetBreakdown(true);
       return;
     }
 
@@ -365,6 +385,15 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
   const submitQuiz = async () => {
   const questions = moduleData.quiz || [];
 
+  const unanswered = questions.some(
+    (_, index) => quizAnswers[index] === undefined
+  );
+
+  if (unanswered) {
+    alert("Please answer all quiz questions before submitting.");
+    return;
+  }
+
   const score = questions.reduce((total, q, questionIndex) => {
     const selectedIndex = quizAnswers[questionIndex];
     const selectedOption = q.options?.[selectedIndex];
@@ -374,6 +403,9 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 
   const percentage =
     questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+
+    setQuizScore(score);
+    setQuizPercentage(percentage);
 
   try {
     const res = await fetch(
@@ -493,8 +525,9 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
             <div className="summaryOverlay">
               <div className="summaryCard">
                 <h2>Week {week} Summary</h2>
-                <p>Spent: £{spent.toFixed(2)}</p>
-                <p>Remaining: £{moneyLeft.toFixed(2)}</p>
+                <p>Spent This Week: £{spent.toFixed(2)}</p>
+                <p>Total Spent: £{totalSpent.toFixed(2)}</p>
+                <p>MoneyRemaining: £{moneyLeft.toFixed(2)}</p>
 
                 <button
                   onClick={() => {
@@ -516,7 +549,41 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
               </div>
             </div>
           )}
+{showBudgetBreakdown && !showFinal && (
+  <div className="summaryOverlay">
+    <div className="summaryCard quizCard">
+      <h2>Final Budget Breakdown</h2>
 
+      <p>Here is how your budget ended before the final quiz.</p>
+
+      {(budgetCategoryConfig || []).map((category) => {
+        const spentAmount = categorySpent[category.id] || 0;
+        const leftAmount = budget[category.id] || 0;
+
+        return (
+          <div key={category.id} className="quizQuestion">
+            <h3>{category.label}</h3>
+            <p>Spent: £{spentAmount.toFixed(2)}</p>
+            <p>Left: £{leftAmount.toFixed(2)}</p>
+          </div>
+        );
+      })}
+
+      <p>
+        Overall remaining balance: £{moneyLeft.toFixed(2)}
+      </p>
+
+      <button
+        onClick={() => {
+          setShowBudgetBreakdown(false);
+          setShowFinal(true);
+        }}
+      >
+        Continue to Quiz
+      </button>
+    </div>
+  </div>
+)}
           {showFinal && (
   <div className="summaryOverlay">
   <div className="summaryCard quizCard">
@@ -551,11 +618,17 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 
     {!quizSubmitted ? (
   <button onClick={submitQuiz}>
-  Submit Quiz
-</button>
+    Submit Quiz
+  </button>
 ) : (
   <>
-    <p>Quiz submitted!</p>
+    <h3>
+      Score: {quizScore}/{moduleData.quiz.length}
+    </h3>
+
+    <p>
+      Percentage: {quizPercentage}%
+    </p>
 
     <button
       onClick={() => {
