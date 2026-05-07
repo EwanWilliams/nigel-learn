@@ -56,6 +56,10 @@ const navigate = useNavigate();
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
   const [categorySpent, setCategorySpent] = useState({});
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [budgetError, setBudgetError] = useState({
+  category: null,
+  message: "",
+});
   
 
   // Simulation data derived from backend module
@@ -229,7 +233,17 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
 
     // Prevent allocating more than net income
     if (newTotal > netIncome) {
-      alert("You cannot allocate more than your available net pay.");
+      setBudgetError({
+  category,
+  message: "Over available money.",
+});
+
+setTimeout(() => {
+  setBudgetError({
+    category: null,
+    message: "",
+  });
+}, 2500);
       return prev;
     }
 
@@ -571,6 +585,7 @@ console.log("MAPPED MODULE:", mapModuleToStudyData(rawModule));
                   changeBudget={changeBudget}
                   selectedCategory={selectedCategory}
                   setSelectedCategory={setSelectedCategory}
+                  budgetError={budgetError}
                 />
               )}
 

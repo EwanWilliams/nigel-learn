@@ -14,8 +14,10 @@ export default function BudgetScreen({
   moneyLeft,
   budgetCategoryConfig,
   budget,
-  changeBudget
-  ,selectedCategory,setSelectedCategory
+  changeBudget,
+  selectedCategory,
+  setSelectedCategory,
+  budgetError,
 }) {
 
   return (
@@ -99,6 +101,11 @@ onClick={() =>
               </button>
 
             </div>
+            {budgetError?.category === category.id && (
+  <div className="budgetErrorPopup">
+    {budgetError.message}
+  </div>
+)}
 
           </div>
 
