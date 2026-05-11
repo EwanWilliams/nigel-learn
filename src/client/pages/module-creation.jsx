@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function ModuleCreation() {
   const [mail, setMail] = useState([{ label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
   const [income, setIncome] = useState([{ label: "", category: "PAYE", amount: 0 }]);
   const [expense, setExpense] = useState([{ label: "", category: "Rent", amount: 0 }]);
-  const [week, setWeek] = useState([{ label: "", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }]);
+ const [week, setWeek] = useState([
+  { label: "Week 1", dateStarting: "", mailPool: [], incomePool: [], expensePool: [] }
+]);
   const [moduleName, setModuleName] = useState("");
   const [brief, setBrief] = useState("");
   const [mailChecked, setMailChecked] = useState({});
@@ -13,6 +16,7 @@ export default function ModuleCreation() {
   const [quiz, setQuiz] = useState([{ question: "", options: [{ text: "", correct: false }, { text: "", correct: false }] }]);
   const [isUploading, setIsUploading] = useState(false);
   const [showQuizValidation, setShowQuizValidation] = useState(false);
+  const navigate = useNavigate();
 
   const handleAddMail = () => {
     setMail([...mail, { label: "", type: "Expense", sender: "", date: "", subject: "", body: "", amount: 0 }]);
@@ -30,7 +34,16 @@ export default function ModuleCreation() {
       lastDate.setDate(lastDate.getDate() + 7);
       newDate = lastDate.toISOString().split('T')[0];
     }
-    setWeek([...week, { label: "", dateStarting: newDate, mailPool: [], incomePool: [], expensePool: [] }]);
+    setWeek([
+  ...week,
+  {
+    label: `Week ${week.length + 1}`,
+    dateStarting: newDate,
+    mailPool: [],
+    incomePool: [],
+    expensePool: []
+  }
+]);
   }
   
   const handleRemoveMail = (index) => {
@@ -174,12 +187,25 @@ export default function ModuleCreation() {
   };
 
   return (
-    <div>
-        {/* Page heading and intro */}
-        <h1>Module Creation</h1>
-        <p>This is where you can create new modules for your application.</p>
+    <div className="routePage modulePage">
+      
+      <div className="routeCard moduleCard">
+        <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate("/landing")}
+>
+  ← Back
+</button>
 
-        <form onSubmit={handleSubmit}>
+      <div className="routeBadge">Build</div>
+
+      <h1 className="routeSectionTitle">Module Creation</h1>
+      <p className="routeSectionText">
+        Create modules, weekly events, income, expenses, mail and quiz questions.
+      </p>
+
+      <form onSubmit={handleSubmit} className="moduleForm">
           {/* Module name and brief inputs */}
           <label>
             Module Name:
@@ -711,6 +737,7 @@ export default function ModuleCreation() {
             <button type="submit" disabled={isUploading}>{isUploading ? "Creating Module..." : "Create Module"}</button>
 
         </form>
+    </div>
     </div>
   );
 }

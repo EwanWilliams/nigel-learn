@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getClassroomById } from '../api.mjs';
 import { loadLocalNames } from '../localNames.mjs';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClassroomProjectionPage() {
   const [searchParams] = useSearchParams();
@@ -43,6 +44,13 @@ export default function ClassroomProjectionPage() {
 
   return (
     <div className="teacher-page teacher-projection">
+      <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => window.close()}
+>
+  ✕ Close
+</button>
       {isLoading && <p className="teacher-hint">Loading…</p>}
       {error && <p className="teacher-error">{error}</p>}
 

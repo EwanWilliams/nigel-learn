@@ -14,8 +14,10 @@ export default function BudgetScreen({
   moneyLeft,
   budgetCategoryConfig,
   budget,
-  changeBudget
-  ,selectedCategory,setSelectedCategory
+  changeBudget,
+  selectedCategory,
+  setSelectedCategory,
+  budgetError,
 }) {
 
   return (
@@ -43,8 +45,12 @@ export default function BudgetScreen({
 
           <div
   key={category.id}
-  className={`budgetRow ${selectedCategory === category.id ? "active" : ""}`}
-  onClick={() => setSelectedCategory(category.id)}
+className={`budgetRow ${selectedCategory === category.id ? "active" : ""}`}
+onClick={() =>
+  setSelectedCategory((prev) =>
+    prev === category.id ? null : category.id
+  )
+}
 >
 
             <span>{category.label}</span>
@@ -66,16 +72,21 @@ export default function BudgetScreen({
                 <span className="currencySymbol">£</span>
 
                 <input
-                  className="budgetInput"
-                  type="number"
-                  value={budget[category.id]}
-                  onChange={(e) =>
-                    changeBudget(
-                      category.id,
-                      Number(e.target.value) - budget[category.id]
-                    )
-                  }
-                />
+  className="budgetInput"
+  type="number"
+  value={budget[category.id]}
+  onFocus={(e) => {
+    if (budget[category.id] === 0) {
+      e.target.select();
+    }
+  }}
+  onChange={(e) =>
+    changeBudget(
+      category.id,
+      Number(e.target.value) - budget[category.id]
+    )
+  }
+/>
 
               </div>
 
@@ -90,6 +101,11 @@ export default function BudgetScreen({
               </button>
 
             </div>
+            {budgetError?.category === category.id && (
+  <div className="budgetErrorPopup">
+    {budgetError.message}
+  </div>
+)}
 
           </div>
 

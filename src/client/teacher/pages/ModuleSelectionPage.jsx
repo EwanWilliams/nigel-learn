@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getModuleById, listModules } from '../api.mjs';
+import { useNavigate } from 'react-router-dom';
 
 // Module list and selection.
 // Backend endpoints used:
@@ -86,6 +87,13 @@ export default function ModuleSelectionPage() {
 
   return (
     <div className="teacher-page teacher-moduleSelection">
+      <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate(-1)}
+>
+  ← Back
+</button>
       <h1 className="teacher-title">Module Selection</h1>
 
       <p className="teacher-hint">Available modules from the backend.</p>

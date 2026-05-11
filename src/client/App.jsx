@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./app.css";
 
 import LandingPage from "./screens/landing";
+import JoinPage from "./screens/join";
 import StudyPage from "./screens/study";
 import ModuleCreation from "./pages/module-creation";
 import CreateClassroomPage from "./teacher/pages/CreateClassroomPage.jsx";
@@ -14,6 +15,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/join" element={<JoinPage />} />
         <Route path="/study" element={<StudyPage />} />
         <Route path="/build" element={<ModuleCreation />} />
         <Route path="/teach" element={<Navigate to="/teach/classes" replace />} />

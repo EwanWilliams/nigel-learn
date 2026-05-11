@@ -173,5 +173,43 @@ router.get('/study/:classCode/:studentCode', async (req, res) => {
     }
 });
 
+// save quiz mark and mark student as completed
+router.post('/study/complete', async (req, res) => {
+  try {
+    const {
+      classroomCode,
+      studentCode,
+      mark
+    } = req.body;
 
+    if (!classroomCode || !studentCode || mark === undefined) {
+      return res.status(400).json({ error: "Missing completion data" });
+    }
+
+    const classroom = await Classroom.findOneAndUpdate(
+      {
+        classCode: classroomCode,
+        "students.studentCode": studentCode
+      },
+      {
+        $set: {
+          "students.$.mark": mark,
+          "students.$.completedAt": new Date()
+        }
+      },
+      { new: true }
+    );
+
+    if (!classroom) {
+      return res.status(404).json({ error: "Classroom or student not found" });
+    }
+
+    res.status(200).json({
+      message: "Student completion saved successfully"
+    });
+  } catch (err) {
+    console.error("Save student completion error: ", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 export default router;

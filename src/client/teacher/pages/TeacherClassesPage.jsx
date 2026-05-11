@@ -42,9 +42,16 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
 
   return (
     <div className="teacher-page teacher-classes">
+      <button
+  className="pageBackBtn"
+  type="button"
+  onClick={() => navigate("landing")}
+>
+  ← Back
+</button>
       <h1 className="teacher-title">My Classes</h1>
-
-      <section className="teacher-section">
+      
+        <div className="routeBadge">Teacher</div>
         <button
           className="teacher-button"
           type="button"
@@ -52,12 +59,6 @@ export default function TeacherClassesPage({ initialUsername = '' }) {
         >
           + Create a classroom
         </button>
-      </section>
-
-      <section className="teacher-section">
-        {isLoading && <p className="teacher-hint">Loading…</p>}
-        {error && <p className="teacher-error">{error}</p>}
-      </section>
 
       <section className="teacher-section">
         <p className="teacher-hint">
